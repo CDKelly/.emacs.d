@@ -273,11 +273,6 @@
   (other-window 1))
 (global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
 
-;; ace-jump - quick navigation in frame; similar to vimium
-;; https://github.com/winterTTr/ace-jump-mode
-;; (require 'ace-jump-mode)
-;; (add-hook 'prog-mode-hook #'ace-jump-mode)
-
 ;; avy mode - quickly jump to char or line
 (use-package avy
   :ensure t

@@ -1,10 +1,14 @@
 init.el~
+.emacs.desktop
+.emacs.desktop.lock
 
 recentf
 recentf~
 recentf~*
 network-security.data*
 projectile-bookmarks.eld*
+
+.saves/
 
 elpa/
 distel/
