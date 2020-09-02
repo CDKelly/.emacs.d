@@ -335,9 +335,6 @@
   ("C-c p" . projectile-command-map)
   :config
   (projectile-global-mode))
-;; (require 'projectile)
-;; (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-;; (projectile-global-mode)
 
 ;; ag
 (require 'ag)
@@ -500,6 +497,48 @@
   (interactive "r\np")
   (move-region start end (if (null n) 1 n)))
 
+
+(defun copy-whole-line ()
+  "Copies a line without regard for cursor position."
+  (interactive)
+  (kill-new
+   (buffer-substring
+    (point-at-bol)
+    (point-at-eol))))
+
+(defun insert-line-below ()
+  "Insert an empty line below the current line."
+  (interactive)
+  (end-of-line)
+  (newline))
+
+(defun insert-line-above ()
+  "Insert an empty line above the current line."
+  (interactive)
+  (end-of-line 0)
+  (newline))
+
+(defun copy-and-yank-line-below ()
+  "Copies a line and inserts it down one line while keeping your cursor
+ position constant"
+  (interactive)
+  (save-excursion
+    (copy-whole-line)
+    (insert-line-below)
+    (yank)))
+(global-set-key (kbd "C-c y n") 'copy-and-yank-line-below)
+
+(defun copy-and-yank-line-above ()
+  "Copies a line and inserts it down one line while keeping your cursor
+ position constant"
+  (interactive)
+  (save-excursion
+    (copy-whole-line)
+    (insert-line-above)
+    (yank)))
+(global-set-key (kbd "C-c y p") 'copy-and-yank-line-above)
+
+
 ;; revert buffer w/o asking for confirmation
 (defun revert-buffer-no-confirm()
   "Revert buffer without confirmation."
@@ -584,7 +623,6 @@
 (global-set-key (kbd "C-c d g") 'dumb-jump-go)
 (global-set-key (kbd "C-c d p") 'dumb-jump-back)
 (global-set-key (kbd "C-c d q") 'dumb-jump-quick-look)
-;; (global-set-key (kbd "C-c f") 'ace-jump-char-mode)
 (global-set-key (kbd "M-<up>") 'move-line-up)
 (global-set-key (kbd "M-<down>") 'move-line-down)
 (global-set-key (kbd "C-M-<up>") 'move-region-up)
@@ -914,3 +952,10 @@ If a prefix argument is specified (e.g. ctrl-u ) then attempts to run only the t
               (mode 15 15 :left :elide) " " filename-and-process)
         (mark " " (name 16 -1) " " filename)))
 (put 'narrow-to-region 'disabled nil)
+
+
+
+
+
+
+
