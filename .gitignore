@@ -1,0 +1,15 @@
+init.el~
+
+recentf
+recentf~
+recentf~*
+network-security.data*
+projectile-bookmarks.eld*
+
+elpa/
+distel/
+auto-save-list/
+transient/
+url/
+
+*.elc

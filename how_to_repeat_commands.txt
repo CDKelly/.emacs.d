@@ -1,0 +1,9 @@
+C-x z               repeats previous command (whether it's a simple or complex command; e.g. move up or down a line)
+
+C-x z z z           repeats previous command 3 times
+
+M-x M-p             repeat previous command that used M-x. If you typed M-x and searched/executed the magit-status command last, then M-x M-p will repeat this command
+
+M-x C-r             reverse-i-search previous commands that used M-x
+
+C-x ESC ESC         repeat complex command. Similar to M-x M-p
