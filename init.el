@@ -174,26 +174,31 @@
 ;; show parentheses matching
 (show-paren-mode 1)
 
+
 (use-package rainbow-delimiters
   :ensure t
-  :init
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-  (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
-  (add-hook 'lisp-mode-hook #'rainbow-delimiters-mode))
+  :hook ((prog-mode emacs-lisp-mode lisp-mode) . rainbow-delimiters-mode))
 
 ;; ParEdit
-(require 'paredit)
-(autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
-(add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
-(add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-(add-hook 'lisp-mode-hook             #'enable-paredit-mode)
-(add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-(add-hook 'scheme-mode-hook           #'enable-paredit-mode)
-;; ParEdit Menu
-(eval-after-load "paredit.el" '(require 'paredit-menu))
+(use-package paredit
+  :ensure t
+  :init
+  (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+  :config
+  (eval-after-load "paredit.el" '(require 'paredit-menu))
+  :hook
+  ((emacs-lisp-mode eval-expression-minibuffer-setup lisp-mode lisp-interaction-mode scheme-mode) . enable-paredit-mode))
+
+
 ;; electric for all else
 (electric-pair-mode 1)
 (setq electric-pair-preserve-balance nil)
+;; Disable pairs when entering minibuffer
+(add-hook 'minibuffer-setup-hook (lambda () (electric-pair-mode 0)))
+
+;; Renable pairs when existing minibuffer
+(add-hook 'minibuffer-exit-hook (lambda () (electric-pair-mode 1)))
+
 (defvar web-mode-electric-pairs '((?\< . ?\>)) "helpful pairing for web mode")
 (defun web-mode-add-electric-pairs ()
   (setq-local electric-pair-pairs (append electric-pair-pairs web-mode-electric-pairs))
@@ -212,6 +217,9 @@
 ;; show 80-character vertical marker
 (require 'fill-column-indicator)
 (add-hook 'prog-mode-hook #'fci-mode)
+
+;; clean up any accidental trailing whitespace upon save.
+(add-hook 'before-save-hook 'whitespace-cleanup)
 
 ;; turn off tabs globally
 ;; but activate if the file I'm in uses tabs
@@ -258,6 +266,10 @@
         '("a" "s" "d" "f" "g" "h" "j" "k" "l" "q" "w" "e" "r"))
   :bind
   ([remap other-window] . switch-window))
+
+(defun switch-to-last-buffer ()
+  (interactive)
+  (switch-to-buffer nil))
 
 (defun split-and-follow-horizontally ()
   (interactive)
@@ -371,8 +383,8 @@
 
 ;; disable jshint since we prefer eslint checking
 (setq-default flycheck-disabled-checkers
-	      (append flycheck-disabled-checkers
-		      '(javascript-jshint)))
+          (append flycheck-disabled-checkers
+              '(javascript-jshint)))
 ;; customize flycheck temp file prefix
 (setq-default flycheck-temp-prefix ".flycheck")
 ;; use local eslint from node_modules before global
@@ -403,7 +415,7 @@
 (add-hook 'groovy-mode-hook
           (lambda ()
             (c-set-offset 'label 2))
-	  (infer-indentation-style))
+      (infer-indentation-style))
 
 ;; yaml-mode (for ansible)
 (require 'yaml-mode)
@@ -412,8 +424,8 @@
 (add-to-list 'auto-mode-alist '("\\.yml\.erb\\'" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml\.erb\\'" . yaml-mode))
 (add-hook 'yaml-mode-hook
-	  '(lambda ()
-	     (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+      '(lambda ()
+         (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
 
 
 ;; =============================================================================
@@ -612,6 +624,7 @@
 (global-set-key (kbd "C-h f") 'counsel-describe-function)
 (global-set-key (kbd "C-h v") 'counsel-describe-variable)
 (global-set-key (kbd "C-h S") 'counsel-info-lookup-symbol)
+(global-set-key (kbd "C-S-b") 'switch-to-last-buffer)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x C-w") 'save-or-restore-workspace)
 (global-set-key (kbd "C-c r n") 'rename-file-and-buffer)
@@ -763,7 +776,7 @@ The command string is suitable for submission with an append of the actual comma
   ;; detect if we should run locally or remotely
   (cond ((string-match-p "PlatformErlang" (buffer-file-name)) (concat "cd .. && " crap-command))
         (t (concat "cd ~/projects/callback_cloud && ssh vm 'set -i;source /etc/profile;source ~/.bashrc;cd /home/vagrant/projects/callback_cloud;"
-		   crap-command "'"))))
+           crap-command "'"))))
 (defun satisy-rubo-cop-silliness()
   (princ "deleting trailing whitespace to make turdmine happy")
   (delete-trailing-whitespace (point-min) (point-max)))
@@ -785,14 +798,14 @@ If a prefix argument is specified (e.g. ctrl-u ) then attempts to run only the t
          (line-number (format-mode-line "%l"))
          (rspec-command (if (equal prefix-arg nil)      ;no ctrl-u pressed
                             (concat "bundle exec rspec " relative-path " --format documentation")
-			  (concat "bundle exec rspec " relative-path ":" line-number "\n")))
+              (concat "bundle exec rspec " relative-path ":" line-number "\n")))
          )
     (compile (run-ruby-crap-string rspec-command))))
 (defun get-boss-token()
   "attempt to get a user token, or report an error if we think boss is not running"
   (let ((token (shell-command-to-string "~/projects/PlatformErlang/scripts/nget_password.sh | ghead -c -1")))
     (if (string-match-p (regexp-quote "failure") token)
-	(error "Boss is not running!?")
+    (error "Boss is not running!?")
       token)))
 (defun ruby-wrap-exception(beg end)
   "add exception catch"
@@ -952,10 +965,3 @@ If a prefix argument is specified (e.g. ctrl-u ) then attempts to run only the t
               (mode 15 15 :left :elide) " " filename-and-process)
         (mark " " (name 16 -1) " " filename)))
 (put 'narrow-to-region 'disabled nil)
-
-
-
-
-
-
-
