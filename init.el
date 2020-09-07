@@ -316,14 +316,17 @@
 (setq highlight-indent-guides-auto-set-faces t)
 
 ;; highlight line where cursor is
-(beacon-mode 1)
-(setq beacon-color "turquoise1")
+(use-package beacon
+  :ensure t
+  :config
+  (beacon-mode 1)
+  (setq beacon-color "turquoise1"))
 
 ;; highlight hexadecimals the color they represent
 (use-package rainbow-mode
   :ensure t
   :init
-    (add-hook 'prog-mode-hook 'rainbow-mode))
+  (add-hook 'prog-mode-hook 'rainbow-mode))
 
 ;; auto-highlight-symbol
 ;; https://github.com/gennad/auto-highlight-symbol
