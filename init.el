@@ -177,7 +177,8 @@
 
 (use-package rainbow-delimiters
   :ensure t
-  :hook ((prog-mode emacs-lisp-mode lisp-mode) . rainbow-delimiters-mode))
+  :hook
+  ((prog-mode emacs-lisp-mode lisp-mode) . rainbow-delimiters-mode))
 
 ;; ParEdit
 (use-package paredit
@@ -215,8 +216,10 @@
 (setq visual-line-fringe-indicators '(bottom-left-angle bottom-right-angle))
 
 ;; show 80-character vertical marker
-(require 'fill-column-indicator)
-(add-hook 'prog-mode-hook #'fci-mode)
+(use-package fill-column-indicator
+  :ensure t
+  :hook
+  ((prog-mode) . fci-mode))
 
 ;; clean up any accidental trailing whitespace upon save.
 (add-hook 'before-save-hook 'whitespace-cleanup)
