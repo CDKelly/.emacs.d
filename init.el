@@ -162,8 +162,8 @@
   (backward-word)
   (kill-word 1))
 
-(global-set-key (kbd "C-c w w") 'kill-whole-word)
-(global-set-key (kbd "C-c w l") 'kill-whole-line)
+(global-set-key (kbd "C-c k w") 'kill-whole-word)
+(global-set-key (kbd "C-c k l") 'kill-whole-line)
 
 ;; treat camel-case symbols as separate
 ;; i.e. M-f will move across parts of a camel-cased symbol
@@ -439,6 +439,13 @@
 ;; Customized workspace functions
 ;; =============================================================================
 
+;; always kill current buffer
+(defun kill-current-buffer ()
+  "Kills the current buffer."
+  (interactive)
+  (kill-buffer (current-buffer)))
+(global-set-key (kbd "C-x k") 'kill-current-buffer)
+
 ;; my global window/workspace saving functions
 (defvar g_workspace (current-window-configuration))
 (defun save-workspace()
@@ -524,6 +531,7 @@
    (buffer-substring
     (point-at-bol)
     (point-at-eol))))
+(global-set-key (kbd "C-c y l") 'copy-whole-line)
 
 (defun insert-line-below ()
   "Insert an empty line below the current line."
