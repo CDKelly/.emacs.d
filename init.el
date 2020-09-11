@@ -225,9 +225,11 @@
 ;; clean up any accidental trailing whitespace upon save.
 (add-hook 'before-save-hook 'whitespace-cleanup)
 
-;; turn off tabs globally
-;; but activate if the file I'm in uses tabs
-;; if so, then rely off smarts-tab-mode
+
+;; infer-indentation-style for a mode-hook. If spaces > tabs,
+;; then turn tabs OFF, else turn tabs ON. If tabs are turned ON, then
+;; smart-tabs will take over (indent-tabs-mode must be non-nil for
+;; smart-tabs to work according to https://www.emacswiki.org/emacs/SmartTabs)
 (setq-default indent-tabs-mode nil)
 
 ;; infer indentation style of file
@@ -692,6 +694,14 @@
 (setq ns-pop-up-frames nil)
 
 
+;; =============================================================================
+;; C/Java stuff
+;; =============================================================================
+
+(defun my-c-mode-common-hook ()
+    (infer-indentation-style))
+
+(add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
 
 ;; =============================================================================
 ;; Ruby stuff
