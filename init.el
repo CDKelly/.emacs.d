@@ -224,6 +224,10 @@
 
 ;; clean up any accidental trailing whitespace upon save.
 (add-hook 'before-save-hook 'whitespace-cleanup)
+;; have to disable few items in whitespace-style
+;; according to https://www.emacswiki.org/emacs/SmartTabs
+(setq whitespace-style
+   '(face trailing tabs spaces lines newline empty indentation space-before-tab space-mark tab-mark newline-mark))
 
 
 ;; infer-indentation-style for a mode-hook. If spaces > tabs,
