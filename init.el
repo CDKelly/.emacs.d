@@ -331,11 +331,13 @@
 (setq highlight-indent-guides-auto-set-faces t)
 
 ;; highlight line where cursor is
+;; used beacon setup from https://ladicle.com/post/config/#beacon
+;; for some reason the setup based on beacon's README wouldn't
+;; work with buffer changes and scrolling
 (use-package beacon
-  :ensure t
-  :config
-  (beacon-mode 1)
-  (setq beacon-color "turquoise1"))
+  :custom
+  (beacon-color "turquoise1")
+  :hook (after-init . beacon-mode))
 
 ;; highlight hexadecimals the color they represent
 (use-package rainbow-mode
@@ -355,7 +357,6 @@
   :ensure t
   :bind
   ("C-=" . er/expand-region))
-;;(require 'expand-region)
 
 ;; hideshow - for folding blocks of code
 (add-hook 'prog-mode-hook #'hs-minor-mode)
@@ -402,6 +403,18 @@
 (require 'which-key)
 (which-key-mode)
 (setq which-key-idle-delay 1.0)
+
+;; basic company setup
+;; NOT READY QUITE YET
+;; (use-package company
+;;   :ensure t
+;;   :init
+;;   (add-hook 'after-init-hook 'global-company-mode)
+;;   :config
+;;   (setq company-idle-delay 0)
+;;   (setq company-minimum-prefix-length 2)
+;;   (setq company-selection-wrap-around t))
+
 
 ;; flycheck
 (require 'flycheck)
@@ -664,7 +677,6 @@
 (global-set-key (kbd "C-c t f") 'toggle-fold)
 (global-set-key (kbd "C-x p") 'ahs-backward)
 (global-set-key (kbd "C-x n") 'ahs-forward)
-
 (global-set-key (kbd "M-<up>") 'move-line-up)
 (global-set-key (kbd "M-<down>") 'move-line-down)
 (global-set-key (kbd "C-M-<up>") 'move-region-up)
