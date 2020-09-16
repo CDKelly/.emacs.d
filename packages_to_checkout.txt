@@ -1,3 +1,4 @@
 multiple-cursors
 lsp
-
+diminish
+spaceline - changes mode line to look cool

@@ -88,7 +88,7 @@
      ("marmalade" . "https://marmalade-repo.org/packages/")))
  '(package-enable-at-startup nil)
  '(package-selected-packages
-   '(avy rainbow-delimiters rainbow-mode switch-window use-package jazz-theme planet-theme soothe-theme color-theme-sanityinc-tomorrow molokai-theme afternoon-theme nord-theme material-theme monokai-alt-theme monokai-theme spacemacs-theme fill-column-indicator ivy-hydra expand-region which-key ace-jump-mode auto-highlight-symbol dockerfile-mode lua-mode highlight-indent-guides yaml-mode smart-tabs-mode groovy-mode json-mode cheat-sh json-reformat edit-server magit ruby-end restclient less-css-mode paredit-menu paredit exec-path-from-shell eslintd-fix add-node-modules-path eslint-fix web-mode editorconfig ag xref-js2 js2-mode browse-url-dwim rspec-mode robe rvm enh-ruby-mode inf-ruby flymake-ruby feature-mode neotree company flycheck flycheck-tip popup ivy counsel projectile flx-ido landmark))
+   '(avy switch-window use-package jazz-theme planet-theme soothe-theme color-theme-sanityinc-tomorrow molokai-theme afternoon-theme nord-theme material-theme monokai-alt-theme monokai-theme spacemacs-theme fill-column-indicator ivy-hydra which-key ace-jump-mode auto-highlight-symbol dockerfile-mode lua-mode highlight-indent-guides yaml-mode smart-tabs-mode groovy-mode json-mode cheat-sh json-reformat edit-server magit ruby-end restclient less-css-mode paredit-menu paredit exec-path-from-shell eslintd-fix add-node-modules-path eslint-fix web-mode editorconfig ag xref-js2 js2-mode browse-url-dwim rspec-mode robe rvm enh-ruby-mode inf-ruby flymake-ruby feature-mode neotree company flycheck flycheck-tip popup ivy counsel projectile flx-ido landmark))
  '(pos-tip-background-color "#32302f")
  '(pos-tip-foreground-color "#bdae93")
  '(powerline-color1 "#1E1E1E")
@@ -265,7 +265,11 @@
   (setq xref-backend-functions (remq 'etags--xref-backend xref-backend-functions))
   (add-to-list 'xref-backend-functions #'dumb-jump-xref-activate t)
   :hook
-  ((prog-mode) . dumb-jump-mode))
+  ((prog-mode) . dumb-jump-mode)
+  :bind
+  ("C-c d g" . dumb-jump-go)
+  ("C-c d p" . dumb-jump-back)
+  ("C-c d q" . dumb-jump-quick-look))
 
 ;; switch windows quickly when > 2 windows
 (use-package switch-window
@@ -283,6 +287,7 @@
 (defun switch-to-last-buffer ()
   (interactive)
   (switch-to-buffer nil))
+(global-set-key (kbd "C-S-b") 'switch-to-last-buffer)
 
 (defun split-and-follow-horizontally ()
   (interactive)
@@ -346,7 +351,11 @@
 (setq ahs-default-range 'ahs-range-whole-buffer)
 
 ;; expand-region
-(require 'expand-region)
+(use-package expand-region
+  :ensure t
+  :bind
+  ("C-=" . er/expand-region))
+;;(require 'expand-region)
 
 ;; hideshow - for folding blocks of code
 (add-hook 'prog-mode-hook #'hs-minor-mode)
@@ -648,7 +657,6 @@
 (global-set-key (kbd "C-h f") 'counsel-describe-function)
 (global-set-key (kbd "C-h v") 'counsel-describe-variable)
 (global-set-key (kbd "C-h S") 'counsel-info-lookup-symbol)
-(global-set-key (kbd "C-S-b") 'switch-to-last-buffer)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x C-w") 'save-or-restore-workspace)
 (global-set-key (kbd "C-c r n") 'rename-file-and-buffer)
@@ -656,10 +664,7 @@
 (global-set-key (kbd "C-c t f") 'toggle-fold)
 (global-set-key (kbd "C-x p") 'ahs-backward)
 (global-set-key (kbd "C-x n") 'ahs-forward)
-(global-set-key (kbd "C-=") 'er/expand-region)
-(global-set-key (kbd "C-c d g") 'dumb-jump-go)
-(global-set-key (kbd "C-c d p") 'dumb-jump-back)
-(global-set-key (kbd "C-c d q") 'dumb-jump-quick-look)
+
 (global-set-key (kbd "M-<up>") 'move-line-up)
 (global-set-key (kbd "M-<down>") 'move-line-down)
 (global-set-key (kbd "C-M-<up>") 'move-region-up)
