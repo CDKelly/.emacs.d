@@ -88,7 +88,7 @@
      ("marmalade" . "https://marmalade-repo.org/packages/")))
  '(package-enable-at-startup nil)
  '(package-selected-packages
-   '(avy switch-window use-package jazz-theme planet-theme soothe-theme color-theme-sanityinc-tomorrow molokai-theme afternoon-theme nord-theme material-theme monokai-alt-theme monokai-theme spacemacs-theme fill-column-indicator ivy-hydra which-key ace-jump-mode auto-highlight-symbol dockerfile-mode lua-mode highlight-indent-guides yaml-mode smart-tabs-mode groovy-mode json-mode cheat-sh json-reformat edit-server magit ruby-end restclient less-css-mode paredit-menu paredit exec-path-from-shell eslintd-fix add-node-modules-path eslint-fix web-mode editorconfig ag xref-js2 js2-mode browse-url-dwim rspec-mode robe rvm enh-ruby-mode inf-ruby flymake-ruby feature-mode neotree company flycheck flycheck-tip popup ivy counsel projectile flx-ido landmark))
+   '(switch-window use-package jazz-theme planet-theme soothe-theme color-theme-sanityinc-tomorrow molokai-theme afternoon-theme nord-theme material-theme monokai-alt-theme monokai-theme spacemacs-theme fill-column-indicator ivy-hydra which-key ace-jump-mode auto-highlight-symbol dockerfile-mode lua-mode highlight-indent-guides yaml-mode smart-tabs-mode groovy-mode json-mode cheat-sh json-reformat edit-server magit ruby-end restclient less-css-mode paredit-menu paredit exec-path-from-shell eslintd-fix add-node-modules-path eslint-fix web-mode editorconfig ag xref-js2 js2-mode browse-url-dwim rspec-mode robe rvm enh-ruby-mode inf-ruby flymake-ruby feature-mode neotree company flycheck flycheck-tip popup ivy counsel flx-ido landmark))
  '(pos-tip-background-color "#32302f")
  '(pos-tip-foreground-color "#bdae93")
  '(powerline-color1 "#1E1E1E")
@@ -116,7 +116,6 @@
  '(default ((t (:inherit nil :extend nil :stipple nil :background "#1c1e1f" :foreground "#dfdfdf" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "nil" :family "Menlo"))))
  '(ahs-plugin-defalt-face ((t (:background "gray40" :foreground "DeepSkyBlue1"))))
  '(ahs-plugin-whole-buffer-face ((t (:background "gray40" :foreground "DeepSkyBlue1"))))
- '(avy-lead-face-0 ((t (:inherit avy-lead-face :background "#fd971f"))))
  '(cursor ((t (:background "turquoise1"))))
  '(custom-documentation ((t (:inherit default))))
  '(font-lock-type-face ((t (:foreground "#66d9ef" :slant italic))))
@@ -310,6 +309,7 @@
   (setq avy-keys-alist
         `((avy-goto-char . ,(number-sequence ?a ?z))))
   (setq avy-background t)
+  (setq avy-lead-face-0 ((t (:inherit avy-lead-face :background "#fd971f"))))
   :bind
   ("C-c f" . avy-goto-char)
   ("C-c a l" . avy-goto-line))
@@ -366,16 +366,8 @@
     (end-of-line)
     (hs-toggle-hiding)))
 
-;; projectile
-(use-package projectile
-  :ensure t
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :config
-  (projectile-global-mode))
-
 ;; ag
-(require 'ag)
+;;(require 'ag)
 
 ;; neotree
 (require 'neotree)
@@ -395,6 +387,19 @@
       '((t . ivy--regex-ignore-order)))
 (setq ivy-wrap t)
 (setq projectile-completion-system 'ivy)
+
+(defun counsel-git-grep-thing-at-point ()
+  (interactive)
+  (counsel-git-grep (kill-new (thing-at-point 'symbol))))
+(global-set-key (kbd "C-c c G") 'counsel-git-grep-thing-at-point)
+
+;; projectile
+(use-package projectile
+  :ensure t
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :config
+  (projectile-global-mode))
 
 ;; cheat-sh
 (require 'cheat-sh)
