@@ -35,6 +35,7 @@
  '(cua-read-only-cursor-color "#98971a")
  '(custom-safe-themes
    '("0f2f1feff73a80556c8c228396d76c1a0342eb4eefd00f881b91e26a14c5b62a" "7f6d4aebcc44c264a64e714c3d9d1e903284305fd7e319e7cb73345a9994f5ef" "7f1d414afda803f3244c6fb4c2c64bea44dac040ed3731ec9d75275b9e831fe5" "830877f4aab227556548dc0a28bf395d0abe0e3a0ab95455731c9ea5ab5fe4e1" default))
+ '(dumb-jump-selector 'ivy)
  '(flycheck-color-mode-line-face-to-color 'mode-line-buffer-id)
  '(frame-background-mode 'light)
  '(fringe-mode 4 nil (fringe))
@@ -88,7 +89,7 @@
      ("marmalade" . "https://marmalade-repo.org/packages/")))
  '(package-enable-at-startup nil)
  '(package-selected-packages
-   '(switch-window use-package jazz-theme planet-theme soothe-theme color-theme-sanityinc-tomorrow molokai-theme afternoon-theme nord-theme material-theme monokai-alt-theme monokai-theme spacemacs-theme fill-column-indicator ivy-hydra which-key ace-jump-mode auto-highlight-symbol dockerfile-mode lua-mode highlight-indent-guides yaml-mode smart-tabs-mode groovy-mode json-mode cheat-sh json-reformat edit-server magit ruby-end restclient less-css-mode paredit-menu paredit exec-path-from-shell eslintd-fix add-node-modules-path eslint-fix web-mode editorconfig ag xref-js2 js2-mode browse-url-dwim rspec-mode robe rvm enh-ruby-mode inf-ruby flymake-ruby feature-mode neotree company flycheck flycheck-tip popup ivy counsel flx-ido landmark))
+   '(doom-modeline avy rainbow-delimiters rainbow-mode switch-window use-package beacon jazz-theme planet-theme soothe-theme color-theme-sanityinc-tomorrow molokai-theme afternoon-theme nord-theme material-theme monokai-alt-theme monokai-theme spacemacs-theme fill-column-indicator ivy-hydra expand-region which-key ace-jump-mode auto-highlight-symbol dumb-jump dockerfile-mode lua-mode highlight-indent-guides yaml-mode smart-tabs-mode groovy-mode json-mode cheat-sh json-reformat edit-server magit ruby-end restclient less-css-mode paredit-menu paredit exec-path-from-shell eslintd-fix add-node-modules-path eslint-fix web-mode editorconfig xref-js2 js2-mode browse-url-dwim rspec-mode robe rvm enh-ruby-mode inf-ruby flymake-ruby feature-mode company flycheck flycheck-tip popup ivy counsel projectile flx-ido landmark))
  '(pos-tip-background-color "#32302f")
  '(pos-tip-foreground-color "#bdae93")
  '(powerline-color1 "#1E1E1E")
@@ -116,6 +117,7 @@
  '(default ((t (:inherit nil :extend nil :stipple nil :background "#1c1e1f" :foreground "#dfdfdf" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "nil" :family "Menlo"))))
  '(ahs-plugin-defalt-face ((t (:background "gray40" :foreground "DeepSkyBlue1"))))
  '(ahs-plugin-whole-buffer-face ((t (:background "gray40" :foreground "DeepSkyBlue1"))))
+ '(avy-lead-face-0 ((t (:inherit avy-lead-face :background "#fd971f"))))
  '(cursor ((t (:background "turquoise1"))))
  '(custom-documentation ((t (:inherit default))))
  '(font-lock-type-face ((t (:foreground "#66d9ef" :slant italic))))
@@ -365,13 +367,6 @@
   (save-excursion
     (end-of-line)
     (hs-toggle-hiding)))
-
-;; ag
-;;(require 'ag)
-
-;; neotree
-(require 'neotree)
-(setq neo-window-width 40)
 
 ;; ivy
 (ivy-mode 1)
@@ -693,7 +688,6 @@
 (global-set-key (kbd "C-t") 'indent-buffer)
 (global-set-key (kbd "<f5>") 'revert-buffer-no-confirm)
 (global-set-key (kbd "<f6>") 'my-compile-v1)
-(global-set-key (kbd "C-c n") 'neotree-toggle)
 (global-set-key (kbd "C-c r r") 'inf-ruby)
 (global-set-key (kbd "C-c r a") 'rvm-activate-corresponding-ruby)
 
