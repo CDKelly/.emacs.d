@@ -408,12 +408,15 @@
   (projectile-global-mode))
 
 ;; cheat-sh
-(require 'cheat-sh)
+(use-package cheat-sh
+  :ensure t)
 
 ;; which-key
-(require 'which-key)
-(which-key-mode)
-(setq which-key-idle-delay 1.0)
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-mode)
+  (setq which-key-idle-delay 1.0))
 
 ;; basic company setup
 ;; NOT READY QUITE YET
