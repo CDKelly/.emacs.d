@@ -430,8 +430,10 @@
 ;;   (setq company-selection-wrap-around t))
 
 ;; restclient
-(require 'restclient)
-(require 'json-reformat)
+(use-package restclient
+  :ensure t)
+(use-package json-reformat
+  :ensure t)
 
 ;; edit-server
 (require 'edit-server)
