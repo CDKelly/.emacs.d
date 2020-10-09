@@ -1,7 +1,9 @@
 multiple-cursors
+
 lsp
+
 diminish
 spaceline - changes mode line to look cool
-doomline
+doom's mode line
 
 dabbrev - particularly dabbrev-expand and hippie-expand --> https://www.reddit.com/r/emacs/comments/j61aoh/weekly_tipstricketc_thread/

@@ -1,0 +1,13 @@
+Tips and tricks for ivy (after pressing M-x)
+
+M-j - insert symbol-at-point in buffer into minibuffer
+
+M-i - insert symbol-at-point in minibuffer into minibuffer
+
+Shift-SPC (C-SPC) - narrow down entire list to current matches and blank out input
+
+C-M-m - run command but keep minibuffer open
+
+M-o - brings up list of options (default, insert, copy)
+
+C-c C-o - produce buffer of things in list -> ivy-occur (C-h m will show helpful commands)

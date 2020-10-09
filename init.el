@@ -89,7 +89,7 @@
      ("marmalade" . "https://marmalade-repo.org/packages/")))
  '(package-enable-at-startup nil)
  '(package-selected-packages
-   '(amx doom-modeline avy rainbow-delimiters rainbow-mode switch-window use-package beacon jazz-theme planet-theme soothe-theme color-theme-sanityinc-tomorrow molokai-theme afternoon-theme nord-theme material-theme monokai-alt-theme monokai-theme spacemacs-theme fill-column-indicator ivy-hydra expand-region which-key ace-jump-mode auto-highlight-symbol dumb-jump dockerfile-mode lua-mode highlight-indent-guides yaml-mode smart-tabs-mode groovy-mode json-mode cheat-sh json-reformat edit-server magit ruby-end restclient less-css-mode paredit-menu paredit exec-path-from-shell eslintd-fix add-node-modules-path eslint-fix web-mode editorconfig xref-js2 js2-mode browse-url-dwim rspec-mode robe rvm enh-ruby-mode inf-ruby flymake-ruby feature-mode company flycheck flycheck-tip popup ivy counsel projectile flx-ido landmark))
+   '(popup-kill-ring ivy-rich amx doom-modeline avy rainbow-delimiters rainbow-mode switch-window use-package beacon jazz-theme planet-theme soothe-theme color-theme-sanityinc-tomorrow molokai-theme afternoon-theme nord-theme material-theme monokai-alt-theme monokai-theme spacemacs-theme fill-column-indicator ivy-hydra expand-region which-key ace-jump-mode auto-highlight-symbol dumb-jump dockerfile-mode lua-mode highlight-indent-guides yaml-mode smart-tabs-mode groovy-mode json-mode cheat-sh json-reformat edit-server magit ruby-end restclient less-css-mode paredit-menu paredit exec-path-from-shell eslintd-fix add-node-modules-path eslint-fix web-mode editorconfig xref-js2 js2-mode browse-url-dwim rspec-mode robe rvm enh-ruby-mode inf-ruby flymake-ruby feature-mode company flycheck flycheck-tip popup ivy counsel projectile flx-ido landmark))
  '(pos-tip-background-color "#32302f")
  '(pos-tip-foreground-color "#bdae93")
  '(powerline-color1 "#1E1E1E")
@@ -384,10 +384,32 @@
 (setq ivy-wrap t)
 (setq projectile-completion-system 'ivy)
 
+;; counsel bindings
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "C-h f") 'counsel-describe-function)
+(global-set-key (kbd "C-h v") 'counsel-describe-variable)
+(global-set-key (kbd "C-h S") 'counsel-info-lookup-symbol)
+(global-set-key (kbd "M-y") 'counsel-yank-pop)
+
+(let ((bindings #'(("g" . counsel-git-grep)
+                  ("r" . counsel-rg)
+                  ("m" . counsel-mark-ring))))
+  (dolist (binding bindings)
+    (global-set-key (kbd (concat "C-c c " (car binding))) (cdr binding))))
+
 (defun counsel-git-grep-thing-at-point ()
   (interactive)
   (counsel-git-grep (kill-new (thing-at-point 'symbol))))
 (global-set-key (kbd "C-c c G") 'counsel-git-grep-thing-at-point)
+
+
+;; ivy-rich
+(use-package ivy-rich
+  :ensure t
+  :config
+  (setcdr (assq t ivy-format-functions-alist)
+          #'ivy-format-function-line)
+  (ivy-rich-mode 1))
 
 ;; amx, an alternative interface for M-x in Emacs
 (use-package amx
@@ -657,11 +679,6 @@
 ;; keybindings
 (global-set-key (kbd "C-s") 'swiper)
 (global-set-key (kbd "C-M-s") 'swiper-thing-at-point)
-;; (global-set-key (kbd "M-x") 'counsel-M-x)
-(global-set-key (kbd "C-x C-f") 'counsel-find-file)
-(global-set-key (kbd "C-h f") 'counsel-describe-function)
-(global-set-key (kbd "C-h v") 'counsel-describe-variable)
-(global-set-key (kbd "C-h S") 'counsel-info-lookup-symbol)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x C-w") 'save-or-restore-workspace)
 (global-set-key (kbd "C-c r n") 'rename-file-and-buffer)
@@ -682,11 +699,7 @@
 (global-set-key (kbd "C-c r r") 'inf-ruby)
 (global-set-key (kbd "C-c r a") 'rvm-activate-corresponding-ruby)
 
-(let ((bindings #'(("g" . counsel-git-grep)
-                  ("r" . counsel-rg)
-                  ("m" . counsel-mark-ring))))
-  (dolist (binding bindings)
-    (global-set-key (kbd (concat "C-c c " (car binding))) (cdr binding))))
+
 
 (add-to-list 'default-frame-alist '(height . 180))
 (add-to-list 'default-frame-alist '(width . 120))
