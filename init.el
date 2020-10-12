@@ -467,18 +467,19 @@
 (add-hook 'groovy-mode-hook
           (lambda ()
             (c-set-offset 'label 2))
-      (infer-indentation-style))
+          (infer-indentation-style))
 
-;; yaml-mode (for ansible)
-(require 'yaml-mode)
-(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yml\.erb\\'" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yaml\.erb\\'" . yaml-mode))
+ ;; yaml-mode (for ansible)
+(use-package yaml-mode
+  :ensure t
+  :init
+  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+  (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
+  (add-to-list 'auto-mode-alist '("\\.yml\.erb\\'" . yaml-mode))
+  (add-to-list 'auto-mode-alist '("\\.yaml\.erb\\'" . yaml-mode)))
 (add-hook 'yaml-mode-hook
-      '(lambda ()
-         (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
-
+            '(lambda ()
+               (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
 
 ;; =============================================================================
 ;; Customized workspace functions
