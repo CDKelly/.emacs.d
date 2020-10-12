@@ -311,7 +311,6 @@
   (setq avy-keys-alist
         `((avy-goto-char . ,(number-sequence ?a ?z))))
   (setq avy-background t)
-  (setq avy-lead-face-0 ((t (:inherit avy-lead-face :background "#fd971f"))))
   :bind
   ("C-c f" . avy-goto-char)
   ("C-c a l" . avy-goto-line))
@@ -337,9 +336,12 @@
 ;; for some reason the setup based on beacon's README wouldn't
 ;; work with buffer changes and scrolling
 (use-package beacon
+  :ensure t
+  :demand t
+  :init
+  (beacon-mode 1)
   :custom
-  (beacon-color "turquoise1")
-  :hook (after-init . beacon-mode))
+  (beacon-color "turquoise1"))
 
 ;; highlight hexadecimals the color they represent
 (use-package rainbow-mode
