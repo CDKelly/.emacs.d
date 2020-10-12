@@ -460,10 +460,8 @@
   :ensure t)
 
 ;; edit-server
-(use-package edit-server
-  :ensure t
-  :config
-  edit-server-start)
+(require 'edit-server)
+(edit-server-start)
 
 ;; groovy (for Jenkinsfiles)
 (add-hook 'groovy-mode-hook
