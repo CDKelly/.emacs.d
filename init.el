@@ -542,11 +542,13 @@
   "Move the current line up by N lines."
   (interactive "p")
   (move-line (if (null n) -1 (- n))))
+(global-set-key (kbd "M-<up>") 'move-line-up)
 
 (defun move-line-down (n)
   "Move the current line down by N lines."
   (interactive "p")
   (move-line (if (null n) 1 n)))
+(global-set-key (kbd "M-<down>") 'move-line-down)
 
 ;; move regions up and down
 (defun move-region (start end n)
@@ -563,11 +565,13 @@
   "Move the current line up by N lines."
   (interactive "r\np")
   (move-region start end (if (null n) -1 (- n))))
+(global-set-key (kbd "C-M-<up>") 'move-region-up)
 
 (defun move-region-down (start end n)
   "Move the current line down by N lines."
   (interactive "r\np")
   (move-region start end (if (null n) 1 n)))
+(global-set-key (kbd "C-M-<down>") 'move-region-down)
 
 
 (defun copy-whole-line ()
@@ -653,6 +657,7 @@
         )
     (compile compile-string t)
     (switch-to-buffer "*compilation*")))
+(global-set-key (kbd "<f6>") 'my-compile-v1)
 
 (defun my-send-string-to-shell(s)
   (let* ((buffer-name "*shell*")
@@ -686,17 +691,10 @@
 (global-set-key (kbd "C-c l") 'recenter-top-bottom)
 (global-set-key (kbd "C-x p") 'ahs-backward)
 (global-set-key (kbd "C-x n") 'ahs-forward)
-(global-set-key (kbd "M-<up>") 'move-line-up)
-(global-set-key (kbd "M-<down>") 'move-line-down)
-(global-set-key (kbd "C-M-<up>") 'move-region-up)
-(global-set-key (kbd "C-M-<down>") 'move-region-down)
-(global-set-key (kbd "M-p") 'gcm-scroll-up)
-(global-set-key (kbd "M-n") 'gcm-scroll-down)
 (global-set-key (kbd "C-o") 'other-window)
 (global-set-key (kbd "C-l") 'goto-line)
 (global-set-key (kbd "C-t") 'indent-buffer)
 (global-set-key (kbd "<f5>") 'revert-buffer-no-confirm)
-(global-set-key (kbd "<f6>") 'my-compile-v1)
 (global-set-key (kbd "C-c r r") 'inf-ruby)
 (global-set-key (kbd "C-c r a") 'rvm-activate-corresponding-ruby)
 
@@ -714,9 +712,13 @@
 (defun gcm-scroll-up ()
   (interactive)
   (scroll-down 3))
+(global-set-key (kbd "M-p") 'gcm-scroll-up)
+
 (defun gcm-scroll-down ()
   (interactive)
   (scroll-up 3))
+(global-set-key (kbd "M-n") 'gcm-scroll-down)
+
 ;; "might" make it so that new windows don't pop up each time
 ;; you open something with Emacs
 (setq ns-pop-up-frames nil)
@@ -736,18 +738,20 @@
 ;; =============================================================================
 
 ;; enh-ruby-mode
-(require 'enh-ruby-mode)
-;; Files with the following extensions should open in enh-ruby-mode
-(add-to-list 'auto-mode-alist '("\\.rb$" . enh-ruby-mode))
-(add-to-list 'auto-mode-alist '("\\.erb$" . enh-ruby-mode))
-(add-to-list 'auto-mode-alist '("\\.rake$" . enh-ruby-mode))
-(add-to-list 'auto-mode-alist '("Rakefile$" . enh-ruby-mode))
-(add-to-list 'auto-mode-alist '("\\.gemspec$" . enh-ruby-mode))
-(add-to-list 'auto-mode-alist '("\\.ru$" . enh-ruby-mode))
-(add-to-list 'auto-mode-alist '("Gemfile$" . enh-ruby-mode))
+(use-package enh-ruby-mode
+  :ensure t
+  :init
+  (add-to-list 'auto-mode-alist '("\\.rb$" . enh-ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\.erb$" . enh-ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\.rake$" . enh-ruby-mode))
+  (add-to-list 'auto-mode-alist '("Rakefile$" . enh-ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\.gemspec$" . enh-ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\.ru$" . enh-ruby-mode))
+  (add-to-list 'auto-mode-alist '("Gemfile$" . enh-ruby-mode)))
 
 ;; inf-ruby
-(require 'inf-ruby)
+(use-package inf-ruby
+  :ensure t)
 
 ;; rvm
 (require 'rvm)
