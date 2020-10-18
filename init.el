@@ -740,73 +740,83 @@
 ;; enh-ruby-mode
 (use-package enh-ruby-mode
   :ensure t
-  :init
-  (add-to-list 'auto-mode-alist '("\\.rb$" . enh-ruby-mode))
-  (add-to-list 'auto-mode-alist '("\\.erb$" . enh-ruby-mode))
-  (add-to-list 'auto-mode-alist '("\\.rake$" . enh-ruby-mode))
-  (add-to-list 'auto-mode-alist '("Rakefile$" . enh-ruby-mode))
-  (add-to-list 'auto-mode-alist '("\\.gemspec$" . enh-ruby-mode))
-  (add-to-list 'auto-mode-alist '("\\.ru$" . enh-ruby-mode))
-  (add-to-list 'auto-mode-alist '("Gemfile$" . enh-ruby-mode)))
+  :mode
+  (("\\.rb$" . enh-ruby-mode)
+   ("\\.erb$" . enh-ruby-mode)
+   ("\\.rake$" . enh-ruby-mode)
+   ("Rakefile$" . enh-ruby-mode)
+   ("\\.gemspec$" . enh-ruby-mode)
+   ("\\.ru$" . enh-ruby-mode)
+   ("Gemfile$" . enh-ruby-mode))
+  :config
+  (defun my-ruby-mode-hook ()
+    "Setup ruby modes for me."
+    (if window-system
+        (linum-mode))
+    (infer-indentation-style)
+    (local-set-key (kbd "C-x f") 'find-ruby-require)
+    (local-set-key (kbd "C-x a") 'ruby-alternate-test-or-class)
+    (local-set-key (kbd "<f6>") 'ruby-run-crapcop)
+    (local-set-key (kbd "<f7>") 'ruby-run-rspec)
+    ;; ctrl-f7 run specific rspec
+    (local-set-key (kbd "<f8>") (lambda() (interactive) (ruby-run-rspec 1)))
+    (local-set-key "\M-g" 'rbgrep)
+
+    (add-hook 'enh-ruby-mode-hook 'ac-robe-setup)
+    (add-hook 'enh-ruby-mode-hook 'ruby-end-mode)
+    (add-hook 'enh-ruby-mode-hook 'robe-mode)
+    (add-hook 'enh-ruby-mode-hook 'flymake-ruby-load)
+    (print "added hooks")
+    ;; (flycheck-disable-checker)
+    ;; (add-hook 'before-save-hook 'satisy-rubo-cop-silliness 'local)
+    )
+
+  (add-hook 'enh-ruby-mode-hook 'my-ruby-mode-hook))
 
 ;; inf-ruby
 (use-package inf-ruby
   :ensure t)
 
 ;; rvm
-(require 'rvm)
-(rvm-use-default)
+(use-package rvm
+  :ensure t
+  :config
+  (rvm-use-default))
 
 ;; robe
-(require 'robe)
+(use-package roby
+  :ensure t)
 (defadvice inf-ruby-console-auto (before activate-rvm-for-robe activate)
   (rvm-activate-corresponding-ruby))
 ;; (push 'company-robe company-backends)
 
 ;; ruby-end
-(require 'ruby-end)
+(use-package ruby-end
+  :ensure t)
 
 ;; flymake-ruby
-(require 'flymake-ruby)
+(use-package flymake-ruby
+  :ensure t)
 
 ;; Cucumber
-(require 'feature-mode)
-(setq freature-use-rvm t) ;; Tell Cucumber to use RVM
-(setq feature-cucumber-command "cucumber {options} {feature}")
-;; .feature files should open in feature-mode
-(add-to-list 'auto-mode-alist '("\.feature$" . feature-mode))
+(use-package feature-mode
+  :ensure t
+  :mode
+  (("\.feature$" . feature-mode))
+  :config
+  (setq freature-use-rvm t) ;; Tell Cucumber to use RVM
+  (setq feature-cucumber-command "cucumber {options} {feature}"))
 
 ;; Rspec
-(require 'rspec-mode)
-;; use rspec instead of rake spec
-(setq rspec-use-rake-when-possible nil)
-;; Scroll to the first test failure
-(setq compilation-scroll-output 'first-error)
-
-(defun my-ruby-mode-hook ()
-  "Setup ruby modes for me."
-  (if window-system
-      (linum-mode))
-  (infer-indentation-style)
-  (local-set-key (kbd "C-x f") 'find-ruby-require)
-  (local-set-key (kbd "C-x a") 'ruby-alternate-test-or-class)
-  (local-set-key (kbd "<f6>") 'ruby-run-crapcop)
-  (local-set-key (kbd "<f7>") 'ruby-run-rspec)
-  ;; ctrl-f7 run specific rspec
-  (local-set-key (kbd "<f8>") (lambda() (interactive) (ruby-run-rspec 1)))
-  (local-set-key "\M-g" 'rbgrep)
-
-  (add-hook 'enh-ruby-mode-hook 'ac-robe-setup)
-  (add-hook 'enh-ruby-mode-hook 'ruby-end-mode)
-  (add-hook 'enh-ruby-mode-hook 'robe-mode)
-  (add-hook 'enh-ruby-mode-hook 'flymake-ruby-load)
-  (print "added hooks")
-  ;; (flycheck-disable-checker)
-  (add-hook 'before-save-hook 'satisy-rubo-cop-silliness 'local))
+(use-package rspec-mode
+  :ensure t
+  :config
+  ;; use rspec instead of rake spec
+  (setq rspec-use-rake-when-possible nil)
+  ;; Scroll to the first test failure
+  (setq compilation-scroll-output 'first-error))
 
 
-
-(add-hook 'enh-ruby-mode-hook 'my-ruby-mode-hook)
 
 (defun ruby-alternate-test-or-class()
   (interactive)
