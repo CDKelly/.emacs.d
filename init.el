@@ -254,6 +254,14 @@
 (smart-tabs-insinuate 'c 'c++ 'java 'javascript 'python
                       'ruby)
 
+;; https://github.com/editorconfig/editorconfig-emacs
+;; https://editorconfig.org/
+;; maintain consistent coding styles between devs working on the same project
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
+
 ;; dumb-jump - locate definitions of funcs or vars
 ;; https://github.com/jacktasia/dumb-jump
 (use-package dumb-jump
@@ -766,7 +774,6 @@
     (add-hook 'enh-ruby-mode-hook 'ruby-end-mode)
     (add-hook 'enh-ruby-mode-hook 'robe-mode)
     (add-hook 'enh-ruby-mode-hook 'flymake-ruby-load)
-    (print "added hooks")
     ;; (flycheck-disable-checker)
     ;; (add-hook 'before-save-hook 'satisy-rubo-cop-silliness 'local)
     )
@@ -937,6 +944,7 @@ If a prefix argument is specified (e.g. ctrl-u ) then attempts to run only the t
 
 (defun my-compilation-hook()
   ;; comp mode, stop overriding my other window keybinding please
+
   (local-set-key (kbd "C-o") 'other-window))
 
 (add-hook 'compilation-mode-hook 'my-compilation-hook)
@@ -946,55 +954,66 @@ If a prefix argument is specified (e.g. ctrl-u ) then attempts to run only the t
 ;; =============================================================================
 
 ;; js2-mode
-(require 'js2-mode)
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-;; better imenu
-(add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
-;; searches the current files parent directories for the
-;; node_modules/.bin/ directory and adds it to the buffer local exec-path
-(defun get-npm-exec-path()
-  "prepend the most local node package manager executable path to the current exec path and return it"
-  (let* ((root (locate-dominating-file
-                (or (buffer-file-name) default-directory)
-                "node_modules")))
-    (cons (concat root "/node_modules/.bin") exec-path)))
-(defun my-js-mode-hook()
-  (set (make-local-variable 'exec-path) (get-npm-exec-path))
-  (infer-indentation-style))
-(add-hook 'js2-mode-hook 'my-js-mode-hook)
+(use-package js2-mode
+  :ensure t
+  :mode
+  (("\\.js\\'" . js2-mode))
+  :config
+  ;; better imenu
+  (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
+  ;; searches the current files parent directories for the
+  ;; node_modules/.bin/ directory and adds it to the buffer local exec-path
+  (defun get-npm-exec-path()
+    "prepend the most local node package manager executable path to the current exec path and return it"
+    (let* ((root (locate-dominating-file
+                  (or (buffer-file-name) default-directory)
+                  "node_modules")))
+      (cons (concat root "/node_modules/.bin") exec-path)))
+  (defun my-js-mode-hook()
+    (set (make-local-variable 'exec-path) (get-npm-exec-path))
+    (infer-indentation-style)
+    (add-hook 'js2-mode-hook (lambda ()
+                               (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+    (add-hook 'js2-mode-hook 'my-js-mode-hook)))
+
 
 ;; xref-js2
-(require 'xref-js2)
-;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so
-;; unbind it.
-(define-key js-mode-map (kbd "M-.") nil)
+(use-package xref-js2
+  :ensure t
+  :config
+  ;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so
+  ;; unbind it.
+  (define-key js-mode-map (kbd "M-.") nil))
 
-;; editorconfig
-(require 'editorconfig)
-(editorconfig-mode 1)
 
 ;; web-mode
-(require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.hbs\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-(setq web-mode-enable-current-element-highlight t)
-(setq web-mode-enable-current-column-highlight t)
-(setq web-mode-enable-auto-pairing t)
-(setq web-mode-enable-auto-closing t)
-(setq web-mode-enable-auto-indentation t)
-(setq web-mode-markup-indent-offset 2)
-;; (add-hook 'web-mode-hook (lambda () (add-hook 'after-save-hook web-mode-buffer-indent)))
+(use-package web-mode
+  :ensure t
+  :mode
+  (("\\.phtml\\'" . web-mode)
+   ("\\.tpl\\.php\\'" . web-mode)
+   ("\\.[agj]sp\\'" . web-mode)
+   ("\\.as[cp]x\\'" . web-mode)
+   ("\\.jsx\\'" . web-mode)
+   ("\\.erb\\'" . web-mode)
+   ("\\.mustache\\'" . web-mode)
+   ("\\.hbs\\'" . web-mode)
+   ("\\.djhtml\\'" . web-mode)
+   ("\\.html?\\'" . web-mode))
+  :config
+  (setq web-mode-enable-current-element-highlight t)
+  (setq web-mode-enable-current-column-highlight t)
+  (setq web-mode-enable-auto-pairing t)
+  (setq web-mode-enable-auto-closing t)
+  (setq web-mode-enable-auto-indentation t)
+  (setq web-mode-markup-indent-offset 2)
+  ;; (add-hook 'web-mode-hook (lambda () (add-hook 'after-save-hook web-mode-buffer-indent)))
+  )
+
 
 ;; eslint
-(require 'eslint-fix)
+(use-package eslint-fix
+  :ensure t)
 ;; (eval-after-load 'js2-mode
 ;;   '(add-hook 'js2-mode-hook (lambda () (add-hook 'after-save-hook 'eslint-fix nil t))))
 
