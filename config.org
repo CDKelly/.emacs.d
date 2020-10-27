@@ -1,0 +1,955 @@
+* Org Mode
+#+BEGIN_SRC emacs-lisp
+  (defun reload-config ()
+    "Reloads ~/.emacs.d/config.org at runtime"
+    (interactive)
+    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+  (global-set-key (kbd "C-c r c") 'reload-config)
+
+  (global-set-key (kbd "C-c '") 'org-edit-src-code)
+
+  (setq org-ellipsis " ")
+  (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
+  (setq org-confirm-babel-evaluate nil)
+  (setq org-export-with-smart-quotes t)
+  (setq org-src-window-setup 'other-window)
+  (add-hook 'org-mode-hook 'org-indent-mode)
+
+  (use-package org-bullets
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+
+  (add-to-list 'org-structure-template-alist
+               '("el" . "src emacs-lisp
+  "))
+#+END_SRC
+* Load modes and configure packages
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'initial-frame-alist '(fullscreen . maximized))
+
+  ;; no tool bar
+  (tool-bar-mode -1)
+
+  ;; desktop mode, keeps track of all the files you've opened
+  ;; and remembers them
+  (load-library "desktop")
+  (desktop-save-mode 1)
+  (require 'server)
+  (or (server-running-p)
+      (server-start))
+
+  ;; change "yes or no?" to "y or n?"
+  (defalias 'yes-or-no-p 'y-or-n-p)
+
+  ;; delete text when it's marked by typing
+  (delete-selection-mode t)
+
+  (defun kill-whole-word ()
+    (interactive)
+    (backward-word)
+    (kill-word 1))
+
+  (global-set-key (kbd "C-c k w") 'kill-whole-word)
+  (global-set-key (kbd "C-c k l") 'kill-whole-line)
+
+  ;; treat camel-case symbols as separate
+  ;; i.e. M-f will move across parts of a camel-cased symbol
+  (global-subword-mode 1)
+
+  ;; show parentheses matching
+  (show-paren-mode 1)
+
+
+  (use-package rainbow-delimiters
+    :ensure t
+    :hook
+    ((prog-mode emacs-lisp-mode lisp-mode) . rainbow-delimiters-mode))
+
+  ;; ParEdit
+  (use-package paredit
+    :ensure t
+    :init
+    (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+    :config
+    (eval-after-load "paredit.el" '(require 'paredit-menu))
+    :hook
+    ((emacs-lisp-mode eval-expression-minibuffer-setup lisp-mode lisp-interaction-mode scheme-mode) . enable-paredit-mode))
+
+
+  ;; electric for all else
+  (electric-pair-mode 1)
+  (setq electric-pair-preserve-balance nil)
+  ;; Disable pairs when entering minibuffer
+  (add-hook 'minibuffer-setup-hook (lambda () (electric-pair-mode 0)))
+
+  ;; Renable pairs when existing minibuffer
+  (add-hook 'minibuffer-exit-hook (lambda () (electric-pair-mode 1)))
+
+  (defvar web-mode-electric-pairs '((?\< . ?\>)) "helpful pairing for web mode")
+  (defun web-mode-add-electric-pairs ()
+    (setq-local electric-pair-pairs (append electric-pair-pairs web-mode-electric-pairs))
+    (setq-local electric-pair-text-pairs electric-pair-pairs))
+  (add-hook 'web-mode-hook 'web-mode-add-electric-pairs)
+
+  ;; add line numbers
+  (global-linum-mode t)
+  (setq-default mode-line-front-space
+                (append mode-line-front-space '((:eval (format "/%s" (line-number-at-pos (point-max)))))))
+
+  ;; wrap words for every line
+  (global-visual-line-mode 1)
+  (setq visual-line-fringe-indicators '(bottom-left-angle bottom-right-angle))
+
+  ;; show 80-character vertical marker
+  (use-package fill-column-indicator
+    :ensure t
+    :config
+    (setq fci-rule-character-color "#202020")
+    (setq fci-rule-width 1)
+    :hook
+    ((prog-mode) . fci-mode))
+
+  ;; clean up any accidental trailing whitespace upon save.
+  (add-hook 'before-save-hook 'whitespace-cleanup)
+  ;; have to disable few items in whitespace-style
+  ;; according to https://www.emacswiki.org/emacs/SmartTabs
+  (setq whitespace-style
+     '(face trailing tabs spaces lines newline empty indentation space-before-tab space-mark tab-mark newline-mark))
+
+
+  ;; infer-indentation-style for a mode-hook. If spaces > tabs,
+  ;; then turn tabs OFF, else turn tabs ON. If tabs are turned ON, then
+  ;; smart-tabs will take over (indent-tabs-mode must be non-nil for
+  ;; smart-tabs to work according to https://www.emacswiki.org/emacs/SmartTabs)
+  (setq-default indent-tabs-mode nil)
+
+  ;; infer indentation style of file
+  (defun infer-indentation-style ()
+    ;; if our source file uses tabs, we use tabs, if spaces spaces, and if
+    ;; neither, we use the current indent-tabs-mode
+    (let ((space-count (how-many "^  " (point-min) (point-max)))
+          (tab-count (how-many "^\t" (point-min) (point-max))))
+      (if (> space-count tab-count) (setq indent-tabs-mode nil))
+      (if (> tab-count space-count) (setq indent-tabs-mode t))))
+
+  ;; smart-tabs-mode
+  (use-package smart-tabs-mode
+    :ensure t
+    :config
+    (autoload 'smart-tabs-mode "smart-tabs-mode"
+      "Intelligently indent with tabs, align with spaces!")
+    (autoload 'smart-tabs-mode-enable "smart-tabs-mode")
+    (autoload 'smart-tabs-advice "smart-tabs-mode")
+    (autoload 'smart-tabs-insinuate "smart-tabs-mode")
+    (smart-tabs-insinuate 'c 'c++ 'java 'javascript 'python
+                          'ruby))
+
+  ;; https://github.com/editorconfig/editorconfig-emacs
+  ;; https://editorconfig.org/
+  ;; maintain consistent coding styles between devs working on the same project
+  (use-package editorconfig
+    :ensure t
+    :config
+    (editorconfig-mode 1))
+
+  ;; dumb-jump - locate definitions of funcs or vars
+  ;; https://github.com/jacktasia/dumb-jump
+  (use-package dumb-jump
+    :ensure t
+    :config
+    (setq dumb-jump-selector 'ivy)
+    ;; see https://www.reddit.com/r/emacs/comments/hzxvke/how_do_people_have_dumbjump_setup/
+    ;; and https://github.com/jacktasia/dumb-jump#obsolete-commands-and-options
+    ;; for latest update
+    (setq xref-backend-functions (remq 'etags--xref-backend xref-backend-functions))
+    (add-to-list 'xref-backend-functions #'dumb-jump-xref-activate t)
+    :hook
+    ((prog-mode) . dumb-jump-mode)
+    :bind
+    ("C-c d g" . dumb-jump-go)
+    ("C-c d p" . dumb-jump-back)
+    ("C-c d q" . dumb-jump-quick-look))
+
+  ;; switch windows quickly when > 2 windows
+  (use-package switch-window
+    :ensure t
+    :config
+    (setq switch-window-input-style 'minibuffer)
+    (setq switch-window-increase 4)
+    (setq switch-window-threshold 2)
+    (setq switch-window-shortcut-style 'qwerty)
+    (setq switch-window-qwerty-shortcuts
+          '("a" "s" "d" "f" "g" "h" "j" "k" "l" "q" "w" "e" "r"))
+    :bind
+    ([remap other-window] . switch-window))
+
+  (defun switch-to-last-buffer ()
+    (interactive)
+    (switch-to-buffer nil))
+  (global-set-key (kbd "C-S-b") 'switch-to-last-buffer)
+
+  (defun split-and-follow-horizontally ()
+    (interactive)
+    (split-window-below)
+    (balance-windows)
+    (other-window 1))
+  (global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)
+
+  (defun split-and-follow-vertically ()
+    (interactive)
+    (split-window-right)
+    (balance-windows)
+    (other-window 1))
+  (global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
+
+  ;; avy mode - quickly jump to char or line
+  (use-package avy
+    :ensure t
+    :config
+    (setq avy-keys-alist
+          `((avy-goto-char . ,(number-sequence ?a ?z))))
+    (setq avy-background t)
+    :bind
+    ("C-c f" . avy-goto-char)
+    ("C-c a l" . avy-goto-line))
+
+  ;; indent entire buffer
+  (defun indent-buffer ()
+    (interactive)
+    (save-excursion
+      (indent-region (point-min) (point-max) nil)))
+
+  ;; highlight indentation
+  ;; https://github.com/DarthFennec/highlight-indent-guides
+  (use-package highlight-indent-guides
+    :ensure t
+    :custom
+    (highlight-indent-guides-method 'character)
+    (highlight-indent-guides-responsive 'top)
+    (highlight-indent-guides-delay 0)
+    (highlight-indent-guides-auto-set-faces t)
+    :hook
+    ((prog-mode yaml-mode nxml-mode) . highlight-indent-guides-mode))
+
+  ;; highlight line where cursor is
+  ;; used beacon setup from https://ladicle.com/post/config/#beacon
+  ;; for some reason the setup based on beacon's README wouldn't
+  ;; work with buffer changes and scrolling
+  (use-package beacon
+    :ensure t
+    :demand t
+    :init
+    (beacon-mode 1)
+    :custom
+    (beacon-color "turquoise1"))
+
+  ;; highlight hexadecimals the color they represent
+  (use-package rainbow-mode
+    :ensure t
+    :init
+    (add-hook 'prog-mode-hook 'rainbow-mode))
+
+  ;; auto-highlight-symbol
+  ;; https://github.com/gennad/auto-highlight-symbol
+  (use-package auto-highlight-symbol
+    :ensure t
+    :custom
+    (ahs-idle-interval 1.0)
+    (ahs-default-range 'ahs-range-whole-buffer)
+    :config
+    (global-auto-highlight-symbol-mode)
+    :hook
+    ((prog-mode) . auto-highlight-symbol-mode))
+
+  ;; expand-region
+  (use-package expand-region
+    :ensure t
+    :bind
+    ("C-=" . er/expand-region))
+
+  ;; hideshow - for folding blocks of code
+  (add-hook 'prog-mode-hook #'hs-minor-mode)
+  (defun toggle-fold ()
+    (interactive)
+    (save-excursion
+      (end-of-line)
+      (hs-toggle-hiding)))
+  (global-set-key (kbd "C-c t f") 'toggle-fold)
+
+  ;; ivy
+  ;; make sure ivy, counsel, and swiper are all installed using the same
+  ;; package repo -> https://github.com/abo-abo/swiper/issues/2591#issuecomment-640022754
+  (use-package ivy
+    :ensure t
+    :custom
+    (ivy-use-virtual-buffers t)
+    (ivy-display-style 'fancy)
+    (ivy-count-format "[%d/%d]")
+    ;; configure regexp engine
+    (ivy-re-builders-alist
+        ;; allow input not in order
+        '((t . ivy--regex-ignore-order)))
+    (ivy-wrap t)
+    :config
+    (ivy-mode 1)
+    (setq projectile-completion-system 'ivy))
+
+  ;; no regexp by default
+  (with-eval-after-load 'counsel
+    (setq ivy-initial-inputs-alist nil))
+
+  ;; counsel bindings
+  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+  (global-set-key (kbd "C-h f") 'counsel-describe-function)
+  (global-set-key (kbd "C-h v") 'counsel-describe-variable)
+  (global-set-key (kbd "C-h S") 'counsel-info-lookup-symbol)
+  (global-set-key (kbd "M-y") 'counsel-yank-pop)
+
+  (let ((bindings #'(("g" . counsel-git-grep)
+                    ("r" . counsel-rg)
+                    ("m" . counsel-mark-ring))))
+    (dolist (binding bindings)
+      (global-set-key (kbd (concat "C-c c " (car binding))) (cdr binding))))
+
+  (defun counsel-git-grep-thing-at-point ()
+    (interactive)
+    (counsel-git-grep (kill-new (thing-at-point 'symbol))))
+  (global-set-key (kbd "C-c c G") 'counsel-git-grep-thing-at-point)
+
+  ;; ivy-rich
+  (use-package ivy-rich
+    :ensure t
+    :config
+    (setcdr (assq t ivy-format-functions-alist)
+            #'ivy-format-function-line)
+    (ivy-rich-mode 1))
+
+  ;; amx, an alternative interface for M-x in Emacs
+  (use-package amx
+    :ensure t
+    :after ivy
+    :custom
+    (amx-backend 'auto)
+    (amx-save-file "~/.emacs.d/amx-items")
+    :config
+    (amx-mode 1))
+
+  ;; projectile
+  (use-package projectile
+    :ensure t
+    :bind-keymap
+    ("C-c p" . projectile-command-map)
+    :config
+    (projectile-global-mode))
+
+  ;; cheat-sh
+  (use-package cheat-sh
+    :ensure t)
+
+  ;; which-key
+  (use-package which-key
+    :ensure t
+    :config
+    (which-key-mode)
+    (setq which-key-idle-delay 1.0))
+
+  ;; basic company setup
+  ;; NOT READY QUITE YET
+  ;; (use-package company
+  ;;   :ensure t
+  ;;   :init
+  ;;   (add-hook 'after-init-hook 'global-company-mode)
+  ;;   :config
+  ;;   (setq company-idle-delay 0)
+  ;;   (setq company-minimum-prefix-length 2)
+  ;;   (setq company-selection-wrap-around t))
+
+  ;; restclient
+  (use-package restclient
+    :ensure t)
+  (use-package json-reformat
+    :ensure t)
+
+  ;; edit-server
+  (use-package edit-server
+    :ensure t
+    :config
+    (edit-server-start))
+
+  ;; groovy (for Jenkinsfiles)
+  (add-hook 'groovy-mode-hook
+            (lambda ()
+              (c-set-offset 'label 2))
+            (infer-indentation-style))
+
+   ;; yaml-mode (for ansible)
+  (use-package yaml-mode
+    :ensure t
+    :init
+    (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+    (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
+    (add-to-list 'auto-mode-alist '("\\.yml\.erb\\'" . yaml-mode))
+    (add-to-list 'auto-mode-alist '("\\.yaml\.erb\\'" . yaml-mode)))
+  (add-hook 'yaml-mode-hook
+              '(lambda ()
+                 (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+
+  ;; =============================================================================
+  ;; Customized workspace functions
+  ;; =============================================================================
+
+  ;; always kill current buffer
+  (defun kill-current-buffer ()
+    "Kills the current buffer."
+    (interactive)
+    (kill-buffer (current-buffer)))
+  (global-set-key (kbd "C-x k") 'kill-current-buffer)
+
+  ;; my global window/workspace saving functions
+  (defvar g_workspace (current-window-configuration))
+  (defun save-workspace()
+    (setq g_workspace (current-window-configuration))
+    (princ "workspace saved"))
+  (defun save-or-restore-workspace()
+    (interactive)
+    (if (> (count-windows) 1)
+        (save-workspace)
+      (set-window-configuration g_workspace)))
+
+  (setq backup-directory-alist `((".*" . "~/.emacs.d/.saves")))
+  (setq auto-save-file-name-transforms
+        `((".*" ,"~/.emacs.d/.saves" t)))
+
+  ;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
+  (defun rename-file-and-buffer(new-name)
+    "Renames both current buffer and file it's visiting to NEW-NAME."
+    (interactive "New name: ")
+    (let ((name (buffer-name))
+          (filename (buffer-file-name)))
+      (if (not filename)
+          (message "Buffer '%s' is not visiting a file!" name)
+        (if (get-buffer new-name)
+            (message "A buffer named '%s' already exists!" new-name)
+          (progn
+            (rename-file filename new-name 1)
+            (rename-buffer new-name)
+            (set-visited-file-name new-name)
+            (set-buffer-modified-p nil))))))
+
+  ;; moving lines up and down
+  (defun move-line (n)
+    "Move the current line up or down by N lines."
+    (interactive "p")
+    (beginning-of-line)
+    (setq col (current-column))
+    (setq start (point))
+    (end-of-line) (forward-char) (setq end (point))
+    (let ((line-text (delete-and-extract-region start end)))
+      (forward-line n)
+      (insert line-text)
+      ;; restore point to original column in moved line
+      (forward-line -1)
+      (forward-char col)))
+
+  (defun move-line-up (n)
+    "Move the current line up by N lines."
+    (interactive "p")
+    (move-line (if (null n) -1 (- n))))
+  (global-set-key (kbd "M-<up>") 'move-line-up)
+
+  (defun move-line-down (n)
+    "Move the current line down by N lines."
+    (interactive "p")
+    (move-line (if (null n) 1 n)))
+  (global-set-key (kbd "M-<down>") 'move-line-down)
+
+  ;; move regions up and down
+  (defun move-region (start end n)
+    "Move the current region up or down by N lines."
+    (interactive "r\np")
+    (let ((line-text (delete-and-extract-region start end)))
+      (forward-line n)
+      (let ((start (point)))
+        (insert line-text)
+        (setq deactivate-mark nil)
+        (set-mark start))))
+
+  (defun move-region-up (start end n)
+    "Move the current line up by N lines."
+    (interactive "r\np")
+    (move-region start end (if (null n) -1 (- n))))
+  (global-set-key (kbd "C-M-<up>") 'move-region-up)
+
+  (defun move-region-down (start end n)
+    "Move the current line down by N lines."
+    (interactive "r\np")
+    (move-region start end (if (null n) 1 n)))
+  (global-set-key (kbd "C-M-<down>") 'move-region-down)
+
+
+  (defun copy-whole-line ()
+    "Copies a line without regard for cursor position."
+    (interactive)
+    (kill-new
+     (buffer-substring
+      (point-at-bol)
+      (point-at-eol))))
+  (global-set-key (kbd "C-c y l") 'copy-whole-line)
+
+  (defun insert-line-below ()
+    "Insert an empty line below the current line."
+    (interactive)
+    (end-of-line)
+    (newline))
+
+  (defun insert-line-above ()
+    "Insert an empty line above the current line."
+    (interactive)
+    (end-of-line 0)
+    (newline))
+
+  (defun copy-and-yank-line-below ()
+    "Copies a line and inserts it down one line while keeping your cursor
+   position constant"
+    (interactive)
+    (save-excursion
+      (copy-whole-line)
+      (insert-line-below)
+      (yank)))
+  (global-set-key (kbd "C-c y n") 'copy-and-yank-line-below)
+
+  (defun copy-and-yank-line-above ()
+    "Copies a line and inserts it down one line while keeping your cursor
+   position constant"
+    (interactive)
+    (save-excursion
+      (copy-whole-line)
+      (insert-line-above)
+      (yank)))
+  (global-set-key (kbd "C-c y p") 'copy-and-yank-line-above)
+
+
+  ;; revert buffer w/o asking for confirmation
+  (defun revert-buffer-no-confirm()
+    "Revert buffer without confirmation."
+    (interactive)
+    (revert-buffer :ignore-auto :noconfirm))
+
+  ;; custom compile functions
+  ;; TODO: make one-button function that compiles everything (w/o using a makefile)
+  ;; and if things compile correctly, then put me in that buffer
+  ;; otherwise don't run and allow to navigate to next-error
+  (defun my-insto-compile()
+    (interactive)
+    (let* ((c-file (buffer-file-name (current-buffer)))
+           (buffer-name "*shell*")
+           (process (get-buffer-process buffer-name))
+           )
+      (with-current-buffer buffer-name
+        (unless process
+          (error "No process in %s" buffer-name))
+        (save-some-buffers)
+        (goto-char (process-mark process))
+        (insert (concat "gcc -Werror " c-file " && ./a.out"))
+        (comint-send-input nil t)
+        (switch-to-buffer "*shell*"))))
+
+  (defun my-compile-v2()
+    (interactive)
+    (let* ((c-file (buffer-file-name (current-buffer)))
+           (c-file-basename (file-name-base c-file))
+           (compile-string (concat "gcc -Werror " c-file " -o " c-file-basename " && ./" c-file-basename)))
+      (open-shell-if-not-open)
+      (my-send-string-to-shell compile-string)))
+
+  (defun my-compile-v1()
+    (interactive)
+    (let* ((c-file (buffer-file-name (current-buffer)))
+          (c-file-basename (file-name-base c-file))
+          (compile-string (concat "gcc -Werror " c-file " -o " c-file-basename " && ./" c-file-basename))
+          )
+      (compile compile-string t)
+      (switch-to-buffer "*compilation*")))
+  (global-set-key (kbd "<f6>") 'my-compile-v1)
+
+  (defun my-send-string-to-shell(s)
+    (let* ((buffer-name "*shell*")
+           (process (get-buffer-process buffer-name)))
+      (with-current-buffer buffer-name
+        (unless process
+          (error "No process in %s" buffer-name))
+        (save-some-buffers)
+        ;;(comint-clear-buffer)
+        (goto-char (process-mark process))
+        (insert s)
+        (comint-send-input nil t))))
+
+  (defun open-shell-if-not-open()
+    (when (not (get-buffer "*shell*"))
+      (shell))
+    (switch-to-buffer "*shell*"))
+
+
+
+  ;; =============================================================================
+  ;; Global keybindings and preferences
+  ;; =============================================================================
+
+  ;; keybindings
+  (global-set-key (kbd "C-s") 'swiper)
+  (global-set-key (kbd "C-M-s") 'swiper-thing-at-point)
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+  (global-set-key (kbd "C-x C-w") 'save-or-restore-workspace)
+  (global-set-key (kbd "C-c r n") 'rename-file-and-buffer)
+  (global-set-key (kbd "C-c l") 'recenter-top-bottom)
+  (global-set-key (kbd "C-x p") 'ahs-backward)
+  (global-set-key (kbd "C-x n") 'ahs-forward)
+  (global-set-key (kbd "C-o") 'other-window)
+  (global-set-key (kbd "C-l") 'goto-line)
+  (global-set-key (kbd "C-t") 'indent-buffer)
+  (global-set-key (kbd "<f5>") 'revert-buffer-no-confirm)
+  (global-set-key (kbd "C-c r r") 'inf-ruby)
+  (global-set-key (kbd "C-c r a") 'rvm-activate-corresponding-ruby)
+
+  ;; scrolling
+  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+  (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+  (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+  (setq scroll-step 1) ;; keyboard scroll one line at a time
+  (defun gcm-scroll-up ()
+    (interactive)
+    (scroll-down 3))
+  (global-set-key (kbd "M-p") 'gcm-scroll-up)
+
+  (defun gcm-scroll-down ()
+    (interactive)
+    (scroll-up 3))
+  (global-set-key (kbd "M-n") 'gcm-scroll-down)
+
+  ;; "might" make it so that new windows don't pop up each time
+  ;; you open something with Emacs
+  (setq ns-pop-up-frames nil)
+
+
+  ;; =============================================================================
+  ;; C/Java stuff
+  ;; =============================================================================
+
+  (defun my-c-mode-common-hook ()
+      (infer-indentation-style))
+
+  (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
+
+  ;; =============================================================================
+  ;; Ruby stuff
+  ;; =============================================================================
+
+  ;; enh-ruby-mode
+  (use-package enh-ruby-mode
+    :ensure t
+    :mode
+    (("\\.rb$" . enh-ruby-mode)
+     ("\\.erb$" . enh-ruby-mode)
+     ("\\.rake$" . enh-ruby-mode)
+     ("Rakefile$" . enh-ruby-mode)
+     ("\\.gemspec$" . enh-ruby-mode)
+     ("\\.ru$" . enh-ruby-mode)
+     ("Gemfile$" . enh-ruby-mode))
+    :config
+    (defun my-ruby-mode-hook ()
+      "Setup ruby modes for me."
+      (if window-system
+          (linum-mode))
+      (infer-indentation-style)
+      (local-set-key (kbd "C-x f") 'find-ruby-require)
+      (local-set-key (kbd "C-x a") 'ruby-alternate-test-or-class)
+      (local-set-key (kbd "<f6>") 'ruby-run-crapcop)
+      (local-set-key (kbd "<f7>") 'ruby-run-rspec)
+      ;; ctrl-f7 run specific rspec
+      (local-set-key (kbd "<f8>") (lambda() (interactive) (ruby-run-rspec 1)))
+      (local-set-key "\M-g" 'rbgrep)
+
+      (add-hook 'enh-ruby-mode-hook 'ac-robe-setup)
+      (add-hook 'enh-ruby-mode-hook 'ruby-end-mode)
+      (add-hook 'enh-ruby-mode-hook 'robe-mode)
+      (add-hook 'enh-ruby-mode-hook 'flymake-ruby-load)
+      ;; (flycheck-disable-checker)
+      ;; (add-hook 'before-save-hook 'satisy-rubo-cop-silliness 'local)
+      )
+
+    (add-hook 'enh-ruby-mode-hook 'my-ruby-mode-hook))
+
+  ;; inf-ruby
+  (use-package inf-ruby
+    :ensure t)
+
+  ;; rvm
+  (use-package rvm
+    :ensure t
+    :config
+    (rvm-use-default))
+
+  ;; robe
+  (use-package robe
+    :ensure t)
+  (defadvice inf-ruby-console-auto (before activate-rvm-for-robe activate)
+    (rvm-activate-corresponding-ruby))
+  ;; (push 'company-robe company-backends)
+
+  ;; ruby-end
+  (use-package ruby-end
+    :ensure t)
+
+  ;; flymake-ruby
+  (use-package flymake-ruby
+    :ensure t)
+
+  ;; Cucumber
+  (use-package feature-mode
+    :ensure t
+    :mode
+    (("\.feature$" . feature-mode))
+    :config
+    (setq freature-use-rvm t) ;; Tell Cucumber to use RVM
+    (setq feature-cucumber-command "cucumber {options} {feature}"))
+
+  ;; Rspec
+  (use-package rspec-mode
+    :ensure t
+    :config
+    ;; use rspec instead of rake spec
+    (setq rspec-use-rake-when-possible nil)
+    ;; Scroll to the first test failure
+    (setq compilation-scroll-output 'first-error))
+
+
+
+  (defun ruby-alternate-test-or-class()
+    (interactive)
+    "switch between rspec or described class"
+    (let* ((root (locate-dominating-file
+                  (or (buffer-file-name) default-directory)
+                  "Gemfile"))
+           (rspec-indicator "_spec")
+           (base-path (file-name-directory (buffer-file-name)))
+           (file-name (file-name-sans-extension (file-name-nondirectory (buffer-file-name))))
+           (spec-suffix-index (string-match (regexp-quote rspec-indicator) file-name))
+           (base-file-name (substring file-name 0 spec-suffix-index))
+           (class-file-name (concat base-file-name ".rb"))
+           (spec-file-name (concat base-file-name rspec-indicator ".rb"))
+           (final-target (cond (spec-suffix-index   ;it was an rspec buffer
+                                (concat (replace-regexp-in-string "/spec/" "/lib/" base-path) class-file-name))
+                               (t (concat (replace-regexp-in-string "/lib/" "/spec/" base-path) spec-file-name)))))
+      ;; (print (concat "target file is " final-target))))
+      (find-file final-target)))
+  (defun run-ruby-crap-string(crap-command)
+    "return a string that does all the nonsense to get ruby crap running under a navigator VM.
+  The command string is suitable for submission with an append of the actual command you'd like to run
+  "
+    ;; detect if we should run locally or remotely
+    (cond ((string-match-p "PlatformErlang" (buffer-file-name)) (concat "cd .. && " crap-command))
+          (t (concat "cd ~/projects/callback_cloud && ssh vm 'set -i;source /etc/profile;source ~/.bashrc;cd /home/vagrant/projects/callback_cloud;"
+             crap-command "'"))))
+  (defun satisy-rubo-cop-silliness()
+    (princ "deleting trailing whitespace to make turdmine happy")
+    (delete-trailing-whitespace (point-min) (point-max)))
+  (defun ruby-run-crapcop()
+    (interactive)
+    (compile (run-ruby-crap-string "bundle exec rubocop")))
+  (defun ruby-run-all-tests()
+    (interactive)
+    (compile (run-ruby-crap-string "bundle exec rspec . --tag ~type:feature --tag ~inconsistent")))
+  (defun ruby-run-rspec(prefix-arg)
+    "submit a command to a inferior process (probably ssh into the navigator machine) that runs a ruby spec.
+  If a prefix argument is specified (e.g. ctrl-u ) then attempts to run only the test at line number.
+  "
+    (interactive "P")
+    (unless  (string-match-p (regexp-quote "_spec")  (buffer-file-name))
+      (error "This doesn't seem to be an rpsec test dude"))
+    (let* (
+           (relative-path (replace-regexp-in-string (expand-file-name "~/projects/callback_cloud/") "" (buffer-file-name)))
+           (line-number (format-mode-line "%l"))
+           (rspec-command (if (equal prefix-arg nil)      ;no ctrl-u pressed
+                              (concat "bundle exec rspec " relative-path " --format documentation")
+                (concat "bundle exec rspec " relative-path ":" line-number "\n")))
+           )
+      (compile (run-ruby-crap-string rspec-command))))
+  (defun get-boss-token()
+    "attempt to get a user token, or report an error if we think boss is not running"
+    (let ((token (shell-command-to-string "~/projects/PlatformErlang/scripts/nget_password.sh | ghead -c -1")))
+      (if (string-match-p (regexp-quote "failure") token)
+      (error "Boss is not running!?")
+        token)))
+  (defun ruby-wrap-exception(beg end)
+    "add exception catch"
+    (interactive "r")
+    (unless (use-region-p)
+      (error "The region is not active"))
+    (save-excursion
+      (let ((limit (copy-marker (max beg end)))
+            (start (min beg end)))
+        (goto-char start)
+        (insert "begin\n")
+        (goto-char limit)
+        (insert (concat "rescue StandardError => ex\n"
+                        "  puts \"exception #{ex}\\n\"\n"
+                        "  ex.backtrace.each { |frame| puts \"#{frame}\\n\" }\n"
+                        "end\n"))
+        (indent-region start (point))
+        )))
+  (defun get-first-platapp()
+    "will get the first platform app id from the http results buffer"
+    (with-current-buffer "*HTTP Response*"
+      (beginning-of-buffer)
+      (assq 'id (aref (json-read 0)))))
+  (defun rbgrep(prefix-arg)
+    "search fun ruby file excluding not so fun ruby files for great justice"
+    (interactive "P")
+    (let ((wildcard "\\( -iname '*.rb' \\)")
+          (xargs "xargs -d'\n' grep -inH ")
+          )
+      (grep (concat "find ~/projects " wildcard " ! -type d -print |  grep -vE '/features/|/spec/' | " xargs (read-from-minibuffer "grep: " (current-word))))))
+  (defun find-ruby-require()
+    "attempts locates a ruby file if the cursor is on a require line"
+    (interactive)
+    (with-current-buffer
+        (current-buffer)
+      (beginning-of-line)
+      (let (
+            (cw (current-word))
+            )
+        (cond ((string= cw "require")
+               (let* (
+                      (path1 "~/projects/callback_cloud/lib/")
+                      (path2 "~/projects/framework_worker_core/lib/")
+                      (start (search-forward "\'" nil t))
+                      (end (- (search-forward "\'" nil t)
+                              1))
+                      (target-file (buffer-substring-no-properties start end))
+                      )
+                 (print (concat "target file is " target-file))
+                 (let (
+                       (target1 (concat path1 target-file ".rb"))
+                       (target2 (concat path2 target-file ".rb"))
+                       )
+                   (cond (
+                          (file-exists-p target1)
+                          (find-file target1)
+                          )
+                         (
+                          (file-exists-p target2)
+                          (find-file target2)
+                          )))))))))
+
+  (defun my-compilation-hook()
+    ;; comp mode, stop overriding my other window keybinding please
+
+    (local-set-key (kbd "C-o") 'other-window))
+
+  (add-hook 'compilation-mode-hook 'my-compilation-hook)
+
+  ;; =============================================================================
+  ;; JavaScript stuff
+  ;; =============================================================================
+
+  ;; js2-mode
+  (use-package js2-mode
+    :ensure t
+    :mode
+    (("\\.js\\'" . js2-mode))
+    :config
+    ;; better imenu
+    (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
+    ;; searches the current files parent directories for the
+    ;; node_modules/.bin/ directory and adds it to the buffer local exec-path
+    (defun get-npm-exec-path()
+      "prepend the most local node package manager executable path to the current exec path and return it"
+      (let* ((root (locate-dominating-file
+                    (or (buffer-file-name) default-directory)
+                    "node_modules")))
+        (cons (concat root "/node_modules/.bin") exec-path)))
+    (defun my-js-mode-hook()
+      (set (make-local-variable 'exec-path) (get-npm-exec-path))
+      (infer-indentation-style)
+      (add-hook 'js2-mode-hook (lambda ()
+                                 (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+      (add-hook 'js2-mode-hook 'my-js-mode-hook)))
+
+
+  ;; xref-js2
+  (use-package xref-js2
+    :ensure t
+    :config
+    ;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so
+    ;; unbind it.
+    (define-key js-mode-map (kbd "M-.") nil))
+
+
+  ;; web-mode
+  (use-package web-mode
+    :ensure t
+    :mode
+    (("\\.phtml\\'" . web-mode)
+     ("\\.tpl\\.php\\'" . web-mode)
+     ("\\.[agj]sp\\'" . web-mode)
+     ("\\.as[cp]x\\'" . web-mode)
+     ("\\.jsx\\'" . web-mode)
+     ("\\.erb\\'" . web-mode)
+     ("\\.mustache\\'" . web-mode)
+     ("\\.hbs\\'" . web-mode)
+     ("\\.djhtml\\'" . web-mode)
+     ("\\.html?\\'" . web-mode))
+    :config
+    (setq web-mode-enable-current-element-highlight t)
+    (setq web-mode-enable-current-column-highlight t)
+    (setq web-mode-enable-auto-pairing t)
+    (setq web-mode-enable-auto-closing t)
+    (setq web-mode-enable-auto-indentation t)
+    (setq web-mode-markup-indent-offset 2)
+    ;; (add-hook 'web-mode-hook (lambda () (add-hook 'after-save-hook web-mode-buffer-indent)))
+    )
+
+
+  ;; eslint
+  (use-package eslint-fix
+    :ensure t)
+  ;; (eval-after-load 'js2-mode
+  ;;   '(add-hook 'js2-mode-hook (lambda () (add-hook 'after-save-hook 'eslint-fix nil t))))
+
+  ;; =============================================================================
+  ;; ibuffer stuff
+  ;; =============================================================================
+
+  (add-hook 'ibuffer-hook (lambda()
+                            (local-set-key "" 'other-window)))
+  (setq ibuffer-saved-filter-groups
+        ' (("default"
+            ("C"
+             (or (mode . cc-mode)
+                 (name . "\\.c")
+                 ))
+            ("Ruby"
+             (or (mode . ruby-mode)
+                 (mode . enh-ruby-mode)
+                 (name . "\\.rb")
+                 ))
+            ("html"
+             (or (mode . html-mode)
+                 (mode . javascript-mode)
+                 (name . "\\.js")
+                 (mode . web-mode)
+                 (mode . handlebars-mode)
+                 ))
+            )))
+  (add-hook 'ibuffer-mode-hook
+            (lambda ()
+              (ibuffer-switch-to-saved-filter-groups "default")))
+  (setq ibuffer-formats
+        '((mark modified read-only " "
+                (name 40 40 :left :elide) " "
+                (mode 15 15 :left :elide) " " filename-and-process)
+          (mark " " (name 16 -1) " " filename)))
+  (put 'narrow-to-region 'disabled nil)
+#+END_SRC

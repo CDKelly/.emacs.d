@@ -1,6 +1,12 @@
 init.el~
+init_bak.el
+config.el
 .emacs.desktop
 .emacs.desktop.lock
+
+*.elc
+*.html
+*.cache
 
 recentf
 recentf~
@@ -16,5 +22,3 @@ distel/
 auto-save-list/
 transient/
 url/
-
-*.elc
