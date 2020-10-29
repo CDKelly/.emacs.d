@@ -54,8 +54,7 @@ keeps track of all the files you've opened and remembers them
   (defalias 'yes-or-no-p 'y-or-n-p)
   #+end_src
 ** subword mode
-treat camel-case symbols as separate
-e.g. M-f will move across parts of a camel-cased symbol
+treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of a camel-cased symbol)
   #+begin_src emacs-lisp
   (global-subword-mode 1)
   #+end_src
@@ -168,14 +167,15 @@ electric for everything that ParEdit doesn't cover
   #+begin_src emacs-lisp
   (electric-pair-mode 1)
   (setq electric-pair-preserve-balance nil)
+
   ;; Disable pairs when entering minibuffer
   (add-hook 'minibuffer-setup-hook (lambda () (electric-pair-mode 0)))
-
   ;; Renable pairs when existing minibuffer
   (add-hook 'minibuffer-exit-hook (lambda () (electric-pair-mode 1)))
   #+end_src
 ** highlighting
 *** beacon
+TODO: consolidate this use-package setup for beacon and figure out one working solution
   #+begin_src emacs-lisp
   ;; highlight line where cursor is
   ;; used beacon setup from https://ladicle.com/post/config/#beacon
@@ -230,7 +230,9 @@ hideshow - for folding blocks of code
   #+end_src
 ** editorconfig
 https://github.com/editorconfig/editorconfig-emacs
+
 https://editorconfig.org/
+
 maintain consistent coding styles between devs working on the same project
   #+begin_src emacs-lisp
   (use-package editorconfig
