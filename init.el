@@ -128,6 +128,10 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+(eval-and-compile
+  (setq use-package-always-ensure t))
+
+
 ;; load theme
 (use-package doom-themes
   :ensure t
