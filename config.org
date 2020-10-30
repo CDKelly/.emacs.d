@@ -1,36 +1,3 @@
-* Org Mode
-** org related vars, defuns, key bindings, etc.
-#+BEGIN_SRC emacs-lisp
-  (setq org-ellipsis " ")
-  (setq org-src-fontify-natively t)
-  (setq org-src-tab-acts-natively t)
-  (setq org-confirm-babel-evaluate nil)
-  (setq org-export-with-smart-quotes t)
-  (setq org-src-window-setup 'other-window)
-  (add-hook 'org-mode-hook 'org-indent-mode)
-
-  (defun reload-config ()
-    "Reloads ~/.emacs.d/config.org at runtime"
-    (interactive)
-    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
-  (global-set-key (kbd "C-c r c") 'reload-config)
-
-  (global-set-key (kbd "C-c '") 'org-edit-src-code)
-#+END_SRC
-** org-structure-template-alist
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'org-structure-template-alist
-               '("el" . "src emacs-lisp
-  "))
-#+END_SRC
-** org-bullets
-better looking bullets for .org files
-#+BEGIN_SRC emacs-lisp
-  (use-package org-bullets
-    :ensure t
-    :config
-    (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
-#+END_SRC
 * Basic setup
 ** frame size
 #+BEGIN_SRC emacs-lisp
@@ -106,7 +73,7 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
     ((prog-mode yaml-mode nxml-mode) . highlight-indent-guides-mode))
 #+end_src
 *** functionality
-*Overall strategy*: infer-indentation-style for a mode-hook. If spaces > tabs, then turn tabs OFF, else turn tabs ON. If tabs are turned ON, then smart-tabs will take over (indent-tabs-mode must be non-nil for smart-tabs to work according to https://www.emacswiki.org/emacs/SmartTabs)
+*Overall strategy*: infer-indentation-style for a mode-hook. If spaces > tabs, then turn tabs OFF, else turn tabs ON. If tabs are turned ON, then smart-tabs will take over (indent-tabs-mode must be non-nil for smart-tabs to work according to the [[https://www.emacswiki.org/emacs/SmartTabs][SmartTabs wiki]])
   #+begin_src emacs-lisp
   (setq-default indent-tabs-mode nil)
 
@@ -138,6 +105,7 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
     (interactive)
     (save-excursion
       (indent-region (point-min) (point-max) nil)))
+  (global-set-key (kbd "C-t") 'indent-buffer)
   #+end_src
 ** delimiters
 *** show parentheses matching
@@ -197,8 +165,7 @@ highlight hexadecimals the color they represent
     :init
     (add-hook 'prog-mode-hook 'rainbow-mode))
   #+end_src
-*** auto-highlight-symbol
-  https://github.com/gennad/auto-highlight-symbol
+*** [[https://github.com/gennad/auto-highlight-symbol][auto-highlight-symbol]]
   #+begin_src emacs-lisp
   (use-package auto-highlight-symbol
     :ensure t
@@ -228,8 +195,7 @@ hideshow - for folding blocks of code
       (hs-toggle-hiding)))
   (global-set-key (kbd "C-c t f") 'toggle-fold)
   #+end_src
-** editorconfig
-https://github.com/editorconfig/editorconfig-emacs
+** [[https://github.com/editorconfig/editorconfig-emacs][editorconfig]]
 
 https://editorconfig.org/
 
@@ -240,7 +206,210 @@ maintain consistent coding styles between devs working on the same project
     :config
     (editorconfig-mode 1))
   #+end_src
-* Figure out this stuff:
+* Org Mode
+** org related vars, defuns, key bindings, etc.
+#+BEGIN_SRC emacs-lisp
+  (setq org-ellipsis " ")
+  (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
+  (setq org-confirm-babel-evaluate nil)
+  (setq org-export-with-smart-quotes t)
+  (setq org-src-window-setup 'other-window)
+  (add-hook 'org-mode-hook 'org-indent-mode)
+
+  (defun reload-config ()
+    "Reloads ~/.emacs.d/config.org at runtime"
+    (interactive)
+    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+  (global-set-key (kbd "C-c r c") 'reload-config)
+
+  (global-set-key (kbd "C-c '") 'org-edit-src-code)
+#+END_SRC
+** org-structure-template-alist
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'org-structure-template-alist
+               '("el" . "src emacs-lisp
+  "))
+#+END_SRC
+** org-bullets
+better looking bullets for .org files
+#+BEGIN_SRC emacs-lisp
+  (use-package org-bullets
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+#+END_SRC
+* Navigation
+** Basic navigation
+  #+begin_src emacs-lisp
+  (global-set-key (kbd "C-o") 'other-window)
+  (global-set-key (kbd "C-l") 'goto-line)
+  (global-set-key (kbd "C-c l") 'recenter-top-bottom)
+  #+end_src
+** switch-window
+switch windows quickly when > 2 windows
+#+begin_src emacs-lisp
+  (use-package switch-window
+    :ensure t
+    :config
+    (setq switch-window-input-style 'minibuffer)
+    (setq switch-window-increase 4)
+    (setq switch-window-threshold 2)
+    (setq switch-window-shortcut-style 'qwerty)
+    (setq switch-window-qwerty-shortcuts
+          '("a" "s" "d" "f" "g" "h" "j" "k" "l" "q" "w" "e" "r"))
+    :bind
+    ([remap other-window] . switch-window))
+#+end_src
+** avy
+quickly jump to char or line
+  #+begin_src emacs-lisp
+  (use-package avy
+    :ensure t
+    :config
+    (setq avy-keys-alist
+          `((avy-goto-char . ,(number-sequence ?a ?z))))
+    (setq avy-background t)
+    :bind
+    ("C-c f" . avy-goto-char)
+    ("C-c a l" . avy-goto-line))
+  #+end_src
+** [[https://github.com/jacktasia/dumb-jump][dumb-jump]]
+locate definitions of funcs or vars
+  #+begin_src emacs-lisp
+  (use-package dumb-jump
+    :ensure t
+    :config
+    (setq dumb-jump-selector 'ivy)
+    ;; see https://www.reddit.com/r/emacs/comments/hzxvke/how_do_people_have_dumbjump_setup/
+    ;; and https://github.com/jacktasia/dumb-jump#obsolete-commands-and-options
+    ;; for latest update
+    (setq xref-backend-functions (remq 'etags--xref-backend xref-backend-functions))
+    (add-to-list 'xref-backend-functions #'dumb-jump-xref-activate t)
+    :hook
+    ((prog-mode) . dumb-jump-mode)
+    :bind
+    ("C-c d g" . dumb-jump-go)
+    ("C-c d p" . dumb-jump-back)
+    ("C-c d q" . dumb-jump-quick-look))
+  #+end_src
+* Buffer and Window stuff
+** ibuffer
+#+begin_src emacs-lisp
+  (setq ibuffer-saved-filter-groups
+        ' (("default"
+            ("C"
+             (or (mode . cc-mode)
+                 (name . "\\.c")
+                 ))
+            ("Ruby"
+             (or (mode . ruby-mode)
+                 (mode . enh-ruby-mode)
+                 (name . "\\.rb")
+                 ))
+            ("html"
+             (or (mode . html-mode)
+                 (mode . javascript-mode)
+                 (name . "\\.js")
+                 (mode . web-mode)
+                 (mode . handlebars-mode)
+                 ))
+            )))
+
+  (setq ibuffer-formats
+        '((mark modified read-only " "
+                (name 40 40 :left :elide) " "
+                (mode 15 15 :left :elide) " " filename-and-process)
+          (mark " " (name 16 -1) " " filename)))
+
+  (put 'narrow-to-region 'disabled nil)
+
+  (add-hook 'ibuffer-hook (lambda()
+                            (local-set-key "" 'other-window)))
+  (add-hook 'ibuffer-mode-hook
+            (lambda ()
+              (ibuffer-switch-to-saved-filter-groups "default")))
+
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+#+end_src
+** switch-to-last-buffer
+  #+begin_src emacs-lisp
+  (defun switch-to-last-buffer ()
+    (interactive)
+    (switch-to-buffer nil))
+  (global-set-key (kbd "C-S-b") 'switch-to-last-buffer)
+  #+end_src
+** focus on newly created windows
+  #+begin_src emacs-lisp
+  (defun split-and-follow-horizontally ()
+    (interactive)
+    (split-window-below)
+    (balance-windows)
+    (other-window 1))
+  (global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)
+
+  (defun split-and-follow-vertically ()
+    (interactive)
+    (split-window-right)
+    (balance-windows)
+    (other-window 1))
+  (global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
+  #+end_src
+** always kill current buffer
+  #+begin_src emacs-lisp
+  (defun kill-current-buffer ()
+    "Kills the current buffer."
+    (interactive)
+    (kill-buffer (current-buffer)))
+  (global-set-key (kbd "C-x k") 'kill-current-buffer)
+  #+end_src
+** rename-file-and-buffer
+source: http://steve.yegge.googlepages.com/my-dot-emacs-file
+  #+begin_src emacs-lisp
+  (defun rename-file-and-buffer(new-name)
+    "Renames both current buffer and file it's visiting to NEW-NAME."
+    (interactive "New name: ")
+    (let ((name (buffer-name))
+          (filename (buffer-file-name)))
+      (if (not filename)
+          (message "Buffer '%s' is not visiting a file!" name)
+        (if (get-buffer new-name)
+            (message "A buffer named '%s' already exists!" new-name)
+          (progn
+            (rename-file filename new-name 1)
+            (rename-buffer new-name)
+            (set-visited-file-name new-name)
+            (set-buffer-modified-p nil))))))
+  (global-set-key (kbd "C-c r n") 'rename-file-and-buffer)
+  #+end_src
+** revert buffer w/o asking for confirmation
+  #+begin_src emacs-lisp
+  (defun revert-buffer-no-confirm()
+    "Revert buffer without confirmation."
+    (interactive)
+    (revert-buffer :ignore-auto :noconfirm))
+  (global-set-key (kbd "<f5>") 'revert-buffer-no-confirm)
+  #+end_src
+** global window/workspace saving functions
+  #+begin_src emacs-lisp
+    (defvar g_workspace (current-window-configuration))
+
+    (defun save-workspace()
+      (setq g_workspace (current-window-configuration))
+      (princ "workspace saved"))
+
+    (defun save-or-restore-workspace()
+      (interactive)
+      (if (> (count-windows) 1)
+          (save-workspace)
+        (set-window-configuration g_workspace)))
+    (global-set-key (kbd "C-x C-w") 'save-or-restore-workspace)
+
+    (setq backup-directory-alist `((".*" . "~/.emacs.d/.saves")))
+    (setq auto-save-file-name-transforms
+          `((".*" ,"~/.emacs.d/.saves" t)))
+  #+end_src
+* Figure this stuff out --> start with Scrolling
 #+begin_src emacs-lisp
   ;; delete text when it's marked by typing
   (delete-selection-mode t)
@@ -260,66 +429,13 @@ maintain consistent coding styles between devs working on the same project
 
 
 
-  ;; dumb-jump - locate definitions of funcs or vars
-  ;; https://github.com/jacktasia/dumb-jump
-  (use-package dumb-jump
-    :ensure t
-    :config
-    (setq dumb-jump-selector 'ivy)
-    ;; see https://www.reddit.com/r/emacs/comments/hzxvke/how_do_people_have_dumbjump_setup/
-    ;; and https://github.com/jacktasia/dumb-jump#obsolete-commands-and-options
-    ;; for latest update
-    (setq xref-backend-functions (remq 'etags--xref-backend xref-backend-functions))
-    (add-to-list 'xref-backend-functions #'dumb-jump-xref-activate t)
-    :hook
-    ((prog-mode) . dumb-jump-mode)
-    :bind
-    ("C-c d g" . dumb-jump-go)
-    ("C-c d p" . dumb-jump-back)
-    ("C-c d q" . dumb-jump-quick-look))
 
-  ;; switch windows quickly when > 2 windows
-  (use-package switch-window
-    :ensure t
-    :config
-    (setq switch-window-input-style 'minibuffer)
-    (setq switch-window-increase 4)
-    (setq switch-window-threshold 2)
-    (setq switch-window-shortcut-style 'qwerty)
-    (setq switch-window-qwerty-shortcuts
-          '("a" "s" "d" "f" "g" "h" "j" "k" "l" "q" "w" "e" "r"))
-    :bind
-    ([remap other-window] . switch-window))
 
-  (defun switch-to-last-buffer ()
-    (interactive)
-    (switch-to-buffer nil))
-  (global-set-key (kbd "C-S-b") 'switch-to-last-buffer)
 
-  (defun split-and-follow-horizontally ()
-    (interactive)
-    (split-window-below)
-    (balance-windows)
-    (other-window 1))
-  (global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)
 
-  (defun split-and-follow-vertically ()
-    (interactive)
-    (split-window-right)
-    (balance-windows)
-    (other-window 1))
-  (global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
 
-  ;; avy mode - quickly jump to char or line
-  (use-package avy
-    :ensure t
-    :config
-    (setq avy-keys-alist
-          `((avy-goto-char . ,(number-sequence ?a ?z))))
-    (setq avy-background t)
-    :bind
-    ("C-c f" . avy-goto-char)
-    ("C-c a l" . avy-goto-line))
+
+
 
 
   ;; ivy
@@ -444,43 +560,9 @@ maintain consistent coding styles between devs working on the same project
   ;; Customized workspace functions
   ;; =============================================================================
 
-  ;; always kill current buffer
-  (defun kill-current-buffer ()
-    "Kills the current buffer."
-    (interactive)
-    (kill-buffer (current-buffer)))
-  (global-set-key (kbd "C-x k") 'kill-current-buffer)
 
-  ;; my global window/workspace saving functions
-  (defvar g_workspace (current-window-configuration))
-  (defun save-workspace()
-    (setq g_workspace (current-window-configuration))
-    (princ "workspace saved"))
-  (defun save-or-restore-workspace()
-    (interactive)
-    (if (> (count-windows) 1)
-        (save-workspace)
-      (set-window-configuration g_workspace)))
 
-  (setq backup-directory-alist `((".*" . "~/.emacs.d/.saves")))
-  (setq auto-save-file-name-transforms
-        `((".*" ,"~/.emacs.d/.saves" t)))
 
-  ;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
-  (defun rename-file-and-buffer(new-name)
-    "Renames both current buffer and file it's visiting to NEW-NAME."
-    (interactive "New name: ")
-    (let ((name (buffer-name))
-          (filename (buffer-file-name)))
-      (if (not filename)
-          (message "Buffer '%s' is not visiting a file!" name)
-        (if (get-buffer new-name)
-            (message "A buffer named '%s' already exists!" new-name)
-          (progn
-            (rename-file filename new-name 1)
-            (rename-buffer new-name)
-            (set-visited-file-name new-name)
-            (set-buffer-modified-p nil))))))
 
   ;; moving lines up and down
   (defun move-line (n)
@@ -575,11 +657,7 @@ maintain consistent coding styles between devs working on the same project
   (global-set-key (kbd "C-c y p") 'copy-and-yank-line-above)
 
 
-  ;; revert buffer w/o asking for confirmation
-  (defun revert-buffer-no-confirm()
-    "Revert buffer without confirmation."
-    (interactive)
-    (revert-buffer :ignore-auto :noconfirm))
+
 
   ;; custom compile functions
   ;; TODO: make one-button function that compiles everything (w/o using a makefile)
@@ -644,16 +722,9 @@ maintain consistent coding styles between devs working on the same project
   ;; keybindings
   (global-set-key (kbd "C-s") 'swiper)
   (global-set-key (kbd "C-M-s") 'swiper-thing-at-point)
-  (global-set-key (kbd "C-x C-b") 'ibuffer)
-  (global-set-key (kbd "C-x C-w") 'save-or-restore-workspace)
-  (global-set-key (kbd "C-c r n") 'rename-file-and-buffer)
-  (global-set-key (kbd "C-c l") 'recenter-top-bottom)
   (global-set-key (kbd "C-x p") 'ahs-backward)
   (global-set-key (kbd "C-x n") 'ahs-forward)
-  (global-set-key (kbd "C-o") 'other-window)
-  (global-set-key (kbd "C-l") 'goto-line)
-  (global-set-key (kbd "C-t") 'indent-buffer)
-  (global-set-key (kbd "<f5>") 'revert-buffer-no-confirm)
+
   (global-set-key (kbd "C-c r r") 'inf-ruby)
   (global-set-key (kbd "C-c r a") 'rvm-activate-corresponding-ruby)
 
@@ -968,38 +1039,5 @@ maintain consistent coding styles between devs working on the same project
   ;; (eval-after-load 'js2-mode
   ;;   '(add-hook 'js2-mode-hook (lambda () (add-hook 'after-save-hook 'eslint-fix nil t))))
 
-  ;; =============================================================================
-  ;; ibuffer stuff
-  ;; =============================================================================
 
-  (add-hook 'ibuffer-hook (lambda()
-                            (local-set-key "" 'other-window)))
-  (setq ibuffer-saved-filter-groups
-        ' (("default"
-            ("C"
-             (or (mode . cc-mode)
-                 (name . "\\.c")
-                 ))
-            ("Ruby"
-             (or (mode . ruby-mode)
-                 (mode . enh-ruby-mode)
-                 (name . "\\.rb")
-                 ))
-            ("html"
-             (or (mode . html-mode)
-                 (mode . javascript-mode)
-                 (name . "\\.js")
-                 (mode . web-mode)
-                 (mode . handlebars-mode)
-                 ))
-            )))
-  (add-hook 'ibuffer-mode-hook
-            (lambda ()
-              (ibuffer-switch-to-saved-filter-groups "default")))
-  (setq ibuffer-formats
-        '((mark modified read-only " "
-                (name 40 40 :left :elide) " "
-                (mode 15 15 :left :elide) " " filename-and-process)
-          (mark " " (name 16 -1) " " filename)))
-  (put 'narrow-to-region 'disabled nil)
 #+END_SRC
