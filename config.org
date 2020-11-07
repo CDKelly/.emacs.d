@@ -25,6 +25,10 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
   #+begin_src emacs-lisp
   (global-subword-mode 1)
   #+end_src
+** delete text when it's marked by typing
+  #+begin_src emacs-lisp
+  (delete-selection-mode t)
+  #+end_src
 * Aesthetics (and other basic stuff)
 ** line stuff
 *** add line numbers
@@ -176,6 +180,9 @@ highlight hexadecimals the color they represent
     (global-auto-highlight-symbol-mode)
     :hook
     ((prog-mode) . auto-highlight-symbol-mode))
+
+  (global-set-key (kbd "C-x p") 'ahs-backward)
+  (global-set-key (kbd "C-x n") 'ahs-forward)
   #+end_src
 *** expand-region
   #+begin_src emacs-lisp
@@ -205,93 +212,6 @@ maintain consistent coding styles between devs working on the same project
     :ensure t
     :config
     (editorconfig-mode 1))
-  #+end_src
-* Org Mode
-** org related vars, defuns, key bindings, etc.
-#+BEGIN_SRC emacs-lisp
-  (setq org-ellipsis " ")
-  (setq org-src-fontify-natively t)
-  (setq org-src-tab-acts-natively t)
-  (setq org-confirm-babel-evaluate nil)
-  (setq org-export-with-smart-quotes t)
-  (setq org-src-window-setup 'other-window)
-  (add-hook 'org-mode-hook 'org-indent-mode)
-
-  (defun reload-config ()
-    "Reloads ~/.emacs.d/config.org at runtime"
-    (interactive)
-    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
-  (global-set-key (kbd "C-c r c") 'reload-config)
-
-  (global-set-key (kbd "C-c '") 'org-edit-src-code)
-#+END_SRC
-** org-structure-template-alist
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'org-structure-template-alist
-               '("el" . "src emacs-lisp
-  "))
-#+END_SRC
-** org-bullets
-better looking bullets for .org files
-#+BEGIN_SRC emacs-lisp
-  (use-package org-bullets
-    :ensure t
-    :config
-    (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
-#+END_SRC
-* Navigation
-** Basic navigation
-  #+begin_src emacs-lisp
-  (global-set-key (kbd "C-o") 'other-window)
-  (global-set-key (kbd "C-l") 'goto-line)
-  (global-set-key (kbd "C-c l") 'recenter-top-bottom)
-  #+end_src
-** switch-window
-switch windows quickly when > 2 windows
-#+begin_src emacs-lisp
-  (use-package switch-window
-    :ensure t
-    :config
-    (setq switch-window-input-style 'minibuffer)
-    (setq switch-window-increase 4)
-    (setq switch-window-threshold 2)
-    (setq switch-window-shortcut-style 'qwerty)
-    (setq switch-window-qwerty-shortcuts
-          '("a" "s" "d" "f" "g" "h" "j" "k" "l" "q" "w" "e" "r"))
-    :bind
-    ([remap other-window] . switch-window))
-#+end_src
-** avy
-quickly jump to char or line
-  #+begin_src emacs-lisp
-  (use-package avy
-    :ensure t
-    :config
-    (setq avy-keys-alist
-          `((avy-goto-char . ,(number-sequence ?a ?z))))
-    (setq avy-background t)
-    :bind
-    ("C-c f" . avy-goto-char)
-    ("C-c a l" . avy-goto-line))
-  #+end_src
-** [[https://github.com/jacktasia/dumb-jump][dumb-jump]]
-locate definitions of funcs or vars
-  #+begin_src emacs-lisp
-  (use-package dumb-jump
-    :ensure t
-    :config
-    (setq dumb-jump-selector 'ivy)
-    ;; see https://www.reddit.com/r/emacs/comments/hzxvke/how_do_people_have_dumbjump_setup/
-    ;; and https://github.com/jacktasia/dumb-jump#obsolete-commands-and-options
-    ;; for latest update
-    (setq xref-backend-functions (remq 'etags--xref-backend xref-backend-functions))
-    (add-to-list 'xref-backend-functions #'dumb-jump-xref-activate t)
-    :hook
-    ((prog-mode) . dumb-jump-mode)
-    :bind
-    ("C-c d g" . dumb-jump-go)
-    ("C-c d p" . dumb-jump-back)
-    ("C-c d q" . dumb-jump-quick-look))
   #+end_src
 * Buffer and Window stuff
 ** ibuffer
@@ -363,6 +283,14 @@ locate definitions of funcs or vars
     (kill-buffer (current-buffer)))
   (global-set-key (kbd "C-x k") 'kill-current-buffer)
   #+end_src
+** revert buffer no confirm
+#+begin_src emacs-lisp
+(defun revert-buffer-no-confirm ()
+    "Revert buffer without confirmation."
+    (interactive)
+    (revert-buffer :ignore-auto :noconfirm))
+(global-set-key (kbd "s-u") 'revert-buffer-no-confirm)
+#+end_src
 ** rename-file-and-buffer
 source: http://steve.yegge.googlepages.com/my-dot-emacs-file
   #+begin_src emacs-lisp
@@ -381,14 +309,6 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
             (set-visited-file-name new-name)
             (set-buffer-modified-p nil))))))
   (global-set-key (kbd "C-c r n") 'rename-file-and-buffer)
-  #+end_src
-** revert buffer w/o asking for confirmation
-  #+begin_src emacs-lisp
-  (defun revert-buffer-no-confirm()
-    "Revert buffer without confirmation."
-    (interactive)
-    (revert-buffer :ignore-auto :noconfirm))
-  (global-set-key (kbd "<f5>") 'revert-buffer-no-confirm)
   #+end_src
 ** global window/workspace saving functions
   #+begin_src emacs-lisp
@@ -409,32 +329,231 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
     (setq auto-save-file-name-transforms
           `((".*" ,"~/.emacs.d/.saves" t)))
   #+end_src
-* Figure this stuff out --> start with Scrolling
+** don't open new window in emacs
 #+begin_src emacs-lisp
-  ;; delete text when it's marked by typing
-  (delete-selection-mode t)
+  ;; "might" make it so that new windows don't pop up each time
+  ;; you open something with Emacs
+  (setq ns-pop-up-frames nil)
+#+end_src
+* Org Mode
+** org related vars, defuns, key bindings, etc.
+#+BEGIN_SRC emacs-lisp
+  (setq org-ellipsis " ")
+  (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
+  (setq org-confirm-babel-evaluate nil)
+  (setq org-export-with-smart-quotes t)
+  (setq org-src-window-setup 'other-window)
+  (add-hook 'org-mode-hook 'org-indent-mode)
 
+  (defun reload-config ()
+    "Reloads ~/.emacs.d/config.org at runtime"
+    (interactive)
+    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+  (global-set-key (kbd "C-c r c") 'reload-config)
+
+  (global-set-key (kbd "C-c '") 'org-edit-src-code)
+#+END_SRC
+** org-structure-template-alist
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'org-structure-template-alist
+               '("el" . "src emacs-lisp
+  "))
+#+END_SRC
+** org-bullets
+better looking bullets for .org files
+#+BEGIN_SRC emacs-lisp
+  (use-package org-bullets
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+#+END_SRC
+* Navigation
+** basic navigation
+  #+begin_src emacs-lisp
+  (global-set-key (kbd "C-o") 'other-window)
+  (global-set-key (kbd "C-l") 'goto-line)
+  (global-set-key (kbd "C-c l") 'recenter-top-bottom)
+  #+end_src
+** switch-window
+switch windows quickly when > 2 windows
+#+begin_src emacs-lisp
+  (use-package switch-window
+    :ensure t
+    :config
+    (setq switch-window-input-style 'minibuffer)
+    (setq switch-window-increase 4)
+    (setq switch-window-threshold 2)
+    (setq switch-window-shortcut-style 'qwerty)
+    (setq switch-window-qwerty-shortcuts
+          '("a" "s" "d" "f" "g" "h" "j" "k" "l" "q" "w" "e" "r"))
+    :bind
+    ([remap other-window] . switch-window))
+#+end_src
+** avy
+quickly jump to char or line
+  #+begin_src emacs-lisp
+  (use-package avy
+    :ensure t
+    :config
+    (setq avy-keys-alist
+          `((avy-goto-char . ,(number-sequence ?a ?z))))
+    (setq avy-background t)
+    :bind
+    ("C-c f" . avy-goto-char)
+    ("C-c a l" . avy-goto-line))
+  #+end_src
+** [[https://github.com/jacktasia/dumb-jump][dumb-jump]]
+locate definitions of funcs or vars
+  #+begin_src emacs-lisp
+  (use-package dumb-jump
+    :ensure t
+    :config
+    (setq dumb-jump-selector 'ivy)
+    ;; see https://www.reddit.com/r/emacs/comments/hzxvke/how_do_people_have_dumbjump_setup/
+    ;; and https://github.com/jacktasia/dumb-jump#obsolete-commands-and-options
+    ;; for latest update
+    (setq xref-backend-functions (remq 'etags--xref-backend xref-backend-functions))
+    (add-to-list 'xref-backend-functions #'dumb-jump-xref-activate t)
+    :hook
+    ((prog-mode) . dumb-jump-mode)
+    :bind
+    ("C-c d g" . dumb-jump-go)
+    ("C-c d p" . dumb-jump-back)
+    ("C-c d q" . dumb-jump-quick-look))
+  #+end_src
+* Scrolling
+#+begin_src emacs-lisp
+  ;; scrolling
+  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+  (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+  (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+  (setq scroll-step 1) ;; keyboard scroll one line at a time
+
+  (defun gcm-scroll-up ()
+    (interactive)
+    (scroll-down 3))
+  (global-set-key (kbd "M-p") 'gcm-scroll-up)
+
+  (defun gcm-scroll-down ()
+    (interactive)
+    (scroll-up 3))
+  (global-set-key (kbd "M-n") 'gcm-scroll-down)
+#+end_src
+
+* Killing, Yanking, Moving lines, etc.
+** killing
+*** kill whole word
+#+begin_src emacs-lisp
   (defun kill-whole-word ()
     (interactive)
     (backward-word)
     (kill-word 1))
-
   (global-set-key (kbd "C-c k w") 'kill-whole-word)
+#+end_src
+*** kill whole line
+  #+begin_src emacs-lisp
   (global-set-key (kbd "C-c k l") 'kill-whole-line)
+  #+end_src
+** yanking
+#+begin_src emacs-lisp
+(defun copy-whole-line ()
+    "Copies a line without regard for cursor position."
+    (interactive)
+    (kill-new
+     (buffer-substring
+      (point-at-bol)
+      (point-at-eol))))
+  (global-set-key (kbd "C-c y l") 'copy-whole-line)
 
+  (defun insert-line-below ()
+    "Insert an empty line below the current line."
+    (interactive)
+    (end-of-line)
+    (newline))
 
+  (defun insert-line-above ()
+    "Insert an empty line above the current line."
+    (interactive)
+    (end-of-line 0)
+    (newline))
 
+  (defun copy-and-yank-line-below ()
+    "Copies a line and inserts it down one line while keeping your cursor
+   position constant"
+    (interactive)
+    (save-excursion
+      (copy-whole-line)
+      (insert-line-below)
+      (yank)))
+  (global-set-key (kbd "C-c y n") 'copy-and-yank-line-below)
 
+  (defun copy-and-yank-line-above ()
+    "Copies a line and inserts it down one line while keeping your cursor
+   position constant"
+    (interactive)
+    (save-excursion
+      (copy-whole-line)
+      (insert-line-above)
+      (yank)))
+  (global-set-key (kbd "C-c y p") 'copy-and-yank-line-above)
+#+end_src
+** moving lines
+  #+begin_src emacs-lisp
+  (defun move-line (n)
+    "Move the current line up or down by N lines."
+    (interactive "p")
+    (beginning-of-line)
+    (setq col (current-column))
+    (setq start (point))
+    (end-of-line) (forward-char) (setq end (point))
+    (let ((line-text (delete-and-extract-region start end)))
+      (forward-line n)
+      (insert line-text)
+      ;; restore point to original column in moved line
+      (forward-line -1)
+      (forward-char col)))
 
+  (defun move-line-up (n)
+    "Move the current line up by N lines."
+    (interactive "p")
+    (move-line (if (null n) -1 (- n))))
+  (global-set-key (kbd "M-<up>") 'move-line-up)
 
+  (defun move-line-down (n)
+    "Move the current line down by N lines."
+    (interactive "p")
+    (move-line (if (null n) 1 n)))
+  (global-set-key (kbd "M-<down>") 'move-line-down)
 
+  #+end_src
+** moving regions
+#+begin_src emacs-lisp
+  (defun move-region (start end n)
+    "Move the current region up or down by N lines."
+    (interactive "r\np")
+    (let ((line-text (delete-and-extract-region start end)))
+      (forward-line n)
+      (let ((start (point)))
+        (insert line-text)
+        (setq deactivate-mark nil)
+        (set-mark start))))
 
+  (defun move-region-up (start end n)
+    "Move the current line up by N lines."
+    (interactive "r\np")
+    (move-region start end (if (null n) -1 (- n))))
+  (global-set-key (kbd "C-M-<up>") 'move-region-up)
 
+  (defun move-region-down (start end n)
+    "Move the current line down by N lines."
+    (interactive "r\np")
+    (move-region start end (if (null n) 1 n)))
+  (global-set-key (kbd "C-M-<down>") 'move-region-down)
+#+end_src
 
-
-
-
-
+* TODO:
+#+begin_src emacs-lisp
 
 
 
@@ -477,6 +596,9 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
     (interactive)
     (counsel-git-grep (kill-new (thing-at-point 'symbol))))
   (global-set-key (kbd "C-c c G") 'counsel-git-grep-thing-at-point)
+
+  (global-set-key (kbd "C-s") 'swiper)
+  (global-set-key (kbd "C-M-s") 'swiper-thing-at-point)
 
   ;; ivy-rich
   (use-package ivy-rich
@@ -564,100 +686,6 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
 
 
 
-  ;; moving lines up and down
-  (defun move-line (n)
-    "Move the current line up or down by N lines."
-    (interactive "p")
-    (beginning-of-line)
-    (setq col (current-column))
-    (setq start (point))
-    (end-of-line) (forward-char) (setq end (point))
-    (let ((line-text (delete-and-extract-region start end)))
-      (forward-line n)
-      (insert line-text)
-      ;; restore point to original column in moved line
-      (forward-line -1)
-      (forward-char col)))
-
-  (defun move-line-up (n)
-    "Move the current line up by N lines."
-    (interactive "p")
-    (move-line (if (null n) -1 (- n))))
-  (global-set-key (kbd "M-<up>") 'move-line-up)
-
-  (defun move-line-down (n)
-    "Move the current line down by N lines."
-    (interactive "p")
-    (move-line (if (null n) 1 n)))
-  (global-set-key (kbd "M-<down>") 'move-line-down)
-
-  ;; move regions up and down
-  (defun move-region (start end n)
-    "Move the current region up or down by N lines."
-    (interactive "r\np")
-    (let ((line-text (delete-and-extract-region start end)))
-      (forward-line n)
-      (let ((start (point)))
-        (insert line-text)
-        (setq deactivate-mark nil)
-        (set-mark start))))
-
-  (defun move-region-up (start end n)
-    "Move the current line up by N lines."
-    (interactive "r\np")
-    (move-region start end (if (null n) -1 (- n))))
-  (global-set-key (kbd "C-M-<up>") 'move-region-up)
-
-  (defun move-region-down (start end n)
-    "Move the current line down by N lines."
-    (interactive "r\np")
-    (move-region start end (if (null n) 1 n)))
-  (global-set-key (kbd "C-M-<down>") 'move-region-down)
-
-
-  (defun copy-whole-line ()
-    "Copies a line without regard for cursor position."
-    (interactive)
-    (kill-new
-     (buffer-substring
-      (point-at-bol)
-      (point-at-eol))))
-  (global-set-key (kbd "C-c y l") 'copy-whole-line)
-
-  (defun insert-line-below ()
-    "Insert an empty line below the current line."
-    (interactive)
-    (end-of-line)
-    (newline))
-
-  (defun insert-line-above ()
-    "Insert an empty line above the current line."
-    (interactive)
-    (end-of-line 0)
-    (newline))
-
-  (defun copy-and-yank-line-below ()
-    "Copies a line and inserts it down one line while keeping your cursor
-   position constant"
-    (interactive)
-    (save-excursion
-      (copy-whole-line)
-      (insert-line-below)
-      (yank)))
-  (global-set-key (kbd "C-c y n") 'copy-and-yank-line-below)
-
-  (defun copy-and-yank-line-above ()
-    "Copies a line and inserts it down one line while keeping your cursor
-   position constant"
-    (interactive)
-    (save-excursion
-      (copy-whole-line)
-      (insert-line-above)
-      (yank)))
-  (global-set-key (kbd "C-c y p") 'copy-and-yank-line-above)
-
-
-
 
   ;; custom compile functions
   ;; TODO: make one-button function that compiles everything (w/o using a makefile)
@@ -720,32 +748,12 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
   ;; =============================================================================
 
   ;; keybindings
-  (global-set-key (kbd "C-s") 'swiper)
-  (global-set-key (kbd "C-M-s") 'swiper-thing-at-point)
-  (global-set-key (kbd "C-x p") 'ahs-backward)
-  (global-set-key (kbd "C-x n") 'ahs-forward)
-
   (global-set-key (kbd "C-c r r") 'inf-ruby)
   (global-set-key (kbd "C-c r a") 'rvm-activate-corresponding-ruby)
 
-  ;; scrolling
-  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
-  (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
-  (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
-  (setq scroll-step 1) ;; keyboard scroll one line at a time
-  (defun gcm-scroll-up ()
-    (interactive)
-    (scroll-down 3))
-  (global-set-key (kbd "M-p") 'gcm-scroll-up)
 
-  (defun gcm-scroll-down ()
-    (interactive)
-    (scroll-up 3))
-  (global-set-key (kbd "M-n") 'gcm-scroll-down)
 
-  ;; "might" make it so that new windows don't pop up each time
-  ;; you open something with Emacs
-  (setq ns-pop-up-frames nil)
+
 
 
   ;; =============================================================================
