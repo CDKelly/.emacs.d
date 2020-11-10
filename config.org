@@ -90,6 +90,18 @@ show 80-character vertical marker
       (if (> tab-count space-count) (setq indent-tabs-mode t))))
 #+end_src
 **** [[https://www.emacswiki.org/emacs/SmartTabs][smart-tabs-mode]]
+#+begin_src emacs-lisp
+  (use-package smart-tabs-mode
+    :ensure t
+    :config
+    (autoload 'smart-tabs-mode "smart-tabs-mode"
+      "Intelligently indent with tabs, align with spaces!")
+    (autoload 'smart-tabs-mode-enable "smart-tabs-mode")
+    (autoload 'smart-tabs-advice "smart-tabs-mode")
+    (autoload 'smart-tabs-insinuate "smart-tabs-mode")
+    (smart-tabs-insinuate 'c 'c++ 'java 'javascript 'python
+                          'ruby))
+#+end_src
 **** indent entire buffer
   #+begin_src emacs-lisp
   (defun indent-buffer ()
@@ -135,6 +147,20 @@ electric for everything that ParEdit doesn't cover
   #+end_src
 ** highlighting
 *** [[https://github.com/Malabarba/beacon][beacon]]
+TODO: consolidate this use-package setup for beacon and figure out one working solution
+#+begin_src emacs-lisp
+  ;; highlight line where cursor is
+  ;; used beacon setup from https://ladicle.com/post/config/#beacon
+  ;; for some reason the setup based on beacon's README wouldn't
+  ;; work with buffer changes and scrolling
+  (use-package beacon
+    :ensure t
+    :demand t
+    :init
+    (beacon-mode 1)
+    :custom
+    (beacon-color "turquoise1"))
+#+end_src
 *** rainbow-mode
 highlight text representing color codes
   #+begin_src emacs-lisp
