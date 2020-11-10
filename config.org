@@ -29,7 +29,7 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
   #+begin_src emacs-lisp
   (delete-selection-mode t)
   #+end_src
-* Aesthetics (and other basic stuff)
+* Aesthetics (and other enhancements)
 ** line stuff
 *** add line numbers
   #+begin_src emacs-lisp
@@ -39,11 +39,11 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
   #+end_src
 *** wrap words for every line
   #+begin_src emacs-lisp
-
   (global-visual-line-mode 1)
   (setq visual-line-fringe-indicators '(bottom-left-angle bottom-right-angle))
   #+end_src
-*** show 80-character vertical marker
+*** [[https://github.com/alpaker/fill-column-indicator][fill-column-indicator]]
+show 80-character vertical marker
   #+begin_src emacs-lisp
   (use-package fill-column-indicator
     :ensure t
@@ -63,9 +63,8 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
   #+end_src
 ** indentation
 *** aesthetics
-**** highlight indentation
+**** [[https://github.com/DarthFennec/highlight-indent-guides][highlight-indent-guides]]
 #+begin_src emacs-lisp
-  ;; https://github.com/DarthFennec/highlight-indent-guides
   (use-package highlight-indent-guides
     :ensure t
     :custom
@@ -90,19 +89,7 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
       (if (> space-count tab-count) (setq indent-tabs-mode nil))
       (if (> tab-count space-count) (setq indent-tabs-mode t))))
 #+end_src
-**** smart-tabs-mode
-  #+begin_src emacs-lisp
-  (use-package smart-tabs-mode
-    :ensure t
-    :config
-    (autoload 'smart-tabs-mode "smart-tabs-mode"
-      "Intelligently indent with tabs, align with spaces!")
-    (autoload 'smart-tabs-mode-enable "smart-tabs-mode")
-    (autoload 'smart-tabs-advice "smart-tabs-mode")
-    (autoload 'smart-tabs-insinuate "smart-tabs-mode")
-    (smart-tabs-insinuate 'c 'c++ 'java 'javascript 'python
-                          'ruby))
-  #+end_src
+**** [[https://www.emacswiki.org/emacs/SmartTabs][smart-tabs-mode]]
 **** indent entire buffer
   #+begin_src emacs-lisp
   (defun indent-buffer ()
@@ -116,14 +103,15 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
   #+begin_src emacs-lisp
   (show-paren-mode 1)
   #+end_src
-*** rainbow-delimiters
+*** [[https://github.com/Fanael/rainbow-delimiters][rainbow-delimiters]]
   #+begin_src emacs-lisp
   (use-package rainbow-delimiters
     :ensure t
     :hook
     ((prog-mode emacs-lisp-mode lisp-mode) . rainbow-delimiters-mode))
   #+end_src
-*** ParEdit
+*** [[https://www.emacswiki.org/emacs/ParEdit][ParEdit]]
+[[http://danmidwood.com/content/2014/11/21/animated-paredit.html][nice animated guide to Paredit]]
   #+begin_src emacs-lisp
   (use-package paredit
     :ensure t
@@ -146,23 +134,9 @@ electric for everything that ParEdit doesn't cover
   (add-hook 'minibuffer-exit-hook (lambda () (electric-pair-mode 1)))
   #+end_src
 ** highlighting
-*** beacon
-TODO: consolidate this use-package setup for beacon and figure out one working solution
-  #+begin_src emacs-lisp
-  ;; highlight line where cursor is
-  ;; used beacon setup from https://ladicle.com/post/config/#beacon
-  ;; for some reason the setup based on beacon's README wouldn't
-  ;; work with buffer changes and scrolling
-  (use-package beacon
-    :ensure t
-    :demand t
-    :init
-    (beacon-mode 1)
-    :custom
-    (beacon-color "turquoise1"))
- #+end_src
+*** [[https://github.com/Malabarba/beacon][beacon]]
 *** rainbow-mode
-highlight hexadecimals the color they represent
+highlight text representing color codes
   #+begin_src emacs-lisp
   (use-package rainbow-mode
     :ensure t
@@ -184,7 +158,7 @@ highlight hexadecimals the color they represent
   (global-set-key (kbd "C-x p") 'ahs-backward)
   (global-set-key (kbd "C-x n") 'ahs-forward)
   #+end_src
-*** expand-region
+*** [[https://github.com/magnars/expand-region.el][expand-region]]
   #+begin_src emacs-lisp
   (use-package expand-region
     :ensure t
@@ -192,7 +166,7 @@ highlight hexadecimals the color they represent
     ("C-=" . er/expand-region))
   #+end_src
 ** hiding code
-hideshow - for folding blocks of code
+[[https://www.emacswiki.org/emacs/HideShow][HideShow]] - for folding blocks of code
   #+begin_src emacs-lisp
   (add-hook 'prog-mode-hook #'hs-minor-mode)
   (defun toggle-fold ()
@@ -213,6 +187,20 @@ maintain consistent coding styles between devs working on the same project
     :config
     (editorconfig-mode 1))
   #+end_src
+** miscellaneous
+*** [[https://github.com/justbur/emacs-which-key][which-key]]
+#+begin_src emacs-lisp
+  (use-package which-key
+    :ensure t
+    :config
+    (which-key-mode)
+    (setq which-key-idle-delay 1.0))
+#+end_src
+*** [[https://github.com/chubin/cheat.sh][cheat-sh]]
+#+begin_src emacs-lisp
+  (use-package cheat-sh
+    :ensure t)
+#+end_src
 * Buffer and Window stuff
 ** ibuffer
 #+begin_src emacs-lisp
@@ -260,6 +248,7 @@ maintain consistent coding styles between devs working on the same project
   (global-set-key (kbd "C-S-b") 'switch-to-last-buffer)
   #+end_src
 ** focus on newly created windows
+both stolen from [[https://github.com/daedreth/UncleDavesEmacs/blob/master/config.org#following-window-splits][UncleDaves's config]]
   #+begin_src emacs-lisp
   (defun split-and-follow-horizontally ()
     (interactive)
@@ -343,7 +332,7 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
   (setq org-src-tab-acts-natively t)
   (setq org-confirm-babel-evaluate nil)
   (setq org-export-with-smart-quotes t)
-  (setq org-src-window-setup 'reorganize-frame)
+  (setq org-src-window-setup 'reorganize-frameasfd)
   (add-hook 'org-mode-hook 'org-indent-mode)
 
   (defun reload-config ()
@@ -375,7 +364,7 @@ better looking bullets for .org files
   (global-set-key (kbd "C-l") 'goto-line)
   (global-set-key (kbd "C-c l") 'recenter-top-bottom)
   #+end_src
-** switch-window
+** [[https://github.com/dimitri/switch-window][switch-window]]
 switch windows quickly when > 2 windows
 #+begin_src emacs-lisp
   (use-package switch-window
@@ -390,7 +379,7 @@ switch windows quickly when > 2 windows
     :bind
     ([remap other-window] . switch-window))
 #+end_src
-** avy
+** [[https://github.com/abo-abo/avy][avy]]
 quickly jump to char or line
   #+begin_src emacs-lisp
   (use-package avy
@@ -552,7 +541,7 @@ locate definitions of funcs or vars
   (global-set-key (kbd "C-M-<down>") 'move-region-down)
 #+end_src
 
-* Ivy, Counsel, Swiper, etc.
+* [[https://writequit.org/denver-emacs/presentations/2017-04-11-ivy.html][Ivy, Counsel, Swiper]] etc.
 ** ivy
 make sure ivy, counsel, and swiper are all installed using the same package repo (according to this [[https://github.com/abo-abo/swiper/issues/2591#issuecomment-640022754][GitHub comment]])
 #+begin_src emacs-lisp
@@ -611,7 +600,7 @@ make sure ivy, counsel, and swiper are all installed using the same package repo
   (global-set-key (kbd "C-s") 'swiper)
   (global-set-key (kbd "C-M-s") 'swiper-thing-at-point)
 #+end_src
-** amx
+** [[https://github.com/DarwinAwardWinner/amx][amx]]
 alternative interface for M-x in Emacs
 #+begin_src emacs-lisp
   (use-package amx
@@ -623,7 +612,7 @@ alternative interface for M-x in Emacs
     :config
     (amx-mode 1))
 #+end_src
-* Projectile
+* [[https://github.com/bbatsov/projectile][Projectile]]
 #+begin_src emacs-lisp
   (use-package projectile
     :ensure t
@@ -635,38 +624,6 @@ alternative interface for M-x in Emacs
 
 * TODO:
 #+begin_src emacs-lisp
-  ;; cheat-sh
-  (use-package cheat-sh
-    :ensure t)
-
-  ;; which-key
-  (use-package which-key
-    :ensure t
-    :config
-    (which-key-mode)
-    (setq which-key-idle-delay 1.0))
-
-  ;; basic company setup
-  ;; NOT READY QUITE YET
-  ;; (use-package company
-  ;;   :ensure t
-  ;;   :init
-  ;;   (add-hook 'after-init-hook 'global-company-mode)
-  ;;   :config
-  ;;   (setq company-idle-delay 0)
-  ;;   (setq company-minimum-prefix-length 2)
-  ;;   (setq company-selection-wrap-around t))
-
-
-  ;; =============================================================================
-  ;; Customized workspace functions
-  ;; =============================================================================
-
-
-
-
-
-
   ;; custom compile functions
   ;; TODO: make one-button function that compiles everything (w/o using a makefile)
   ;; and if things compile correctly, then put me in that buffer
@@ -1030,26 +987,35 @@ alternative interface for M-x in Emacs
 
 #+END_SRC
 * Miscellaneous
+** [[https://github.com/pashky/restclient.el][restclient]]
+manually explore and test HTTP REST webservices
 #+begin_src emacs-lisp
-  ;; restclient
   (use-package restclient
     :ensure t)
+#+end_src
+** [[https://github.com/gongo/json-reformat][json-reformat]]
+#+begin_src emacs-lisp
   (use-package json-reformat
     :ensure t)
-
-  ;; edit-server
+#+end_src
+** [[https://melpa.org/#/edit-server][edit-server]]
+server that responds to edit requests from Chrome
+#+begin_src emacs-lisp
   (use-package edit-server
     :ensure t
     :config
     (edit-server-start))
-
-  ;; groovy (for Jenkinsfiles)
+#+end_src
+** groovy-mode
+(mostly for Jenkinsfiles)
+#+begin_src emacs-lisp
   (add-hook 'groovy-mode-hook
             (lambda ()
               (c-set-offset 'label 2))
             (infer-indentation-style))
-
-   ;; yaml-mode (for ansible)
+#+end_src
+** yaml-mode
+#+begin_src emacs-lisp
   (use-package yaml-mode
     :ensure t
     :init
