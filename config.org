@@ -147,7 +147,6 @@ electric for everything that ParEdit doesn't cover
   #+end_src
 ** highlighting
 *** [[https://github.com/Malabarba/beacon][beacon]]
-TODO: consolidate this use-package setup for beacon and figure out one working solution
 #+begin_src emacs-lisp
   ;; highlight line where cursor is
   ;; used beacon setup from https://ladicle.com/post/config/#beacon
@@ -156,10 +155,10 @@ TODO: consolidate this use-package setup for beacon and figure out one working s
   (use-package beacon
     :ensure t
     :demand t
-    :init
-    (beacon-mode 1)
     :custom
-    (beacon-color "turquoise1"))
+    (beacon-color "turquoise1")
+    :hook
+    (after-init . beacon-mode))
 #+end_src
 *** rainbow-mode
 highlight text representing color codes
@@ -647,8 +646,34 @@ alternative interface for M-x in Emacs
     :config
     (projectile-global-mode))
 #+end_src
+* Shell stuff
+#+begin_src emacs-lisp
+  (defun my-send-string-to-shell(s)
+    (let* ((buffer-name "*shell*")
+           (process (get-buffer-process buffer-name)))
+      (with-current-buffer buffer-name
+        (unless process
+          (error "No process in %s" buffer-name))
+        (save-some-buffers)
+        ;;(comint-clear-buffer)
+        (goto-char (process-mark process))
+        (insert s)
+        (comint-send-input nil t))))
 
-* TODO:
+  (defun open-shell-if-not-open()
+    (when (not (get-buffer "*shell*"))
+      (shell))
+    (switch-to-buffer "*shell*"))
+#+end_src
+* Languages
+** C
+#+begin_src emacs-lisp
+  (defun my-c-mode-common-hook ()
+      (infer-indentation-style))
+
+  (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
+#+end_src
+*** compilation functions
 #+begin_src emacs-lisp
   ;; custom compile functions
   ;; TODO: make one-button function that compiles everything (w/o using a makefile)
@@ -686,47 +711,10 @@ alternative interface for M-x in Emacs
       (compile compile-string t)
       (switch-to-buffer "*compilation*")))
   (global-set-key (kbd "<f6>") 'my-compile-v1)
+#+end_src
 
-  (defun my-send-string-to-shell(s)
-    (let* ((buffer-name "*shell*")
-           (process (get-buffer-process buffer-name)))
-      (with-current-buffer buffer-name
-        (unless process
-          (error "No process in %s" buffer-name))
-        (save-some-buffers)
-        ;;(comint-clear-buffer)
-        (goto-char (process-mark process))
-        (insert s)
-        (comint-send-input nil t))))
-
-  (defun open-shell-if-not-open()
-    (when (not (get-buffer "*shell*"))
-      (shell))
-    (switch-to-buffer "*shell*"))
-
-
-
-  ;; =============================================================================
-  ;; Global keybindings and preferences
-  ;; =============================================================================
-
-  ;; keybindings
-  (global-set-key (kbd "C-c r r") 'inf-ruby)
-  (global-set-key (kbd "C-c r a") 'rvm-activate-corresponding-ruby)
-
-
-
-
-
-
-  ;; =============================================================================
-  ;; C/Java stuff
-  ;; =============================================================================
-
-  (defun my-c-mode-common-hook ()
-      (infer-indentation-style))
-
-  (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
+* TODO:
+#+begin_src emacs-lisp
 
   ;; =============================================================================
   ;; Ruby stuff
@@ -769,7 +757,9 @@ alternative interface for M-x in Emacs
 
   ;; inf-ruby
   (use-package inf-ruby
-    :ensure t)
+    :ensure t
+    :bind
+    ("C-c r r" . inf-ruby))
 
   ;; rvm
   (use-package rvm
@@ -780,8 +770,11 @@ alternative interface for M-x in Emacs
   ;; robe
   (use-package robe
     :ensure t)
+
   (defadvice inf-ruby-console-auto (before activate-rvm-for-robe activate)
     (rvm-activate-corresponding-ruby))
+  (global-set-key (kbd "C-c r a") 'rvm-activate-corresponding-ruby)
+
   ;; (push 'company-robe company-backends)
 
   ;; ruby-end
