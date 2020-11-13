@@ -193,13 +193,62 @@ highlight text representing color codes
 ** hiding code
 [[https://www.emacswiki.org/emacs/HideShow][HideShow]] - for folding blocks of code
   #+begin_src emacs-lisp
-  (add-hook 'prog-mode-hook #'hs-minor-mode)
-  (defun toggle-fold ()
-    (interactive)
-    (save-excursion
-      (end-of-line)
-      (hs-toggle-hiding)))
-  (global-set-key (kbd "C-c t f") 'toggle-fold)
+    (add-hook 'prog-mode-hook #'hs-minor-mode)
+
+    (defun my-hs-hide-block ()
+      "move to end of line, then hs-hide-block"
+      (interactive)
+      (save-excursion
+        (end-of-line)
+        (hs-hide-block)))
+    (global-set-key (kbd "C-c h s h") 'my-hs-hide-block)
+
+    (defun my-hs-show-block ()
+      "move to beginning of line, then hs-show-block"
+      (interactive)
+      (save-excursion
+        (beginning-of-line)
+        (hs-show-block)))
+    (global-set-key (kbd "C-c h s s") 'my-hs-show-block)
+
+
+    (defun toggle-fold ()
+      (interactive)
+      (save-excursion
+        (end-of-line)
+        (hs-toggle-hiding)))
+
+    (defun toggle-fold-v3 ()
+      (interactive)
+      (save-excursion
+        (if (hs-find-block-beginning)
+            (progn
+              (message "find block is NON-NIL... yay")
+              (hs-toggle-hiding))
+          (progn
+            (message "nil nil nil false false false")
+            (end-of-line)
+            (hs-toggle-hiding)))))
+
+    (global-set-key (kbd "C-c t f") 'toggle-fold)
+    (global-set-key (kbd "C-c t 3") 'toggle-fold-v3)
+
+
+    (defun toggle-selective-display (column)
+          (interactive "P")
+          (set-selective-display
+           (or column
+               (unless selective-display
+                 (1+ (current-column))))))
+
+    (defun toggle-hiding (column)
+          (interactive "P")
+          (if hs-minor-mode
+              (if (condition-case nil
+                      (hs-toggle-hiding)
+                    (error t))
+                  (hs-show-all))
+            (toggle-selective-display column)))
   #+end_src
 ** [[https://github.com/editorconfig/editorconfig-emacs][editorconfig]]
 
