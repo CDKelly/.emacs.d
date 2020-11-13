@@ -192,6 +192,8 @@ highlight text representing color codes
   #+end_src
 ** hiding code
 [[https://www.emacswiki.org/emacs/HideShow][HideShow]] - for folding blocks of code
+
+The original ~toggle-fold~ function I found wasn't actually working the way I wanted it to (the cursor had to be in a particular position to show already-hidden code). I tried using the ~toggle-selective-display~ and ~toggle-hiding~ functions from the above wiki but to no avail. I even tried cherry picking some of the source code (~hs-find-block-beginning~, ~hs-already-hidden-p~) out of hideshow.el but no dice. In the end, I decided to just roll with my own hide-block and show-block functions... oh well
   #+begin_src emacs-lisp
     (add-hook 'prog-mode-hook #'hs-minor-mode)
 
@@ -210,45 +212,6 @@ highlight text representing color codes
         (beginning-of-line)
         (hs-show-block)))
     (global-set-key (kbd "C-c h s s") 'my-hs-show-block)
-
-
-    (defun toggle-fold ()
-      (interactive)
-      (save-excursion
-        (end-of-line)
-        (hs-toggle-hiding)))
-
-    (defun toggle-fold-v3 ()
-      (interactive)
-      (save-excursion
-        (if (hs-find-block-beginning)
-            (progn
-              (message "find block is NON-NIL... yay")
-              (hs-toggle-hiding))
-          (progn
-            (message "nil nil nil false false false")
-            (end-of-line)
-            (hs-toggle-hiding)))))
-
-    (global-set-key (kbd "C-c t f") 'toggle-fold)
-    (global-set-key (kbd "C-c t 3") 'toggle-fold-v3)
-
-
-    (defun toggle-selective-display (column)
-          (interactive "P")
-          (set-selective-display
-           (or column
-               (unless selective-display
-                 (1+ (current-column))))))
-
-    (defun toggle-hiding (column)
-          (interactive "P")
-          (if hs-minor-mode
-              (if (condition-case nil
-                      (hs-toggle-hiding)
-                    (error t))
-                  (hs-show-all))
-            (toggle-selective-display column)))
   #+end_src
 ** [[https://github.com/editorconfig/editorconfig-emacs][editorconfig]]
 
