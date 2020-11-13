@@ -225,6 +225,11 @@ maintain consistent coding styles between devs working on the same project
     (editorconfig-mode 1))
   #+end_src
 ** miscellaneous
+*** [[https://github.com/magit/magit][magit]]
+#+begin_src emacs-lisp
+(use-package magit
+  :ensure t)
+#+end_src
 *** [[https://github.com/justbur/emacs-which-key][which-key]]
 #+begin_src emacs-lisp
   (use-package which-key
