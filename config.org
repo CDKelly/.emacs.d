@@ -722,17 +722,23 @@ alternative interface for M-x in Emacs
   (defun my-compile-v1()
     (interactive)
     (let* ((c-file (buffer-file-name (current-buffer)))
-          (c-file-basename (file-name-base c-file))
-          (compile-string (concat "gcc -Werror " c-file " -o " c-file-basename " && ./" c-file-basename))
-          )
+           (c-file-basename (file-name-base c-file))
+           (compile-string (concat "gcc -Werror " c-file " -o " c-file-basename " && ./" c-file-basename))
+           )
       (compile compile-string t)
       (switch-to-buffer "*compilation*")))
   (global-set-key (kbd "<f6>") 'my-compile-v1)
-#+end_src
 
+  (defun my-compilation-hook()
+    ;; comp mode, stop overriding my other window keybinding please
+    (local-set-key (kbd "C-o") 'other-window))
+
+  (add-hook 'compilation-mode-hook 'my-compilation-hook)
+#+end_src
 ** Ruby
+[[https://wikemacs.org/wiki/Ruby][WikEmacs]] does not have a bad starting point for Ruby
+*** [[https://github.com/zenspider/enhanced-ruby-mode][enh-ruby-mode]]
 #+begin_src emacs-lisp
-  ;; enh-ruby-mode
     (use-package enh-ruby-mode
       :ensure t
       :mode
@@ -756,76 +762,66 @@ alternative interface for M-x in Emacs
         (add-hook 'enh-ruby-mode-hook 'flymake-ruby-load))
 
       (add-hook 'enh-ruby-mode-hook 'my-ruby-mode-hook))
+#+end_src
+*** [[https://github.com/nonsequitur/inf-ruby][inf-ruby]]
+REPL buffer connected to a Ruby subprocess
+#+begin_src emacs-lisp
+  (use-package inf-ruby
+    :ensure t
+    :bind
+    ("C-c r r" . inf-ruby))
+#+end_src
+*** [[https://github.com/senny/rvm.el][rvm]]
+#+begin_src emacs-lisp
+  (use-package rvm
+    :ensure t
+    :config
+    (rvm-use-default))
+#+end_src
+*** [[https://github.com/dgutov/robe][robe]]
+#+begin_src emacs-lisp
+  (use-package robe
+    :ensure t)
 
-    ;; inf-ruby
-    (use-package inf-ruby
-      :ensure t
-      :bind
-      ("C-c r r" . inf-ruby))
-
-    ;; rvm
-    (use-package rvm
-      :ensure t
-      :config
-      (rvm-use-default))
-
-    ;; robe
-    (use-package robe
-      :ensure t)
-
-    (defadvice inf-ruby-console-auto (before activate-rvm-for-robe activate)
-      (rvm-activate-corresponding-ruby))
-    (global-set-key (kbd "C-c r a") 'rvm-activate-corresponding-ruby)
+  (defadvice inf-ruby-console-auto (before activate-rvm-for-robe activate)
+    (rvm-activate-corresponding-ruby))
+  (global-set-key (kbd "C-c r a") 'rvm-activate-corresponding-ruby)
 
     ;; (push 'company-robe company-backends)
-
-    ;; ruby-end
-    (use-package ruby-end
-      :ensure t)
-
-    ;; flymake-ruby
-    (use-package flymake-ruby
-      :ensure t)
-
-    ;; Cucumber
-    (use-package feature-mode
-      :ensure t
-      :mode
-      (("\.feature$" . feature-mode))
-      :config
-      (setq freature-use-rvm t) ;; Tell Cucumber to use RVM
-      (setq feature-cucumber-command "cucumber {options} {feature}"))
-
-    ;; Rspec
-    (use-package rspec-mode
-      :ensure t
-      :config
-      ;; use rspec instead of rake spec
-      (setq rspec-use-rake-when-possible nil)
-      ;; Scroll to the first test failure
-      (setq compilation-scroll-output 'first-error))
-
-
-    (defun my-compilation-hook()
-      ;; comp mode, stop overriding my other window keybinding please
-      (local-set-key (kbd "C-o") 'other-window))
-
-    (add-hook 'compilation-mode-hook 'my-compilation-hook)
 #+end_src
-* TODO:
+*** [[https://github.com/rejeep/ruby-end.el][ruby-end]]
 #+begin_src emacs-lisp
-
-  ;; =============================================================================
-  ;; Ruby stuff
-  ;; =============================================================================
-
-
-
-  ;; =============================================================================
-  ;; JavaScript stuff
-  ;; =============================================================================
-
-  ;; js2-mode
+  (use-package ruby-end
+    :ensure t)
+#+end_src
+*** [[https://github.com/purcell/flymake-ruby][flymake-ruby]]
+#+begin_src emacs-lisp
+  (use-package flymake-ruby
+    :ensure t)
+#+end_src
+*** [[https://github.com/michaelklishin/cucumber.el][feature-mode]]
+#+begin_src emacs-lisp
+  (use-package feature-mode
+    :ensure t
+    :mode
+    (("\.feature$" . feature-mode))
+    :config
+    (setq freature-use-rvm t) ;; Tell Cucumber to use RVM
+    (setq feature-cucumber-command "cucumber {options} {feature}"))
+#+end_src
+*** [[https://github.com/pezra/rspec-mode][rspec-mode]]
+#+begin_src emacs-lisp
+  (use-package rspec-mode
+    :ensure t
+    :config
+    ;; use rspec instead of rake spec
+    (setq rspec-use-rake-when-possible nil)
+    ;; Scroll to the first test failure
+    (setq compilation-scroll-output 'first-error))
+#+end_src
+** Javascript (and web-mode)
+*** [[https://github.com/mooz/js2-mode][js2-mode]]
+#+begin_src emacs-lisp
   (use-package js2-mode
     :ensure t
     :mode
@@ -847,18 +843,26 @@ alternative interface for M-x in Emacs
       (add-hook 'js2-mode-hook (lambda ()
                                  (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
       (add-hook 'js2-mode-hook 'my-js-mode-hook)))
-
-
-  ;; xref-js2
+#+end_src
+*** [[https://github.com/NicolasPetton/xref-js2][xref-js2]]
+#+begin_src emacs-lisp
   (use-package xref-js2
     :ensure t
     :config
     ;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so
     ;; unbind it.
     (define-key js-mode-map (kbd "M-.") nil))
-
-
-  ;; web-mode
+#+end_src
+*** [[https://github.com/codesuki/eslint-fix][eslint-fix]]
+#+begin_src emacs-lisp
+  ;; eslint
+  (use-package eslint-fix
+    :ensure t)
+  ;; (eval-after-load 'js2-mode
+  ;;   '(add-hook 'js2-mode-hook (lambda () (add-hook 'after-save-hook 'eslint-fix nil t))))
+#+end_src
+*** [[https://github.com/fxbois/web-mode][web-mode]]
+#+begin_src emacs-lisp
   (use-package web-mode
     :ensure t
     :mode
@@ -881,21 +885,11 @@ alternative interface for M-x in Emacs
     (setq web-mode-markup-indent-offset 2)
     ;; (add-hook 'web-mode-hook (lambda () (add-hook 'after-save-hook web-mode-buffer-indent)))
 
-  (defvar web-mode-electric-pairs '((?\< . ?\>)) "helpful pairing for web mode")
-  (defun web-mode-add-electric-pairs ()
-    (setq-local electric-pair-pairs (append electric-pair-pairs web-mode-electric-pairs))
-    (setq-local electric-pair-text-pairs electric-pair-pairs))
-  (add-hook 'web-mode-hook 'web-mode-add-electric-pairs)
-    )
-
-
-  ;; eslint
-  (use-package eslint-fix
-    :ensure t)
-  ;; (eval-after-load 'js2-mode
-  ;;   '(add-hook 'js2-mode-hook (lambda () (add-hook 'after-save-hook 'eslint-fix nil t))))
-
-
+    (defvar web-mode-electric-pairs '((?\< . ?\>)) "helpful pairing for web mode")
+    (defun web-mode-add-electric-pairs ()
+      (setq-local electric-pair-pairs (append electric-pair-pairs web-mode-electric-pairs))
+      (setq-local electric-pair-text-pairs electric-pair-pairs))
+    (add-hook 'web-mode-hook 'web-mode-add-electric-pairs))
 #+END_SRC
 * Miscellaneous
 ** [[https://github.com/pashky/restclient.el][restclient]]
