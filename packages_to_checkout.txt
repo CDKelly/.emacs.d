@@ -1,9 +1,17 @@
 multiple-cursors
 
+zygospore - toggle delete-other-window
+
 lsp
+
+yasnippet
 
 diminish
 spaceline - changes mode line to look cool
 doom's mode line
 
 dabbrev - particularly dabbrev-expand and hippie-expand --> https://www.reddit.com/r/emacs/comments/j61aoh/weekly_tipstricketc_thread/
+
+dtrt-indent - guess indentation and adjust settings in emacs; look for dtrt-indent in https://tuhdo.github.io/c-ide.html
+
+VLF (view large files) - https://elpa.gnu.org/packages/vlf.html

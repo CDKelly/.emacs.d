@@ -686,7 +686,7 @@ alternative interface for M-x in Emacs
 ** C
 #+begin_src emacs-lisp
   (defun my-c-mode-common-hook ()
-      (infer-indentation-style))
+    (infer-indentation-style))
 
   (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
 #+end_src
@@ -739,29 +739,28 @@ alternative interface for M-x in Emacs
 [[https://wikemacs.org/wiki/Ruby][WikEmacs]] does not have a bad starting point for Ruby
 *** [[https://github.com/zenspider/enhanced-ruby-mode][enh-ruby-mode]]
 #+begin_src emacs-lisp
-    (use-package enh-ruby-mode
-      :ensure t
-      :mode
-      (("\\.rb$" . enh-ruby-mode)
-       ("\\.erb$" . enh-ruby-mode)
-       ("\\.rake$" . enh-ruby-mode)
-       ("Rakefile$" . enh-ruby-mode)
-       ("\\.gemspec$" . enh-ruby-mode)
-       ("\\.ru$" . enh-ruby-mode)
-       ("Gemfile$" . enh-ruby-mode))
-      :config
-      (defun my-ruby-mode-hook ()
-        "Setup ruby modes for me."
-        (if window-system
-            (linum-mode))
-        (infer-indentation-style)
+  (use-package enh-ruby-mode
+    :ensure t
+    :mode
+    (("\\.rb$" . enh-ruby-mode)
+     ("\\.erb$" . enh-ruby-mode)
+     ("\\.rake$" . enh-ruby-mode)
+     ("Rakefile$" . enh-ruby-mode)
+     ("\\.gemspec$" . enh-ruby-mode)
+     ("\\.ru$" . enh-ruby-mode)
+     ("Gemfile$" . enh-ruby-mode))
+    :config
+    (defun my-ruby-mode-hook ()
+      "Setup ruby modes for me."
+      (if window-system
+          (linum-mode))
+      (infer-indentation-style)
+      (add-hook 'enh-ruby-mode-hook 'ac-robe-setup)
+      (add-hook 'enh-ruby-mode-hook 'ruby-end-mode)
+      (add-hook 'enh-ruby-mode-hook 'robe-mode)
+      (add-hook 'enh-ruby-mode-hook 'flymake-ruby-load))
 
-        (add-hook 'enh-ruby-mode-hook 'ac-robe-setup)
-        (add-hook 'enh-ruby-mode-hook 'ruby-end-mode)
-        (add-hook 'enh-ruby-mode-hook 'robe-mode)
-        (add-hook 'enh-ruby-mode-hook 'flymake-ruby-load))
-
-      (add-hook 'enh-ruby-mode-hook 'my-ruby-mode-hook))
+    (add-hook 'enh-ruby-mode-hook 'my-ruby-mode-hook))
 #+end_src
 *** [[https://github.com/nonsequitur/inf-ruby][inf-ruby]]
 REPL buffer connected to a Ruby subprocess
@@ -891,6 +890,71 @@ REPL buffer connected to a Ruby subprocess
       (setq-local electric-pair-text-pairs electric-pair-pairs))
     (add-hook 'web-mode-hook 'web-mode-add-electric-pairs))
 #+END_SRC
+* Company
+mostly taken from [[https://github.com/andreyorst/dotfiles/tree/master/.config/emacs][this config]]
+#+begin_src emacs-lisp
+  (use-package company
+    :bind (:map company-active-map
+                ("TAB" . company-complete-common-or-cycle)
+                ("<tab>" . company-complete-common-or-cycle))
+    :hook
+    (after-init . global-company-mode)
+    :custom
+    (company-require-match 'never)
+    (company-minimum-prefix-length 2)
+    (company-tooltip-align-annotations t)
+    (company-show-numbers t)
+    (company-frontends '(company-pseudo-tooltip-unless-just-one-frontend
+                         company-preview-frontend
+                         company-echo-metadata-frontend))
+    (company-backends '(company-clang
+                        company-capf
+                        (company-dabbrev-code company-gtags company-etags
+                                              company-keywords)
+                        company-files
+                        company-dabbrev
+                        company-semantic))
+    :config
+    ;; use numbers to insert company match
+    ;; stolen from https://github.com/abo-abo/oremacs/blob/9c1dd95f52bd6f65313c50c1a85c8bacdde74581/modes/ora-company.el
+    (defun ora-company-number ()
+      "Forward to `company-complete-number'.
+  Unless the number is potentially part of the candidate.
+  In that case, insert the number."
+      (interactive)
+      (let* ((k (this-command-keys))
+             (re (concat "^" company-prefix k)))
+        (if (or (cl-find-if (lambda (s) (string-match re s))
+                            company-candidates)
+                (> (string-to-number k)
+                   (length company-candidates))
+                (looking-back "[0-9]+\\.[0-9]*" (line-beginning-position)))
+            (self-insert-command 1)
+          (company-complete-number
+           (if (equal k "0")
+               10
+             (string-to-number k))))))
+
+    (defun ora--company-good-prefix-p (orig-fn prefix)
+      (unless (and (stringp prefix) (string-match-p "\\`[0-9]+\\'" prefix))
+        (funcall orig-fn prefix)))
+
+    (defun ora-advice-add (&rest args)
+      (when (fboundp 'advice-add)
+        (apply #'advice-add args)))
+
+    (ora-advice-add 'company--good-prefix-p :around #'ora--company-good-prefix-p)
+
+    (let ((map company-active-map))
+      (mapc (lambda (x) (define-key map (format "%d" x) 'ora-company-number))
+            (number-sequence 0 9))
+      (define-key map " " (lambda ()
+                            (interactive)
+                            (company-abort)
+                            (self-insert-command 1)))
+      (define-key map (kbd "<return>") nil)))
+
+#+end_src
 * Miscellaneous
 ** [[https://github.com/pashky/restclient.el][restclient]]
 manually explore and test HTTP REST webservices
