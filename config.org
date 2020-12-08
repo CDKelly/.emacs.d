@@ -44,15 +44,32 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
   #+end_src
 *** [[https://github.com/alpaker/fill-column-indicator][fill-column-indicator]]
 show 80-character vertical marker
+*TODO:* take out and replace with native [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Displaying-Boundaries.html][display-fill-column-indicator-mode]]
   #+begin_src emacs-lisp
-  (use-package fill-column-indicator
-    :ensure t
-    :config
-    (setq fci-rule-character-color "#202020")
-    (setq fci-rule-width 1)
-    :hook
-    ((prog-mode) . fci-mode))
+    (use-package fill-column-indicator
+      :ensure t
+      :config
+      (setq fci-rule-character-color "#202020")
+      (setq fci-rule-width 1)
+      :hook
+      ((prog-mode) . fci-mode))
   #+end_src
+**** [[https://github.com/company-mode/company-mode/issues/180#issuecomment-55047120][fix incompatibility with company]]
+#+begin_src emacs-lisp
+  (defvar-local company-fci-mode-on-p nil)
+
+  (defun company-turn-off-fci (&rest ignore)
+    (when (boundp 'fci-mode)
+      (setq company-fci-mode-on-p fci-mode)
+      (when fci-mode (fci-mode -1))))
+
+  (defun company-maybe-turn-on-fci (&rest ignore)
+    (when company-fci-mode-on-p (fci-mode 1)))
+
+  (add-hook 'company-completion-started-hook 'company-turn-off-fci)
+  (add-hook 'company-completion-finished-hook 'company-maybe-turn-on-fci)
+  (add-hook 'company-completion-cancelled-hook 'company-maybe-turn-on-fci)
+#+end_src
 *** clean up any accidental trailing whitespace upon save.
   #+begin_src emacs-lisp
   (add-hook 'before-save-hook 'whitespace-cleanup)
@@ -911,6 +928,7 @@ mostly taken from [[https://github.com/andreyorst/dotfiles/tree/master/.config/e
                         company-capf
                         (company-dabbrev-code company-gtags company-etags
                                               company-keywords)
+                        company-elisp
                         company-files
                         company-dabbrev
                         company-semantic))
