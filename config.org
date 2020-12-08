@@ -44,6 +44,7 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
   #+end_src
 *** [[https://github.com/alpaker/fill-column-indicator][fill-column-indicator]]
 show 80-character vertical marker
+
 *TODO:* take out and replace with native [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Displaying-Boundaries.html][display-fill-column-indicator-mode]]
   #+begin_src emacs-lisp
     (use-package fill-column-indicator
@@ -706,6 +707,14 @@ alternative interface for M-x in Emacs
     (infer-indentation-style))
 
   (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
+#+end_src
+*** [[https://github.com/randomphrase/company-c-headers][company-c-headers]]
+#+begin_src emacs-lisp
+  (use-package company-c-headers
+    :after company
+    :config
+    (push 'company-c-headers company-backends)
+    (add-to-list 'company-c-headers-path-system "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include"))
 #+end_src
 *** compilation functions
 #+begin_src emacs-lisp
