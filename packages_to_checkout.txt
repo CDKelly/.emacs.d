@@ -6,6 +6,10 @@ lsp
 
 yasnippet
 
+
+major-mode-hydra - checkout this part of this config --> https://github.com/rememberYou/.emacs.d/blob/master/config.org#hydra
+pretty-hydra - https://github.com/jerrypnz/major-mode-hydra.el#pretty-hydra
+
 diminish
 spaceline - changes mode line to look cool
 doom's mode line
@@ -13,5 +17,6 @@ doom's mode line
 dabbrev - particularly dabbrev-expand and hippie-expand --> https://www.reddit.com/r/emacs/comments/j61aoh/weekly_tipstricketc_thread/
 
 dtrt-indent - guess indentation and adjust settings in emacs; look for dtrt-indent in https://tuhdo.github.io/c-ide.html
+aggressive-indent
 
 VLF (view large files) - https://elpa.gnu.org/packages/vlf.html

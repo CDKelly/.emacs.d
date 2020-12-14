@@ -921,6 +921,26 @@ REPL buffer connected to a Ruby subprocess
       (setq-local electric-pair-text-pairs electric-pair-pairs))
     (add-hook 'web-mode-hook 'web-mode-add-electric-pairs))
 #+END_SRC
+** JSON
+#+begin_src emacs-lisp
+  (use-package json-mode
+    :hook (json-mode . flycheck-mode)
+    :custom (js-indent-level 2))
+#+end_src
+*** [[https://github.com/gongo/json-reformat][json-reformat]]
+#+begin_src emacs-lisp
+  (use-package json-reformat
+    :ensure t)
+#+end_src
+** Groovy
+(mostly for Jenkinsfiles)
+#+begin_src emacs-lisp
+  (add-hook 'groovy-mode-hook
+            (lambda ()
+              (c-set-offset 'label 2))
+            (infer-indentation-style))
+#+end_src
+** yaml
 * Company
 mostly taken from [[https://github.com/andreyorst/dotfiles/tree/master/.config/emacs][this config]]
 #+begin_src emacs-lisp
@@ -1013,16 +1033,51 @@ mostly taken from [[https://github.com/andreyorst/dotfiles/tree/master/.config/e
     :config
     (company-posframe-mode))
 #+end_src
+* Flycheck
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :ensure t
+    :hook ((prog-mode) . flycheck-mode)
+    :custom
+    (flycheck-global-modes
+     '(not text-mode outline-mode fundamental-mode org-mode
+           diff-mode shell-mode eshell-mode term-mode))
+    (flycheck-indication-mode 'right-fringe)
+    (flycheck-display-errors-delay 0.75)
+    :config
+    (when (fboundp #'defhydra)
+      (defhydra hydra-flycheck (:color blue :hint nil)
+        "
+   ^Flycheck^         ^Errors^       ^Checker^
+   _q_: quit          _p_: previous  _?_: describe
+   _M_: manual        _n_: next      _d_: disable
+   _v_: verify setup  _f_: check     _m_: mode
+   ^ ^                _l_: list      _s_: select
+   ^ ^                _C_: clear"
+        ("q" ignore :exit t)
+        ("M" flycheck-manual)
+        ("v" flycheck-verify-setup)
+        ("p" flycheck-previous-error)
+        ("n" flycheck-next-error)
+        ("f" flycheck-buffer)
+        ("l" flycheck-list-errors)
+        ("C" flycheck-clear)
+        ("?" flycheck-describe-checker)
+        ("d" flycheck-disable-checker)
+        ("m" flycheck-mode)
+        ("s" flycheck-select-checker))))
+#+end_src
+* Hydra
+#+begin_src emacs-lisp
+  (use-package hydra
+    :ensure t
+    :bind (("C-c h y f" . hydra-flycheck/body)))
+#+end_src
 * Miscellaneous
 ** [[https://github.com/pashky/restclient.el][restclient]]
 manually explore and test HTTP REST webservices
 #+begin_src emacs-lisp
   (use-package restclient
-    :ensure t)
-#+end_src
-** [[https://github.com/gongo/json-reformat][json-reformat]]
-#+begin_src emacs-lisp
-  (use-package json-reformat
     :ensure t)
 #+end_src
 ** [[https://melpa.org/#/edit-server][edit-server]]
@@ -1032,25 +1087,4 @@ server that responds to edit requests from Chrome
     :ensure t
     :config
     (edit-server-start))
-#+end_src
-** groovy-mode
-(mostly for Jenkinsfiles)
-#+begin_src emacs-lisp
-  (add-hook 'groovy-mode-hook
-            (lambda ()
-              (c-set-offset 'label 2))
-            (infer-indentation-style))
-#+end_src
-** yaml-mode
-#+begin_src emacs-lisp
-  (use-package yaml-mode
-    :ensure t
-    :init
-    (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
-    (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
-    (add-to-list 'auto-mode-alist '("\\.yml\.erb\\'" . yaml-mode))
-    (add-to-list 'auto-mode-alist '("\\.yaml\.erb\\'" . yaml-mode)))
-  (add-hook 'yaml-mode-hook
-              '(lambda ()
-                 (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
 #+end_src

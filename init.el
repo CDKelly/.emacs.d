@@ -76,7 +76,7 @@
      ("gnu" . "http://elpa.gnu.org/packages/")))
  '(package-enable-at-startup nil)
  '(package-selected-packages
-   '(company-posframe company-c-headers roby org-bullets popup-kill-ring ivy-rich amx doom-modeline avy rainbow-delimiters rainbow-mode switch-window use-package beacon jazz-theme planet-theme soothe-theme color-theme-sanityinc-tomorrow molokai-theme afternoon-theme nord-theme material-theme monokai-alt-theme monokai-theme spacemacs-theme fill-column-indicator ivy-hydra expand-region which-key ace-jump-mode auto-highlight-symbol dumb-jump dockerfile-mode lua-mode highlight-indent-guides yaml-mode smart-tabs-mode groovy-mode json-mode cheat-sh json-reformat edit-server magit ruby-end restclient less-css-mode paredit-menu paredit exec-path-from-shell eslintd-fix add-node-modules-path eslint-fix web-mode editorconfig xref-js2 js2-mode browse-url-dwim rspec-mode robe rvm enh-ruby-mode inf-ruby flymake-ruby feature-mode company flycheck flycheck-tip popup ivy counsel projectile flx-ido landmark))
+   '(zerodark-theme company-posframe company-c-headers roby org-bullets popup-kill-ring ivy-rich amx doom-modeline avy rainbow-delimiters rainbow-mode switch-window use-package beacon jazz-theme planet-theme soothe-theme color-theme-sanityinc-tomorrow molokai-theme afternoon-theme nord-theme material-theme monokai-alt-theme monokai-theme spacemacs-theme fill-column-indicator ivy-hydra expand-region which-key ace-jump-mode auto-highlight-symbol dumb-jump dockerfile-mode lua-mode highlight-indent-guides yaml-mode smart-tabs-mode groovy-mode json-mode cheat-sh json-reformat edit-server magit ruby-end restclient less-css-mode paredit-menu paredit exec-path-from-shell eslintd-fix add-node-modules-path eslint-fix web-mode editorconfig xref-js2 js2-mode browse-url-dwim rspec-mode robe rvm enh-ruby-mode inf-ruby flymake-ruby feature-mode company flycheck flycheck-tip popup ivy counsel projectile flx-ido landmark))
  '(pos-tip-background-color "#32302f")
  '(pos-tip-foreground-color "#bdae93")
  '(powerline-color1 "#1E1E1E")
@@ -105,8 +105,12 @@
  '(ahs-plugin-defalt-face ((t (:background "gray40" :foreground "DeepSkyBlue1"))))
  '(ahs-plugin-whole-buffer-face ((t (:background "gray40" :foreground "DeepSkyBlue1"))))
  '(avy-lead-face-0 ((t (:inherit avy-lead-face :background "#fd971f"))))
+ '(company-posframe-metadata ((t (:inherit match))))
  '(cursor ((t (:background "turquoise1"))))
  '(custom-documentation ((t (:inherit default))))
+ '(flycheck-error ((t (:underline (:color "#e74c3c" :style wave)))))
+ '(flycheck-info ((t (:underline (:color "#b6e63e" :style wave)))))
+ '(flycheck-warning ((t (:underline (:color "#e2c770" :style wave)))))
  '(font-lock-type-face ((t (:foreground "#66d9ef" :slant italic))))
  '(ivy-current-match ((t (:extend t :background "MediumPurple3" :foreground "seashell1"))))
  '(ivy-minibuffer-match-face-1 ((t (:background "MediumPurple3" :foreground "AntiqueWhite1"))))
@@ -122,8 +126,9 @@
 ;; only need exec-path-from-shell on OSX
 ;; this hopefully sets up path and other vars better
 ;; helps ESLint get found
-;; (when (memq window-system '(mac ns x))
-;;   (exec-path-from-shell-initialize))
+(package-install 'exec-path-from-shell)
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
