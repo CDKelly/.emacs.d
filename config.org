@@ -243,6 +243,24 @@ maintain consistent coding styles between devs working on the same project
     (editorconfig-mode 1))
   #+end_src
 ** miscellaneous
+*** [[https://github.com/magnars/multiple-cursors.el][multiple-cursors]]
+#+begin_src emacs-lisp
+  (use-package multiple-cursors
+    :ensure t
+    :bind
+    (("C-c m c e" . mc/edit-lines)
+     ("C-c m c n" . mc/mark-next-like-this-symbol)
+     ("C-c m c p" . mc/mark-previous-like-this-symbol)
+     ("C-c m c a" . mc/mark-all-like-this)
+     ("C-c m c N" . mc/unmark-next-like-this)
+     ("C-c m c P" . mc/unmark-previous-like-this)
+     ("C-c m c b" . mc/cycle-backward)
+     ("C-c m c f" . mc/cycle-forward)
+     ("C-c m c ^" . mc/edit-beginnings-of-lines)
+     ("C-c m c $" . mc/edit-ends-of-lines)
+     ("C-c m c h" . mc-hide-unmatched-lines-mode)
+     ("C-S-<mouse-1>" . mc/add-cursor-on-click)))
+#+end_src
 *** [[https://github.com/magit/magit][magit]]
 #+begin_src emacs-lisp
 (use-package magit
@@ -687,7 +705,7 @@ alternative interface for M-x in Emacs
 #+end_src
 * Shell stuff
 #+begin_src emacs-lisp
-  (defun my-send-string-to-shell(s)
+  (defun my-send-string-to-shell (s)
     (let* ((buffer-name "*shell*")
            (process (get-buffer-process buffer-name)))
       (with-current-buffer buffer-name
@@ -699,7 +717,7 @@ alternative interface for M-x in Emacs
         (insert s)
         (comint-send-input nil t))))
 
-  (defun open-shell-if-not-open()
+  (defun open-shell-if-not-open ()
     (when (not (get-buffer "*shell*"))
       (shell))
     (switch-to-buffer "*shell*"))
