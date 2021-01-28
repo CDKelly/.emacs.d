@@ -1,5 +1,3 @@
-multiple-cursors
-
 zygospore - toggle delete-other-window
 
 lsp
