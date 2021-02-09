@@ -726,7 +726,8 @@ alternative interface for M-x in Emacs
 ** C
 #+begin_src emacs-lisp
   (defun my-c-mode-common-hook ()
-    (infer-indentation-style))
+    (infer-indentation-style)
+    (setq c-basic-offset . 4))
 
   (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
 #+end_src
