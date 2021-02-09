@@ -30,6 +30,14 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
   (delete-selection-mode t)
   #+end_src
 * Aesthetics (and other enhancements)
+** doom-themes
+#+begin_src emacs-lisp
+  (use-package doom-themes
+    :ensure t
+    :config
+    (load-theme 'doom-molokai t))
+  ;; doom-monokai-classic - very similar to doom-molokai
+#+end_src
 ** line stuff
 *** add line numbers
   #+begin_src emacs-lisp
@@ -1063,6 +1071,10 @@ mostly taken from [[https://github.com/andreyorst/dotfiles/tree/master/.config/e
            diff-mode shell-mode eshell-mode term-mode))
     (flycheck-indication-mode 'right-fringe)
     (flycheck-display-errors-delay 0.75)
+    :custom-face
+    (flycheck-error ((t (:background nil :underline (:color "#e74c3c" :style wave)))))
+    (flycheck-info ((t (:background nil :underline (:color "#b6e63e" :style wave)))))
+    (flycheck-warning ((t (:background nil :underline (:color "#e2c770" :style wave)))))
     :config
     (when (fboundp #'defhydra)
       (defhydra hydra-flycheck (:color blue :hint nil)
@@ -1106,4 +1118,12 @@ server that responds to edit requests from Chrome
     :ensure t
     :config
     (edit-server-start))
+#+end_src
+** reset garbage collector
+copied from [[https://github.com/hlissner/doom-emacs/blob/develop/docs/faq.org#how-does-doom-start-up-so-quickly][How does doom start up so quickly]]
+#+begin_src emacs-lisp
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (setq gc-cons-threshold 16777216 ; 16mb
+                    gc-cons-percentage 0.1)))
 #+end_src
