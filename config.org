@@ -30,7 +30,7 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
   (delete-selection-mode t)
   #+end_src
 * Aesthetics (and other enhancements)
-** doom-themes
+** theme
 #+begin_src emacs-lisp
   (use-package doom-themes
     :ensure t
@@ -286,6 +286,57 @@ maintain consistent coding styles between devs working on the same project
 #+begin_src emacs-lisp
   (use-package cheat-sh
     :ensure t)
+#+end_src
+*** turn off stuff to speed things up
+*TODO*: shorten ~turn-off-sluggish-minor-modes~ by iterating through a list of minor modes (versus having an if-then block for every minor mode); ~turn-off-sluggish-minor-modes-2~ makes it to the ~bound-and-true-p~ and conks out b/c of the lambda
+#+begin_src emacs-lisp
+  (defun turn-off-sluggish-minor-modes ()
+    "disable minor modes that are making emacs slow
+    when working with large files"
+    (interactive)
+    (if (bound-and-true-p auto-highlight-symbol-mode)
+        (progn
+          (message "auto-highlight-symbol-mode is ON >>> turning OFF now")
+          (auto-highlight-symbol-mode 0))
+      (message "auto-highlight-symbol-mode is already OFF"))
+    (if (bound-and-true-p highlight-indent-guides-mode)
+        (progn
+          (message "highlight-indent-guides-mode is ON >>> turning OFF now")
+          (highlight-indent-guides-mode 0))
+      (message "highlight-indent-guides-mode is already OFF"))
+    (if (bound-and-true-p beacon-mode)
+        (progn
+          (message "beacon-mode is ON >>> turning OFF now")
+          (beacon-mode 0))
+      (message "beacon-mode is already OFF"))
+    (if (bound-and-true-p flycheck-mode)
+        (progn
+          (message "flycheck-mode is ON >>> turning OFF now")
+          (flycheck-mode 0))
+      (message "flycheck-mode is already OFF"))
+    (if (bound-and-true-p font-lock-mode)
+        (progn
+          (message "font-lock-mode is ON >>> turning OFF now")
+          (font-lock-mode 0))
+      (message "font-lock-mode is already OFF")))
+
+  ;; (defun turn-off-sluggish-minor-modes-2 ()
+  ;;   "disable minor modes that are making emacs slow
+  ;;   when working with large files"
+  ;;   (interactive)
+  ;;   (let ((sluggish-minor-modes #'(auto-highlight-symbol-mode
+  ;;                                  highlight-indent-guides-mode
+  ;;                                  beacon-mode
+  ;;                                  flycheck-mode)))
+  ;;     (dolist (mode sluggish-minor-modes)
+  ;;       (print mode)
+  ;;       (if (bound-and-true-p (lambda () (mode)))
+  ;;           (progn
+  ;;             (message "turning OFF minor mode")
+  ;;             (mode 0))
+  ;;         (message "MODE is already OFF")))))
+
+  ;; (global-set-key (kbd "C-c t o 2") 'turn-off-sluggish-minor-modes-2)
 #+end_src
 * Buffer and Window stuff
 ** ibuffer
