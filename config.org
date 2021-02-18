@@ -503,7 +503,7 @@ better looking bullets for .org files
   #+begin_src emacs-lisp
   (global-set-key (kbd "C-o") 'other-window)
   (global-set-key (kbd "C-l") 'goto-line)
-  (global-set-key (kbd "C-c l") 'recenter-top-bottom)
+  (global-set-key (kbd "C-x l") 'recenter-top-bottom)
   #+end_src
 ** [[https://github.com/dimitri/switch-window][switch-window]]
 switch windows quickly when > 2 windows
@@ -587,7 +587,17 @@ locate definitions of funcs or vars
   #+end_src
 ** yanking
 #+begin_src emacs-lisp
-(defun copy-whole-line ()
+  (defun copy-whole-word ()
+    "Copies a word without regard for cursor position."
+    (interactive)
+    (save-excursion
+      (forward-char 1)
+      (backward-word)
+      (kill-word 1)
+      (yank)))
+  (global-set-key (kbd "C-c y w") 'copy-whole-word)
+
+  (defun copy-whole-line ()
     "Copies a line without regard for cursor position."
     (interactive)
     (kill-new
@@ -610,7 +620,7 @@ locate definitions of funcs or vars
 
   (defun copy-and-yank-line-below ()
     "Copies a line and inserts it down one line while keeping your cursor
-   position constant"
+     position constant"
     (interactive)
     (save-excursion
       (copy-whole-line)
@@ -620,7 +630,7 @@ locate definitions of funcs or vars
 
   (defun copy-and-yank-line-above ()
     "Copies a line and inserts it down one line while keeping your cursor
-   position constant"
+     position constant"
     (interactive)
     (save-excursion
       (copy-whole-line)
@@ -786,7 +796,7 @@ alternative interface for M-x in Emacs
 #+begin_src emacs-lisp
   (defun my-c-mode-common-hook ()
     (infer-indentation-style)
-    (setq c-basic-offset . 4))
+    (setq c-basic-offset 4))
 
   (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
 #+end_src
@@ -1025,7 +1035,9 @@ mostly taken from [[https://github.com/andreyorst/dotfiles/tree/master/.config/e
   (use-package company
     :bind (:map company-active-map
                 ("TAB" . company-complete-common-or-cycle)
-                ("<tab>" . company-complete-common-or-cycle))
+                ("<tab>" . company-complete-common-or-cycle)
+                ("C-d" . company-show-doc-buffer)
+                ("M-." . company-show-location))
     :hook
     (after-init . global-company-mode)
     :custom
@@ -1040,10 +1052,11 @@ mostly taken from [[https://github.com/andreyorst/dotfiles/tree/master/.config/e
                         company-capf
                         (company-dabbrev-code company-gtags company-etags
                                               company-keywords)
-                        company-elisp
-                        company-files
+                        company-cmake
                         company-dabbrev
-                        company-semantic))
+                        company-semantic
+                        company-elisp
+                        company-files))
     :config
     ;; use numbers to insert company match
     ;; stolen from https://github.com/abo-abo/oremacs/blob/9c1dd95f52bd6f65313c50c1a85c8bacdde74581/modes/ora-company.el
@@ -1170,11 +1183,39 @@ server that responds to edit requests from Chrome
     :config
     (edit-server-start))
 #+end_src
-** reset garbage collector
-copied from [[https://github.com/hlissner/doom-emacs/blob/develop/docs/faq.org#how-does-doom-start-up-so-quickly][How does doom start up so quickly]]
+** garbage collector
+copied from [[https://github.com/hlissner/doom-emacs/blob/develop/docs/faq.org#how-does-doom-start-up-so-quickly][How does doom start up so quickly]] and [[https://github.com/MatthewZMD/.emacs.d#garbage-collection][this config]]
+
+
+If you experience freezing, decrease this amount, if you increase stuttering, increase this amount.
+#+begin_src emacs-lisp
+  (defvar better-gc-cons-threshold 16777216 ; 16mb
+    "The default value to use for `gc-cons-threshold'.
+  If you experience freezing, decrease this.  If you experience stuttering, increase this.")
+
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (setq gc-cons-threshold better-gc-cons-threshold
+                    gc-cons-percentage 0.1)))
+#+end_src
+
+Garbage Collect when Emacs is out of focus and avoid garbage collection when using minibuffer.
 #+begin_src emacs-lisp
   (add-hook 'emacs-startup-hook
             (lambda ()
-              (setq gc-cons-threshold 16777216 ; 16mb
-                    gc-cons-percentage 0.1)))
+              (if (boundp 'after-focus-change-function)
+                  (add-function :after after-focus-change-function
+                                (lambda ()
+                                  (unless (frame-focus-state)
+                                    (garbage-collect))))
+                (add-hook 'after-focus-change-function 'garbage-collect))
+              (defun gc-minibuffer-setup-hook ()
+                (setq gc-cons-threshold (* better-gc-cons-threshold 2)))
+
+              (defun gc-minibuffer-exit-hook ()
+                (garbage-collect)
+                (setq gc-cons-threshold better-gc-cons-threshold))
+
+              (add-hook 'minibuffer-setup-hook #'gc-minibuffer-setup-hook)
+              (add-hook 'minibuffer-exit-hook #'gc-minibuffer-exit-hook)))
 #+end_src
