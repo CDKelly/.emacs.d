@@ -367,6 +367,9 @@ maintain consistent coding styles between devs working on the same project
             ("xml"
              (or (mode . nxml-mode)
                  (name . "\\.xml$")))
+            ("yaml"
+             (or (mode . yaml-mode)
+                 (name . "\\.ya?ml$")))
             )))
   (setq ibuffer-formats
         '((mark modified read-only " "
@@ -723,31 +726,41 @@ make sure ivy, counsel, and swiper are all installed using the same package repo
 #+end_src
 
 ** counsel
+TODO: use-package-ify all of counsel
 #+begin_src emacs-lisp
-;; no regexp by default
-  (with-eval-after-load 'counsel
-    (setq ivy-initial-inputs-alist nil))
+  (use-package counsel
+    :ensure t
+    :after ivy)
 
-  ;; counsel bindings
-  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-  (global-set-key (kbd "C-h f") 'counsel-describe-function)
-  (global-set-key (kbd "C-h v") 'counsel-describe-variable)
-  (global-set-key (kbd "C-h S") 'counsel-info-lookup-symbol)
-  (global-set-key (kbd "M-y") 'counsel-yank-pop)
+  ;; no regexp by default
+    (with-eval-after-load 'counsel
+      (setq ivy-initial-inputs-alist nil))
 
-  (let ((bindings #'(("g" . counsel-git-grep)
-                    ("r" . counsel-rg)
-                    ("m" . counsel-mark-ring))))
-    (dolist (binding bindings)
-      (global-set-key (kbd (concat "C-c c " (car binding))) (cdr binding))))
+    ;; counsel bindings
+    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+    (global-set-key (kbd "C-h f") 'counsel-describe-function)
+    (global-set-key (kbd "C-h v") 'counsel-describe-variable)
+    (global-set-key (kbd "C-h S") 'counsel-info-lookup-symbol)
+    (global-set-key (kbd "M-y") 'counsel-yank-pop)
 
-  (defun counsel-git-grep-thing-at-point ()
-    (interactive)
-    (counsel-git-grep (kill-new (thing-at-point 'symbol))))
-  (global-set-key (kbd "C-c c G") 'counsel-git-grep-thing-at-point)
+    (let ((bindings #'(("g" . counsel-git-grep)
+                      ("r" . counsel-rg)
+                      ("m" . counsel-mark-ring))))
+      (dolist (binding bindings)
+        (global-set-key (kbd (concat "C-c c " (car binding))) (cdr binding))))
+
+    (defun counsel-git-grep-thing-at-point ()
+      (interactive)
+      (counsel-git-grep (kill-new (thing-at-point 'symbol))))
+    (global-set-key (kbd "C-c c G") 'counsel-git-grep-thing-at-point)
 #+end_src
 ** swiper
+TODO: use-package-ify all of swiper
 #+begin_src emacs-lisp
+  (use-package swiper
+    :ensure t
+    :after ivy)
+
   (global-set-key (kbd "C-s") 'swiper)
   (global-set-key (kbd "C-M-s") 'swiper-thing-at-point)
 #+end_src
@@ -1029,6 +1042,28 @@ REPL buffer connected to a Ruby subprocess
             (infer-indentation-style))
 #+end_src
 ** yaml
+* [[https://emacs-lsp.github.io/lsp-mode/][LSP]]
+copied a lot of stuff from [[https://github.com/MatthewZMD/.emacs.d#lsp][this config]] and [[https://github.com/andreyorst/dotfiles/tree/master/.config/emacs#lsp-mode][this config]]
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :ensure t
+    :defer t
+    :custom
+    (lsp-keymap-prefix "C-c l")
+    (lsp-auto-guess-root nil)
+    (lsp-eldoc-hook nil)
+    (lsp-enable-indentation nil)
+    (lsp-enable-folding nil)
+    (lsp-enable-links nil)
+    (lsp-prefer-flymake nil) ; Use flycheck instead of flymake
+    (lsp-file-watch-threshold 2000)
+    (read-process-output-max (* 1024 1024)) ;; 1mb --> from https://emacs-lsp.github.io/lsp-mode/page/performance/
+    (lsp-completion-provider :capf)
+    (lsp-restart 'auto-restart)
+    (lsp-log-io nil)
+    ;; (lsp-print-performance t)
+    :hook ((java-mode c-mode c++-mode) . lsp))
+#+end_src
 * Company
 mostly taken from [[https://github.com/andreyorst/dotfiles/tree/master/.config/emacs][this config]]
 #+begin_src emacs-lisp
