@@ -1042,6 +1042,12 @@ REPL buffer connected to a Ruby subprocess
             (infer-indentation-style))
 #+end_src
 ** yaml
+#+begin_src emacs-lisp
+  (use-package yaml-mode
+    :ensure t
+    :mode
+      (("\\.ya?ml$" . yaml-mode)))
+#+end_src
 * [[https://emacs-lsp.github.io/lsp-mode/][LSP]]
 copied a lot of stuff from [[https://github.com/MatthewZMD/.emacs.d#lsp][this config]] and [[https://github.com/andreyorst/dotfiles/tree/master/.config/emacs#lsp-mode][this config]]
 #+begin_src emacs-lisp
