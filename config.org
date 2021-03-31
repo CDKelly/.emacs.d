@@ -516,7 +516,7 @@ switch windows quickly when > 2 windows
     :config
     (setq switch-window-input-style 'minibuffer)
     (setq switch-window-increase 4)
-    (setq switch-window-threshold 2)
+    (setq switch-window-threshold 3)
     (setq switch-window-shortcut-style 'qwerty)
     (setq switch-window-qwerty-shortcuts
           '("a" "s" "d" "f" "g" "h" "j" "k" "l" "q" "w" "e" "r"))
@@ -759,10 +759,10 @@ TODO: use-package-ify all of swiper
 #+begin_src emacs-lisp
   (use-package swiper
     :ensure t
-    :after ivy)
-
-  (global-set-key (kbd "C-s") 'swiper)
-  (global-set-key (kbd "C-M-s") 'swiper-thing-at-point)
+    :after ivy
+    :bind
+    ("C-s" . swiper)
+    ("C-M-s" . swiper-thing-at-point))
 #+end_src
 ** [[https://github.com/DarwinAwardWinner/amx][amx]]
 alternative interface for M-x in Emacs
@@ -1036,10 +1036,15 @@ REPL buffer connected to a Ruby subprocess
 ** Groovy
 (mostly for Jenkinsfiles)
 #+begin_src emacs-lisp
-  (add-hook 'groovy-mode-hook
-            (lambda ()
-              (c-set-offset 'label 2))
-            (infer-indentation-style))
+  (use-package groovy-mode
+    :ensure t
+    :mode
+    (("\\.groovy$" . groovy-mode))
+    :config
+    (add-hook 'groovy-mode-hook
+              (lambda ()
+                (c-set-offset 'label 2))
+              (infer-indentation-style)))
 #+end_src
 ** yaml
 #+begin_src emacs-lisp
@@ -1210,6 +1215,15 @@ mostly taken from [[https://github.com/andreyorst/dotfiles/tree/master/.config/e
     :bind (("C-c h y f" . hydra-flycheck/body)))
 #+end_src
 * Miscellaneous
+** [[https://jblevins.org/projects/markdown-mode/][markdown]]
+#+begin_src emacs-lisp
+  (use-package markdown-mode
+    :ensure t
+    :commands (markdown-mode)
+    :mode (("README\\.md\\'" . markdown-mode)
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode)))
+#+end_src
 ** [[https://github.com/pashky/restclient.el][restclient]]
 manually explore and test HTTP REST webservices
 #+begin_src emacs-lisp
