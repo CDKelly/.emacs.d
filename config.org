@@ -867,6 +867,15 @@ Can't use ~/usr/include~ dir for C headers location due to Mac OS's System Integ
 
   (add-hook 'compilation-mode-hook 'my-compilation-hook)
 #+end_src
+** Java
+#+begin_src emacs-lisp
+  (use-package lsp-java
+    :ensure t
+    :defer t
+    :after lsp
+    :hook (java-mode . lsp)
+    :if (executable-find "mvn"))
+#+end_src
 ** Ruby
 [[https://wikemacs.org/wiki/Ruby][WikEmacs]] does not have a bad starting point for Ruby
 *** [[https://github.com/zenspider/enhanced-ruby-mode][enh-ruby-mode]]
@@ -1061,6 +1070,7 @@ copied a lot of stuff from [[https://github.com/MatthewZMD/.emacs.d#lsp][this co
     :defer t
     :custom
     (lsp-keymap-prefix "C-c l")
+    (lsp-enable-which-key-integration t)
     (lsp-auto-guess-root nil)
     (lsp-eldoc-hook nil)
     (lsp-enable-indentation nil)
@@ -1145,30 +1155,42 @@ mostly taken from [[https://github.com/andreyorst/dotfiles/tree/master/.config/e
 
 #+end_src
 ** [[https://github.com/tumashu/company-posframe][company-posframe]]
+Not yet ready to work on Mac (causes flickering). See these comments in ~company-posframe.el~:
+#+begin_src emacs-lisp
+  (defun company-posframe-quickhelp-raise-frame ()
+    (interactive)
+    ;; FIXME: On macOS, the new lower-frame call causes Emacs to hide.
+    ;; 1. https://github.com/tumashu/company-posframe/issues/43
+    ;; 2. https://lists.gnu.org/archive/html/emacs-devel/2020-05/msg03253.html
+    (unless (memq system-type '(darwin))
+      (posframe-funcall company-posframe-quickhelp-buffer
+                        #'raise-frame)))
+#+end_src
+
 mostly taken from [[https://github.com/andreyorst/dotfiles/tree/master/.config/emacs][this config]]
 #+begin_src emacs-lisp
-  (use-package company-posframe
-    :after company
-    :custom
-    (company-posframe-quickhelp-show-header t)
-    (company-posframe-show-indicator nil)
-    (company-posframe-show-metadata t)
-    (company-posframe-quickhelp-show-params
-     (list :poshandler #'company-posframe-quickhelp-right-poshandler
-           :internal-border-width 1
-           :timeout 60
-           :internal-border-color (face-attribute 'font-lock-regexp-grouping-backslash :foreground)
-           :no-properties nil))
-    (company-posframe-show-params
-     (list :poshandler #'company-posframe-quickhelp-right-poshandler
-           :internal-border-width 1
-           :timeout 60
-           :internal-border-color (face-attribute 'font-lock-regexp-grouping-backslash :foreground)
-           :no-properties nil))
-    :custom-face
-    (company-posframe-metadata ((t (:inherit match))))
-    :config
-    (company-posframe-mode))
+  ;; (use-package company-posframe
+  ;;   :after company
+  ;;   :custom
+  ;;   (company-posframe-quickhelp-show-header t)
+  ;;   (company-posframe-show-indicator nil)
+  ;;   (company-posframe-show-metadata t)
+  ;;   (company-posframe-quickhelp-show-params
+  ;;    (list :poshandler #'company-posframe-quickhelp-right-poshandler
+  ;;          :internal-border-width 1
+  ;;          :timeout 60
+  ;;          :internal-border-color (face-attribute 'font-lock-regexp-grouping-backslash :foreground)
+  ;;          :no-properties nil))
+  ;;   (company-posframe-show-params
+  ;;    (list :poshandler #'company-posframe-quickhelp-right-poshandler
+  ;;          :internal-border-width 1
+  ;;          :timeout 60
+  ;;          :internal-border-color (face-attribute 'font-lock-regexp-grouping-backslash :foreground)
+  ;;          :no-properties nil))
+  ;;   :custom-face
+  ;;   (company-posframe-metadata ((t (:inherit match))))
+  ;;   :config
+  ;;   (company-posframe-mode))
 #+end_src
 * Flycheck
 #+begin_src emacs-lisp
