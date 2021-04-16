@@ -47,8 +47,20 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
   #+end_src
 *** wrap words for every line
   #+begin_src emacs-lisp
-  (global-visual-line-mode 1)
-  (setq visual-line-fringe-indicators '(bottom-left-angle bottom-right-angle))
+    (global-visual-line-mode 1)
+    (setq visual-line-fringe-indicators '(bottom-left-angle bottom-right-angle))
+
+    (if (bound-and-true-p global-visual-line-mode)
+        (progn
+          (global-set-key (kbd "C-e") 'end-of-visual-line)
+          (global-set-key (kbd "s-e") 'end-of-line)
+          (global-set-key (kbd "C-a") 'beginning-of-visual-line)
+          (global-set-key (kbd "s-a") 'beginning-of-line))
+      (progn
+        (global-set-key (kbd "C-e") 'end-of-line)
+        (global-set-key (kbd "s-e") 'end-of-visual-line)
+        (global-set-key (kbd "C-a") 'beginning-of-line)
+        (global-set-key (kbd "s-a") 'beginning-of-visual-line)))
   #+end_src
 *** [[https://github.com/alpaker/fill-column-indicator][fill-column-indicator]]
 show 80-character vertical marker
@@ -104,16 +116,16 @@ show 80-character vertical marker
 *** functionality
 *Overall strategy*: infer-indentation-style for a mode-hook. If spaces > tabs, then turn tabs OFF, else turn tabs ON. If tabs are turned ON, then smart-tabs will take over (indent-tabs-mode must be non-nil for smart-tabs to work according to the [[https://www.emacswiki.org/emacs/SmartTabs][SmartTabs wiki]])
   #+begin_src emacs-lisp
-  (setq-default indent-tabs-mode nil)
+    (setq-default indent-tabs-mode nil)
 
-  ;; infer indentation style of file
-  (defun infer-indentation-style ()
-    ;; if our source file uses tabs, we use tabs, if spaces spaces, and if
-    ;; neither, we use the current indent-tabs-mode
-    (let ((space-count (how-many "^  " (point-min) (point-max)))
-          (tab-count (how-many "^\t" (point-min) (point-max))))
-      (if (> space-count tab-count) (setq indent-tabs-mode nil))
-      (if (> tab-count space-count) (setq indent-tabs-mode t))))
+    ;; infer indentation style of file
+    (defun infer-indentation-style ()
+      ;; if our source file uses tabs, we use tabs, if spaces spaces, and if
+      ;; neither, we use the current indent-tabs-mode
+      (let ((space-count (how-many "^  " (point-min) (point-max)))
+            (tab-count (how-many "^\t" (point-min) (point-max))))
+        (if (> space-count tab-count) (setq indent-tabs-mode nil))
+        (if (> tab-count space-count) (setq indent-tabs-mode t))))
 #+end_src
 **** [[https://www.emacswiki.org/emacs/SmartTabs][smart-tabs-mode]]
 #+begin_src emacs-lisp
@@ -1077,7 +1089,7 @@ copied a lot of stuff from [[https://github.com/MatthewZMD/.emacs.d#lsp][this co
     (lsp-enable-folding nil)
     (lsp-enable-links nil)
     (lsp-prefer-flymake nil) ; Use flycheck instead of flymake
-    (lsp-file-watch-threshold 2000)
+    (lsp-file-watch-threshold 500)
     (read-process-output-max (* 1024 1024)) ;; 1mb --> from https://emacs-lsp.github.io/lsp-mode/page/performance/
     (lsp-completion-provider :capf)
     (lsp-restart 'auto-restart)
