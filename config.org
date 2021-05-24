@@ -175,13 +175,13 @@ show 80-character vertical marker
 *** electric pair mode
 electric for everything that ParEdit doesn't cover
   #+begin_src emacs-lisp
-  (electric-pair-mode 1)
-  (setq electric-pair-preserve-balance nil)
+    (electric-pair-mode 1)
+    (setq electric-pair-preserve-balance nil)
 
-  ;; Disable pairs when entering minibuffer
-  (add-hook 'minibuffer-setup-hook (lambda () (electric-pair-mode 0)))
-  ;; Renable pairs when existing minibuffer
-  (add-hook 'minibuffer-exit-hook (lambda () (electric-pair-mode 1)))
+    ;; Disable pairs when entering minibuffer
+    (add-hook 'minibuffer-setup-hook (lambda () (electric-pair-mode 0)))
+    ;; Renable pairs when existing minibuffer
+    (add-hook 'minibuffer-exit-hook (lambda () (electric-pair-mode 1)))
   #+end_src
 ** highlighting
 *** [[https://github.com/Malabarba/beacon][beacon]]
@@ -605,11 +605,13 @@ locate definitions of funcs or vars
   (defun copy-whole-word ()
     "Copies a word without regard for cursor position."
     (interactive)
+    (global-superword-mode 1)
     (save-excursion
       (forward-char 1)
       (backward-word)
       (kill-word 1)
-      (yank)))
+      (yank))
+    (global-subword-mode 1)
   (global-set-key (kbd "C-c y w") 'copy-whole-word)
 
   (defun copy-whole-line ()
@@ -1089,7 +1091,7 @@ copied a lot of stuff from [[https://github.com/MatthewZMD/.emacs.d#lsp][this co
     (lsp-enable-folding nil)
     (lsp-enable-links nil)
     (lsp-prefer-flymake nil) ; Use flycheck instead of flymake
-    (lsp-file-watch-threshold 500)
+    (lsp-enable-file-watchers nil)
     (read-process-output-max (* 1024 1024)) ;; 1mb --> from https://emacs-lsp.github.io/lsp-mode/page/performance/
     (lsp-completion-provider :capf)
     (lsp-restart 'auto-restart)
