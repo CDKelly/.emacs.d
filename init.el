@@ -113,6 +113,7 @@
  '(flycheck-error ((t (:background nil :underline (:color "#e74c3c" :style wave)))))
  '(flycheck-info ((t (:background nil :underline (:color "#b6e63e" :style wave)))))
  '(flycheck-warning ((t (:background nil :underline (:color "#e2c770" :style wave)))))
+ '(font-lock-comment-face ((t (:foreground "#7f7f80"))))
  '(font-lock-type-face ((t (:foreground "#66d9ef" :slant italic))))
  '(ivy-current-match ((t (:extend t :background "MediumPurple3" :foreground "seashell1"))))
  '(ivy-minibuffer-match-face-1 ((t (:background "MediumPurple3" :foreground "AntiqueWhite1"))))
