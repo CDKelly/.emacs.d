@@ -611,7 +611,7 @@ locate definitions of funcs or vars
       (backward-word)
       (kill-word 1)
       (yank))
-    (global-subword-mode 1)
+    (global-subword-mode 1))
   (global-set-key (kbd "C-c y w") 'copy-whole-word)
 
   (defun copy-whole-line ()
