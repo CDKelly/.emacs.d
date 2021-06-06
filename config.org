@@ -38,6 +38,13 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
     (load-theme 'doom-molokai t))
   ;; doom-monokai-classic - very similar to doom-molokai
 #+end_src
+** modeline
+#+begin_src emacs-lisp
+  (use-package mood-line
+    :ensure t
+    :config
+    (mood-line-mode))
+#+end_src
 ** line stuff
 *** add line numbers
   #+begin_src emacs-lisp
