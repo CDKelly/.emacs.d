@@ -121,6 +121,7 @@
  '(ivy-prompt-match ((t (:inherit ivy-current-match))))
  '(mode-line ((t (:background "black" :box (:line-width 1 :color "medium slate blue")))))
  '(mode-line-buffer-id ((t (:weight bold))))
+ '(mode-line-inactive ((t (:background "#171819" :foreground "#4e4e4e" :box (:line-width 1 :color "gray25" :style released-button)))))
  '(show-paren-match ((t (:background "MediumPurple1" :foreground "white" :overline nil :underline nil :weight ultra-bold))))
  '(swiper-background-match-face-1 ((t (:background "MediumPurple3" :foreground "white"))))
  '(swiper-match-face-1 ((t (:background "MediumPurple3" :foreground "antique white")))))

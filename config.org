@@ -79,8 +79,9 @@ show 80-character vertical marker
       :config
       (setq fci-rule-character-color "#202020")
       (setq fci-rule-width 1)
-      :hook
-      ((prog-mode) . fci-mode))
+      ;; :hook
+      ;; ((prog-mode) . fci-mode)
+      )
   #+end_src
 **** [[https://github.com/company-mode/company-mode/issues/180#issuecomment-55047120][fix incompatibility with company]]
 #+begin_src emacs-lisp
@@ -145,7 +146,7 @@ show 80-character vertical marker
     (autoload 'smart-tabs-advice "smart-tabs-mode")
     (autoload 'smart-tabs-insinuate "smart-tabs-mode")
     (smart-tabs-insinuate 'c 'c++ 'java 'javascript 'python
-                          'ruby))
+                          'ruby 'nxml))
 #+end_src
 **** indent entire buffer
   #+begin_src emacs-lisp
@@ -170,14 +171,14 @@ show 80-character vertical marker
 *** [[https://www.emacswiki.org/emacs/ParEdit][ParEdit]]
 [[http://danmidwood.com/content/2014/11/21/animated-paredit.html][nice animated guide to Paredit]]
   #+begin_src emacs-lisp
-  (use-package paredit
-    :ensure t
-    :init
-    (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
-    :config
-    (eval-after-load "paredit.el" '(require 'paredit-menu))
-    :hook
-    ((emacs-lisp-mode eval-expression-minibuffer-setup lisp-mode lisp-interaction-mode scheme-mode) . enable-paredit-mode))
+    (use-package paredit
+      :ensure t
+      :init
+      (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+      :config
+      (eval-after-load "paredit.el" '(require 'paredit-menu))
+      :hook
+      ((emacs-lisp-mode eval-expression-minibuffer-setup lisp-mode lisp-interaction-mode scheme-mode) . enable-paredit-mode))
   #+end_src
 *** electric pair mode
 electric for everything that ParEdit doesn't cover
@@ -612,13 +613,16 @@ locate definitions of funcs or vars
   (defun copy-whole-word ()
     "Copies a word without regard for cursor position."
     (interactive)
+    (save-buffer)
     (global-superword-mode 1)
     (save-excursion
       (forward-char 1)
       (backward-word)
       (kill-word 1)
       (yank))
-    (global-subword-mode 1))
+    (global-subword-mode 1)
+    (save-buffer)
+    (message "whole word copied"))
   (global-set-key (kbd "C-c y w") 'copy-whole-word)
 
   (defun copy-whole-line ()
@@ -627,7 +631,8 @@ locate definitions of funcs or vars
     (kill-new
      (buffer-substring
       (point-at-bol)
-      (point-at-eol))))
+      (point-at-eol)))
+    (message "whole line copied"))
   (global-set-key (kbd "C-c y l") 'copy-whole-line)
 
   (defun insert-line-below ()
@@ -893,6 +898,9 @@ Can't use ~/usr/include~ dir for C headers location due to Mac OS's System Integ
   (use-package lsp-java
     :ensure t
     :defer t
+    :custom
+    (lsp-java-maven-download-sources t)
+    ;; (lsp-java-configuration-maven-user-settings "/Users/ckelly/.m2/settings.xml")
     :after lsp
     :hook (java-mode . lsp)
     :if (executable-find "mvn"))
@@ -1063,6 +1071,20 @@ REPL buffer connected to a Ruby subprocess
   (use-package json-reformat
     :ensure t)
 #+end_src
+*** json-to-single-line
+#+begin_src emacs-lisp
+  (defun json-to-single-line (beg end)
+    "Collapse prettified json in region between BEG and END to a single line"
+    (interactive "r")
+    (if (use-region-p)
+        (save-excursion
+          (save-restriction
+            (narrow-to-region beg end)
+            (goto-char (point-min))
+            (while (re-search-forward "[[:space:]\n]+" nil t)
+              (replace-match " "))))
+      (print "This function operates on a region")))
+#+end_src
 ** Groovy
 (mostly for Jenkinsfiles)
 #+begin_src emacs-lisp
@@ -1082,6 +1104,10 @@ REPL buffer connected to a Ruby subprocess
     :ensure t
     :mode
       (("\\.ya?ml$" . yaml-mode)))
+#+end_src
+** xml
+#+begin_src emacs-lisp
+  (setq nxml-child-indent 4)
 #+end_src
 * [[https://emacs-lsp.github.io/lsp-mode/][LSP]]
 copied a lot of stuff from [[https://github.com/MatthewZMD/.emacs.d#lsp][this config]] and [[https://github.com/andreyorst/dotfiles/tree/master/.config/emacs#lsp-mode][this config]]

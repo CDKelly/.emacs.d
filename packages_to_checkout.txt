@@ -1,7 +1,5 @@
 zygospore - toggle delete-other-window
 
-lsp
-
 yasnippet
 
 docker - wrapper around docker CLI
@@ -12,8 +10,6 @@ pretty-hydra - https://github.com/jerrypnz/major-mode-hydra.el#pretty-hydra
 
 diminish
 spaceline - changes mode line to look cool
-doom's mode line: https://github.com/seagle0128/doom-modeline
-mood-line: https://github.com/jessiehildebrandt/mood-line
 
 dabbrev - particularly dabbrev-expand and hippie-expand --> https://www.reddit.com/r/emacs/comments/j61aoh/weekly_tipstricketc_thread/
 
