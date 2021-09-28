@@ -46,11 +46,16 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
     (mood-line-mode))
 #+end_src
 ** line stuff
-*** add line numbers
+*** add and highlight line numbers
   #+begin_src emacs-lisp
-  (global-linum-mode t)
-  (setq-default mode-line-front-space
-                (append mode-line-front-space '((:eval (format "/%s" (line-number-at-pos (point-max)))))))
+    ;; allows line-number-current-line face to work
+    (setq-default display-line-numbers t)
+    ;; but global-linum-mode has to be turned off
+    (global-linum-mode 0)
+
+    (setq-default mode-line-front-space
+                  (append mode-line-front-space '((:eval (format "/%s" (line-number-at-pos (point-max)))))))
+
   #+end_src
 *** wrap words for every line
   #+begin_src emacs-lisp
