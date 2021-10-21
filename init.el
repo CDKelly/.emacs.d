@@ -19,6 +19,7 @@
  '(Linum-format "%7i ")
  '(ansi-color-faces-vector
    [default bold shadow italic underline bold bold-italic bold])
+ '(company-show-quick-access t nil nil "Customized with use-package company")
  '(compilation-message-face 'default)
  '(cua-global-mark-cursor-color "#689d6a")
  '(cua-normal-cursor-color "#a89984")
@@ -78,7 +79,7 @@
      ("gnu" . "http://elpa.gnu.org/packages/")))
  '(package-enable-at-startup nil)
  '(package-selected-packages
-   '(mood-line lsp-java company-posframe company-c-headers multiple-cursors zerodark-theme roby org-bullets popup-kill-ring ivy-rich amx doom-modeline avy rainbow-delimiters rainbow-mode switch-window use-package beacon jazz-theme planet-theme soothe-theme color-theme-sanityinc-tomorrow molokai-theme afternoon-theme nord-theme material-theme monokai-alt-theme monokai-theme spacemacs-theme fill-column-indicator ivy-hydra expand-region which-key ace-jump-mode auto-highlight-symbol dumb-jump dockerfile-mode lua-mode highlight-indent-guides yaml-mode smart-tabs-mode groovy-mode json-mode cheat-sh json-reformat edit-server magit ruby-end restclient less-css-mode paredit-menu paredit exec-path-from-shell eslintd-fix add-node-modules-path eslint-fix web-mode editorconfig xref-js2 js2-mode browse-url-dwim rspec-mode robe rvm enh-ruby-mode inf-ruby flymake-ruby feature-mode flycheck popup ivy counsel projectile flx-ido landmark))
+   '(counsel-projectile mood-line lsp-java company-posframe company-c-headers multiple-cursors zerodark-theme roby org-bullets popup-kill-ring ivy-rich amx doom-modeline avy rainbow-delimiters rainbow-mode switch-window use-package beacon jazz-theme planet-theme soothe-theme color-theme-sanityinc-tomorrow molokai-theme afternoon-theme nord-theme material-theme monokai-alt-theme monokai-theme spacemacs-theme fill-column-indicator ivy-hydra expand-region which-key ace-jump-mode auto-highlight-symbol dumb-jump dockerfile-mode lua-mode highlight-indent-guides yaml-mode smart-tabs-mode groovy-mode json-mode cheat-sh json-reformat edit-server magit ruby-end restclient less-css-mode paredit-menu paredit exec-path-from-shell eslintd-fix add-node-modules-path eslint-fix web-mode editorconfig xref-js2 js2-mode browse-url-dwim rspec-mode robe rvm enh-ruby-mode inf-ruby flymake-ruby feature-mode flycheck popup ivy counsel projectile flx-ido landmark))
  '(pos-tip-background-color "#32302f")
  '(pos-tip-foreground-color "#bdae93")
  '(powerline-color1 "#1E1E1E")
@@ -104,7 +105,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :extend nil :stipple nil :background "#1c1e1f" :foreground "#dfdfdf" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "nil" :family "Menlo"))))
- '(ahs-plugin-defalt-face ((t (:background "gray40" :foreground "DeepSkyBlue1"))))
+ '(ahs-plugin-defalt-face ((t (:background "gray40" :foreground "DeepSkyBlue1"))) t)
  '(ahs-plugin-whole-buffer-face ((t (:background "gray40" :foreground "DeepSkyBlue1"))))
  '(avy-lead-face-0 ((t (:inherit avy-lead-face :background "#fd971f"))))
  '(company-posframe-metadata ((t (:inherit match))))

@@ -1,8 +1,9 @@
 * Basic setup
 ** frame size
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
   (add-to-list 'initial-frame-alist '(fullscreen . maximized))
-#+END_SRC emacs-lisp
+#+end_src
 ** no tool bar
   #+begin_src emacs-lisp
   (tool-bar-mode -1)
@@ -175,6 +176,7 @@ show 80-character vertical marker
   #+end_src
 *** [[https://www.emacswiki.org/emacs/ParEdit][ParEdit]]
 [[http://danmidwood.com/content/2014/11/21/animated-paredit.html][nice animated guide to Paredit]]
+[[https://www.emacswiki.org/emacs/PareditCheatsheet][PareditCheatsheet]]
   #+begin_src emacs-lisp
     (use-package paredit
       :ensure t
@@ -306,6 +308,11 @@ maintain consistent coding styles between devs working on the same project
     :config
     (which-key-mode)
     (setq which-key-idle-delay 1.0))
+#+end_src
+*** [[https://www.emacswiki.org/emacs/WhichFuncMode][which-function-mode]]
+#+begin_src emacs-lisp
+   (eval-after-load "which-func"
+        '(setq which-func-modes '(prog-mode org-mode)))
 #+end_src
 *** [[https://github.com/chubin/cheat.sh][cheat-sh]]
 #+begin_src emacs-lisp
@@ -814,7 +821,14 @@ alternative interface for M-x in Emacs
     :bind-keymap
     ("C-c p" . projectile-command-map)
     :config
-    (projectile-global-mode))
+    (projectile-global-mode)
+    (setq projectile-completion-system 'ivy))
+
+  (use-package counsel-projectile
+    :ensure t
+    :init
+    (counsel-projectile-mode)
+    :after counsel)
 #+end_src
 * Shell stuff
 #+begin_src emacs-lisp
@@ -1145,7 +1159,8 @@ mostly taken from [[https://github.com/andreyorst/dotfiles/tree/master/.config/e
                 ("TAB" . company-complete-common-or-cycle)
                 ("<tab>" . company-complete-common-or-cycle)
                 ("C-d" . company-show-doc-buffer)
-                ("M-." . company-show-location))
+                ("M-." . company-show-location)
+                ("C-." . company-complete))
     :hook
     (after-init . global-company-mode)
     :custom
