@@ -557,16 +557,17 @@ switch windows quickly when > 2 windows
 #+end_src
 ** [[https://github.com/abo-abo/avy][avy]]
 quickly jump to char or line
+TODO: avy-goto-char-timer + symbol-at-point = could make it easier to jump to a non-highlighted part of a frame
   #+begin_src emacs-lisp
-  (use-package avy
-    :ensure t
-    :config
-    (setq avy-keys-alist
-          `((avy-goto-char . ,(number-sequence ?a ?z))))
-    (setq avy-background t)
-    :bind
-    ("C-c f" . avy-goto-char)
-    ("C-c a l" . avy-goto-line))
+    (use-package avy
+      :ensure t
+      :config
+      (setq avy-keys-alist
+            `((avy-goto-char-timer . ,(number-sequence ?a ?z))))
+      (setq avy-background t)
+      :bind
+      ("C-c f" . avy-goto-char-timer)
+      ("C-c a l" . avy-goto-line))
   #+end_src
 ** [[https://github.com/jacktasia/dumb-jump][dumb-jump]]
 locate definitions of funcs or vars
