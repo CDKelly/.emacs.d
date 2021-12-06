@@ -6,7 +6,7 @@
 #+end_src
 ** no tool bar
   #+begin_src emacs-lisp
-  (tool-bar-mode -1)
+    (tool-bar-mode -1)
   #+end_src
 ** desktop mode
 keeps track of all the files you've opened and remembers them
@@ -30,6 +30,11 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
   #+begin_src emacs-lisp
   (delete-selection-mode t)
   #+end_src
+** minibuffer
+I just want to use counsel-yank-pop in the minibuffer
+#+begin_src emacs-lisp
+  (setq enable-recursive-minibuffers t)
+#+end_src
 * Aesthetics (and other enhancements)
 ** theme
 #+begin_src emacs-lisp
@@ -56,7 +61,6 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
 
     (setq-default mode-line-front-space
                   (append mode-line-front-space '((:eval (format "/%s" (line-number-at-pos (point-max)))))))
-
   #+end_src
 *** wrap words for every line
   #+begin_src emacs-lisp
@@ -119,13 +123,15 @@ show 80-character vertical marker
 #+begin_src emacs-lisp
   (use-package highlight-indent-guides
     :ensure t
+    :defer t
     :custom
     (highlight-indent-guides-method 'character)
     (highlight-indent-guides-responsive 'top)
     (highlight-indent-guides-delay 0)
     (highlight-indent-guides-auto-set-faces t)
-    :hook
-    ((prog-mode yaml-mode nxml-mode) . highlight-indent-guides-mode))
+    ;; :hook
+    ;; ((yaml-mode nxml-mode) . highlight-indent-guides-mode)
+    )
 #+end_src
 *** functionality
 *Overall strategy*: infer-indentation-style for a mode-hook. If spaces > tabs, then turn tabs OFF, else turn tabs ON. If tabs are turned ON, then smart-tabs will take over (indent-tabs-mode must be non-nil for smart-tabs to work according to the [[https://www.emacswiki.org/emacs/SmartTabs][SmartTabs wiki]])
@@ -205,13 +211,13 @@ electric for everything that ParEdit doesn't cover
   ;; used beacon setup from https://ladicle.com/post/config/#beacon
   ;; for some reason the setup based on beacon's README wouldn't
   ;; work with buffer changes and scrolling
-  (use-package beacon
-    :ensure t
-    :demand t
-    :custom
-    (beacon-color "turquoise1")
-    :hook
-    (after-init . beacon-mode))
+  ;; (use-package beacon
+  ;;   :ensure t
+  ;;   :demand t
+  ;;   :custom
+  ;;   (beacon-color "turquoise1")
+  ;;   :hook
+  ;;   (after-init . beacon-mode))
 #+end_src
 *** rainbow-mode
 highlight text representing color codes
@@ -598,12 +604,12 @@ locate definitions of funcs or vars
 
   (defun gcm-scroll-up ()
     (interactive)
-    (scroll-down 3))
+    (scroll-down 7))
   (global-set-key (kbd "M-p") 'gcm-scroll-up)
 
   (defun gcm-scroll-down ()
     (interactive)
-    (scroll-up 3))
+    (scroll-up 7))
   (global-set-key (kbd "M-n") 'gcm-scroll-down)
 #+end_src
 
@@ -753,6 +759,13 @@ make sure ivy, counsel, and swiper are all installed using the same package repo
     (ivy-mode 1)
     (setq projectile-completion-system 'ivy))
 
+#+end_src
+*** ivy-hydra
+#+begin_src emacs-lisp
+  (use-package ivy-hydra
+    :ensure t
+    :defer t
+    :after ivy)
 #+end_src
 *** ivy-rich
 #+begin_src emacs-lisp
@@ -920,10 +933,13 @@ Can't use ~/usr/include~ dir for C headers location due to Mac OS's System Integ
     :defer t
     :custom
     (lsp-java-maven-download-sources t)
-    ;; (lsp-java-configuration-maven-user-settings "/Users/ckelly/.m2/settings.xml")
+    (lsp-java-configuration-maven-user-settings "/Users/ckelly/.m2/settings.xml")
     :after lsp
-    :hook (java-mode . lsp)
-    :if (executable-find "mvn"))
+    ;; :hook (java-mode . lsp)
+    ;; :config
+    ;; ((add-hook 'java-mode-hook 'lsp))
+    ;; :if (executable-find "mvn")
+    )
 #+end_src
 ** Ruby
 [[https://wikemacs.org/wiki/Ruby][WikEmacs]] does not have a bad starting point for Ruby
@@ -1067,7 +1083,7 @@ REPL buffer connected to a Ruby subprocess
      ("\\.html?\\'" . web-mode))
     :config
     (setq web-mode-enable-current-element-highlight t)
-    (setq web-mode-enable-current-column-highlight t)
+    ;; (setq web-mode-enable-current-column-highlight t)
     (setq web-mode-enable-auto-pairing t)
     (setq web-mode-enable-auto-closing t)
     (setq web-mode-enable-auto-indentation t)
@@ -1090,20 +1106,6 @@ REPL buffer connected to a Ruby subprocess
 #+begin_src emacs-lisp
   (use-package json-reformat
     :ensure t)
-#+end_src
-*** json-to-single-line
-#+begin_src emacs-lisp
-  (defun json-to-single-line (beg end)
-    "Collapse prettified json in region between BEG and END to a single line"
-    (interactive "r")
-    (if (use-region-p)
-        (save-excursion
-          (save-restriction
-            (narrow-to-region beg end)
-            (goto-char (point-min))
-            (while (re-search-forward "[[:space:]\n]+" nil t)
-              (replace-match " "))))
-      (print "This function operates on a region")))
 #+end_src
 ** Groovy
 (mostly for Jenkinsfiles)
@@ -1143,14 +1145,25 @@ copied a lot of stuff from [[https://github.com/MatthewZMD/.emacs.d#lsp][this co
     (lsp-enable-indentation nil)
     (lsp-enable-folding nil)
     (lsp-enable-links nil)
-    (lsp-prefer-flymake nil) ; Use flycheck instead of flymake
+    (lsp-prefer-flymake nil) ;; Use flycheck instead of flymake
     (lsp-enable-file-watchers nil)
     (read-process-output-max (* 1024 1024)) ;; 1mb --> from https://emacs-lsp.github.io/lsp-mode/page/performance/
     (lsp-completion-provider :capf)
     (lsp-restart 'auto-restart)
-    (lsp-log-io nil)
+    ;; (lsp-log-io t)
     ;; (lsp-print-performance t)
-    :hook ((java-mode c-mode c++-mode) . lsp))
+    ;; :hook
+    ;; ((java-mode c-mode c++-mode) . lsp-deferred)
+    ;; :config
+    ;; ;; disable key bindings that collide with gcm-scroll up/down
+    ;; (progn (define-key lsp-mode-map (kbd "M-n") nil)
+    ;;        (define-key lsp-mode-map (kbd "M-p") nil))
+    ;; (defun overwrite-local-lsp-key-bindings()
+    ;;   (local-set-key (kbd "M-n") 'gcm-scroll-down)
+    ;;   (local-set-key (kbd "M-p") 'gcm-scroll-up))
+
+    ;; (add-hook 'lsp-mode-hook 'overwrite-local-lsp-key-bindings)
+    )
 #+end_src
 * Company
 set [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Completion-Styles.html][completion-style]]
@@ -1314,10 +1327,16 @@ mostly taken from [[https://github.com/andreyorst/dotfiles/tree/master/.config/e
 #+begin_src emacs-lisp
   (use-package markdown-mode
     :ensure t
-    :commands (markdown-mode)
-    :mode (("README\\.md\\'" . markdown-mode)
-           ("\\.md\\'" . markdown-mode)
-           ("\\.markdown\\'" . markdown-mode)))
+    :commands
+    (markdown-mode)
+    :mode
+    (("README\\.md\\'" . markdown-mode)
+     ("\\.md\\'" . markdown-mode)
+     ("\\.markdown\\'" . markdown-mode))
+    :config
+    (eval-after-load "markdown-mode"
+      '(progn (define-key markdown-mode-map (kbd "M-n") nil)
+              (define-key markdown-mode-map (kbd "M-p") nil))))
 #+end_src
 ** [[https://github.com/pashky/restclient.el][restclient]]
 manually explore and test HTTP REST webservices
@@ -1368,4 +1387,31 @@ Garbage Collect when Emacs is out of focus and avoid garbage collection when usi
 
               (add-hook 'minibuffer-setup-hook #'gc-minibuffer-setup-hook)
               (add-hook 'minibuffer-exit-hook #'gc-minibuffer-exit-hook)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun json-to-single-line-insert-whitespace (beg end)
+    "Collapse prettified json in region between BEG and END to a single line"
+    (interactive "r")
+    (if (use-region-p)
+        (save-excursion
+          (save-restriction
+            (narrow-to-region beg end)
+            (goto-char (point-min))
+            (while (re-search-forward "[[:space:]\n]+" nil t)
+              (replace-match " "))))
+      (print "This function operates on a region")))
+
+  (defun json-to-single-line-insert-newline-char (beg end)
+    "Collapse prettified json in region between BEG and END to a single line"
+    (interactive "r")
+    (if (use-region-p)
+        (save-excursion
+          (save-restriction
+            (narrow-to-region beg end)
+            (goto-char (point-min))
+            (while (re-search-forward "[\n]+" nil t)
+              (replace-match "\r"))))
+      (print "This function operates on a region")))
+
 #+end_src
