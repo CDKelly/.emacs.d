@@ -507,8 +507,7 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
 ** org-structure-template-alist
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'org-structure-template-alist
-               '("el" . "src emacs-lisp
-  "))
+               '("el" . "src emacs-lisp"))
 #+END_SRC
 ** org-bullets
 better looking bullets for .org files
@@ -521,9 +520,24 @@ better looking bullets for .org files
 * Navigation
 ** basic navigation
   #+begin_src emacs-lisp
-  (global-set-key (kbd "C-o") 'other-window)
-  (global-set-key (kbd "C-l") 'goto-line)
-  (global-set-key (kbd "C-x l") 'recenter-top-bottom)
+    (global-set-key (kbd "C-o") 'other-window)
+    (global-set-key (kbd "C-l") 'goto-line-begin)
+    (global-set-key (kbd "C-S-l") 'goto-line-end)
+    (global-set-key (kbd "C-x l") 'recenter-top-bottom)
+
+    (defun goto-line-begin (n)
+      "Jump to beginning (where text starts) of line N."
+      (interactive "nGo to BEGIN of line : ")
+      (goto-line n)
+      (back-to-indentation))
+
+    (defun goto-line-end (n)
+      "Jump to very end of line N regardless of 'global-visual-line-mode'."
+      (interactive "nGo to END of line : ")
+      (goto-line n)
+      (if (bound-and-true-p global-visual-line-mode)
+          (end-of-line)
+        (end-of-visual-line)))
   #+end_src
 ** [[https://github.com/dimitri/switch-window][switch-window]]
 switch windows quickly when > 2 windows
