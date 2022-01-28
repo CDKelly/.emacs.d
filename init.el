@@ -19,6 +19,7 @@
  '(Linum-format "%7i ")
  '(ansi-color-faces-vector
    [default bold shadow italic underline bold bold-italic bold])
+ '(company-show-quick-access t nil nil "Customized with use-package company")
  '(compilation-message-face 'default)
  '(cua-global-mark-cursor-color "#689d6a")
  '(cua-normal-cursor-color "#a89984")
@@ -110,6 +111,7 @@
  '(company-posframe-metadata ((t (:inherit match))))
  '(cursor ((t (:background "turquoise1"))))
  '(custom-documentation ((t (:inherit default))))
+ '(eldoc-highlight-function-argument ((t (:inherit bold :underline t))))
  '(flycheck-error ((t (:background nil :underline (:color "#e74c3c" :style wave)))))
  '(flycheck-info ((t (:background nil :underline (:color "#b6e63e" :style wave)))))
  '(flycheck-warning ((t (:background nil :underline (:color "#e2c770" :style wave)))))
