@@ -326,7 +326,7 @@ maintain consistent coding styles between devs working on the same project
     :ensure t)
 #+end_src
 *** custom functions to do stuff
-**** save all files w/o asking y-or-n
+**** save *all* files w/o asking y-or-n
 #+begin_src emacs-lisp
   (defun save-all-buffers-no-confirm ()
     "Save ALL buffers that are un-saved without asking y-or-n."
@@ -335,7 +335,6 @@ maintain consistent coding styles between devs working on the same project
   (global-set-key (kbd "C-x S") 'save-all-buffers-no-confirm)
 #+end_src
 **** turn off stuff to speed things up
-*TODO*: shorten ~turn-off-sluggish-minor-modes~ by iterating through a list of minor modes (versus having an if-then block for every minor mode); ~turn-off-sluggish-minor-modes-2~ makes it to the ~bound-and-true-p~ and conks out b/c of the lambda
 #+begin_src emacs-lisp
   (setq sluggish-minor-modes '(auto-highlight-symbol-mode
                                highlight-indent-guides-mode
