@@ -44,6 +44,15 @@ I just want to use counsel-yank-pop in the minibuffer
     (load-theme 'doom-molokai t))
   ;; doom-monokai-classic - very similar to doom-molokai
 #+end_src
+** what face
+#+begin_src emacs-lisp
+  (defun what-face (pos)
+  "what-face to determine the face at the current point"
+    (interactive "d")
+    (let ((face (or (get-char-property (point) 'read-face-name)
+                    (get-char-property (point) 'face))))
+      (if face (message "Face: %s" face) (message "No face at %d" pos))))
+#+end_src
 ** modeline
 #+begin_src emacs-lisp
   (use-package mood-line
@@ -144,9 +153,8 @@ show 80-character vertical marker
     (highlight-indent-guides-responsive 'top)
     (highlight-indent-guides-delay 0)
     (highlight-indent-guides-auto-set-faces t)
-    ;; :hook
-    ;; ((yaml-mode nxml-mode) . highlight-indent-guides-mode)
-    )
+    :hook
+    ((yaml-mode nxml-mode) . highlight-indent-guides-mode))
 #+end_src
 *** functionality
 *Overall strategy*: infer-indentation-style for a mode-hook. If spaces > tabs, then turn tabs OFF, else turn tabs ON. If tabs are turned ON, then smart-tabs will take over (indent-tabs-mode must be non-nil for smart-tabs to work according to the [[https://www.emacswiki.org/emacs/SmartTabs][SmartTabs wiki]])
@@ -306,25 +314,7 @@ maintain consistent coding styles between devs working on the same project
     :bind
     (("C-S-<mouse-1>" . mc/add-cursor-on-click))
     :custom
-    (mc/always-repeat-command t)
-    (mc--executing-command-for-fake-cursor nil)
-    ;; (mc--executing-command-for-fake-cursor t)
-    :config
-    (let ((prefix "C-c m c ")
-          (bindings #'(("e" . mc/edit-lines)
-                       ("n" . mc/mark-next-like-this-symbol)
-                       ("p" . mc/mark-previous-like-this-symbol)
-                       ("a" . mc/mark-all-like-this)
-                       ("N" . mc/unmark-next-like-this)
-                       ("P" . mc/unmark-previous-like-this)
-                       ("b" . mc/cycle-backward)
-                       ("f" . mc/cycle-forward)
-                       ("^" . mc/edit-beginnings-of-lines)
-                       ("$" . mc/edit-ends-of-lines)
-                       ("h" . mc-hide-unmatched-lines-mode))))
-      (dolist (binding bindings)
-        (global-set-key (kbd (concat prefix (car binding)))
-                        (cdr binding)))))
+    (mc/always-repeat-command t))
 #+end_src
 *** [[https://github.com/magit/magit][magit]]
 #+begin_src emacs-lisp
@@ -378,6 +368,16 @@ maintain consistent coding styles between devs working on the same project
     (dolist (mode sluggish-minor-modes)
       (funcall mode)))
   (global-set-key (kbd "C-c t o 1") 'turn-on-sluggish-minor-modes)
+
+  (defun toggle-sluggish-minor-modes ()
+    "Turn on/off minor modes that could make Emacs slow when working with large files."
+    (interactive)
+    (dolist (mode sluggish-minor-modes)
+      (if (symbol-value mode)
+          (funcall mode 0)
+        (funcall mode))))
+
+
 #+end_src
 * Buffer and Window stuff
 ** ibuffer
@@ -775,7 +775,6 @@ make sure ivy, counsel, and swiper are all installed using the same package repo
     :config
     (ivy-mode 1)
     (setq projectile-completion-system 'ivy))
-
 #+end_src
 *** ivy-hydra
 #+begin_src emacs-lisp
@@ -814,9 +813,10 @@ TODO: use-package-ify all of counsel
 
     (let ((bindings #'(("g" . counsel-git-grep)
                       ("r" . counsel-rg)
-                      ("m" . counsel-mark-ring))))
+                      ("m" . counsel-mark-ring)))
+          (prefix "C-c c "))
       (dolist (binding bindings)
-        (global-set-key (kbd (concat "C-c c " (car binding))) (cdr binding))))
+        (global-set-key (kbd (concat prefix (car binding))) (cdr binding))))
 
     (defun counsel-git-grep-thing-at-point ()
       (interactive)
@@ -831,7 +831,8 @@ TODO: use-package-ify all of swiper
     :after ivy
     :bind
     ("C-s" . swiper)
-    ("C-M-s" . swiper-thing-at-point))
+    ("C-M-s" . swiper-thing-at-point)
+    ("C-c s a" . swiper-all))
 #+end_src
 ** [[https://github.com/DarwinAwardWinner/amx][amx]]
 alternative interface for M-x in Emacs
@@ -908,8 +909,7 @@ Can't use ~/usr/include~ dir for C headers location due to Mac OS's System Integ
     (interactive)
     (let* ((c-file (buffer-file-name (current-buffer)))
            (buffer-name "*shell*")
-           (process (get-buffer-process buffer-name))
-           )
+           (process (get-buffer-process buffer-name)))
       (with-current-buffer buffer-name
         (unless process
           (error "No process in %s" buffer-name))
