@@ -1,0 +1,3 @@
+Replacing the dhs-<proj> parent version on all the poms in a project. For example, when upgrading dhs-sync-aws's parent pom.xml, I wanna projectile-replace across all the poms.
+
+When yanking (pasting) a line/chunk of code, it's (mostly just the 1st line) rarely aligned as it should be (to the right too much). This is probably b/c I yank the entire rectangle of code to the beginning of the line, but only paste when my cursor _is_ aligned thus pushing my code the right a bit. I just wanna hit yank, and the code is aligned as it should be with everything else in the buffer
