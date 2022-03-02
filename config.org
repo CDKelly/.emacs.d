@@ -378,6 +378,23 @@ maintain consistent coding styles between devs working on the same project
 
 
 #+end_src
+*** [[https://github.com/benma/visual-regexp-steroids.el/][visual-regexp-steroids]]
+#+begin_src emacs-lisp
+  (use-package visual-regexp-steroids
+    :ensure t
+    :bind
+    ("C-c r e r" . vr/replace)
+    ("C-c r e q" . vr/query-replace)
+    ("C-c r e m" . vr/mc-mark)
+    ("C-c r e m" . vr/mc-mark)
+    :init
+    ;; if the files are not already in the load path
+    (add-to-list 'load-path "/Users/ckelly/.emacs.d/elpa/visual-regexp-20210502.2019/")
+    (add-to-list 'load-path "/Users/ckelly/.emacs.d/elpa/visual-regexp-steroids-20170222.253/")
+    :config
+    ;; to use visual-regexp-steroids's isearch instead of the built-in regexp isearch, also include the following lines:
+    (define-key esc-map (kbd "C-c r e s b") 'vr/isearch-backward)
+    (define-key esc-map (kbd "C-c r e s f") 'vr/isearch-forward))
 * Buffer and Window stuff
 ** ibuffer
 #+begin_src emacs-lisp
@@ -990,7 +1007,7 @@ REPL buffer connected to a Ruby subprocess
   (use-package inf-ruby
     :ensure t
     :bind
-    ("C-c r r" . inf-ruby))
+    ("C-c r i r" . inf-ruby))
 #+end_src
 *** [[https://github.com/senny/rvm.el][rvm]]
 #+begin_src emacs-lisp
