@@ -413,6 +413,7 @@ maintain consistent coding styles between devs working on the same project
     ;; to use visual-regexp-steroids's isearch instead of the built-in regexp isearch, also include the following lines:
     (define-key esc-map (kbd "C-c r e s b") 'vr/isearch-backward)
     (define-key esc-map (kbd "C-c r e s f") 'vr/isearch-forward))
+#+end_src
 * Buffer and Window stuff
 ** ibuffer
 #+begin_src emacs-lisp
