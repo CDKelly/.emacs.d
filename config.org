@@ -310,10 +310,28 @@ maintain consistent coding styles between devs working on the same project
 #+begin_src emacs-lisp
   (use-package multiple-cursors
     :ensure t
+    :defer t
     :bind
     (("C-S-<mouse-1>" . mc/add-cursor-on-click))
     :custom
-    (mc/always-repeat-command t))
+    (mc/always-repeat-command t)
+    (mc--executing-command-for-fake-cursor nil)
+    :config
+    (let ((prefix "C-c m c ")
+          (bindings #'(("e" . mc/edit-lines)
+                       ("n" . mc/mark-next-like-this-symbol)
+                       ("p" . mc/mark-previous-like-this-symbol)
+                       ("a" . mc/mark-all-like-this)
+                       ("N" . mc/unmark-next-like-this)
+                       ("P" . mc/unmark-previous-like-this)
+                       ("b" . mc/cycle-backward)
+                       ("f" . mc/cycle-forward)
+                       ("^" . mc/edit-beginnings-of-lines)
+                       ("$" . mc/edit-ends-of-lines)
+                       ("h" . mc-hide-unmatched-lines-mode))))
+      (dolist (binding bindings)
+        (global-set-key (kbd (concat prefix (car binding)))
+                        (cdr binding)))))
 #+end_src
 *** [[https://github.com/magit/magit][magit]]
 #+begin_src emacs-lisp
