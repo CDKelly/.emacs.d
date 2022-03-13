@@ -6,6 +6,8 @@ docker - wrapper around docker CLI
 
 puni - https://github.com/AmaiKinono/puni - smart/soft deletes around sexps
 
+pcre2el - https://github.com/joddie/pcre2el
+
 major-mode-hydra - checkout this part of this config --> https://github.com/rememberYou/.emacs.d/blob/master/config.org#hydra
 pretty-hydra - https://github.com/jerrypnz/major-mode-hydra.el#pretty-hydra
 
