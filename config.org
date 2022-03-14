@@ -416,6 +416,16 @@ maintain consistent coding styles between devs working on the same project
     (define-key esc-map (kbd "C-c r e s b") 'vr/isearch-backward)
     (define-key esc-map (kbd "C-c r e s f") 'vr/isearch-forward))
 #+end_src
+*** my-query-regexp-replace
+Kept getting the following error when running query-replace-regexp: "Match data clobbered by buffer modification hooks"
+Check out these links for more info: [[https://emacs.stackexchange.com/questions/47147/regex-replace-sporadic-match-data-clobbered-by-buffer-modification-hooks][stackexchange #1]], [[https://emacs.stackexchange.com/questions/38800/match-data-clobbered-by-buffer-modification-hooks][stackexchange #2]], [[https://gnu.emacs.bug.narkive.com/AfLtJyrL/bug-41445-26-3-query-replace-triggers-match-data-clobbered-by][gnu.emacs.bug]]
+#+begin_src emacs-lisp
+  (defun my-query-replace-regexp ()
+    (interactive)
+    (let ((after-change-functions nil)) ; empty when executing this func
+      (call-interactively 'query-replace-regexp)))
+  (global-set-key (kbd "C-M-%") 'my-query-replace-regexp)
+#+end_src
 * Buffer and Window stuff
 ** ibuffer
 #+begin_src emacs-lisp
