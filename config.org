@@ -892,7 +892,9 @@ alternative interface for M-x in Emacs
     (amx-backend 'auto)
     (amx-save-file "~/.emacs.d/amx-items")
     :config
-    (amx-mode 1))
+    (amx-mode 1)
+    ;; https://github.com/DarwinAwardWinner/amx#speeding-up-amx
+    (setq amx-ignored-command-matchers nil))
 #+end_src
 * [[https://github.com/bbatsov/projectile][Projectile]]
 #+begin_src emacs-lisp
@@ -1492,7 +1494,7 @@ If you experience freezing, decrease this amount, if you increase stuttering, in
                     gc-cons-percentage 0.1)))
 #+end_src
 
-Garbage Collect when Emacs is out of focus and avoid garbage collection when using minibuffer.
+Garbage Collect when Emacs is out of focus and try to avoid garbage collection when using minibuffer.
 #+begin_src emacs-lisp
   (add-hook 'emacs-startup-hook
             (lambda ()
@@ -1503,7 +1505,7 @@ Garbage Collect when Emacs is out of focus and avoid garbage collection when usi
                                     (garbage-collect))))
                 (add-hook 'after-focus-change-function 'garbage-collect))
               (defun gc-minibuffer-setup-hook ()
-                (setq gc-cons-threshold (* better-gc-cons-threshold 2)))
+                (setq gc-cons-threshold (* better-gc-cons-threshold 4)))
 
               (defun gc-minibuffer-exit-hook ()
                 (garbage-collect)
