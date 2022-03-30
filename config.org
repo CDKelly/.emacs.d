@@ -364,7 +364,8 @@ maintain consistent coding styles between devs working on the same project
   (defun save-all-buffers-no-confirm ()
     "Save ALL buffers that are un-saved without asking y-or-n."
     (interactive)
-    (save-some-buffers t nil))
+    (save-some-buffers t nil)
+    (message "All files saved"))
   (global-set-key (kbd "C-x S") 'save-all-buffers-no-confirm)
 #+end_src
 **** turn off stuff to speed things up
