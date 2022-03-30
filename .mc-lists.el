@@ -10,12 +10,15 @@
         hydra-multiple-cursors/nil
         indent-for-tab-command
         kill-region
+        kill-visual-line
         org-edit-src-save
         org-self-insert-command
         paredit-backward-kill-word
         paredit-forward-delete
         paredit-forward-kill-word
         paredit-kill
+        gcm-scroll-up
+        gcm-scroll-down
         ))
 
 (setq mc/cmds-to-run-once

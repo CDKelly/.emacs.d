@@ -901,7 +901,12 @@ alternative interface for M-x in Emacs
     ("C-c p" . projectile-command-map)
     :config
     (projectile-global-mode)
-    (setq projectile-completion-system 'ivy))
+    (setq projectile-completion-system 'ivy)
+    (defun my-projectile-replace ()
+      (interactive)
+      (let ((after-change-functions nil)) ; empty when executing this func
+        (call-interactively 'projectile-replace)))
+    (global-set-key (kbd "C-c p r") 'my-projectile-replace))
 
   (use-package counsel-projectile
     :ensure t
