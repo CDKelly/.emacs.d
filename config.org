@@ -681,6 +681,8 @@ locate definitions of funcs or vars
 * Killing, Yanking, Moving lines, etc.
 ** killing
 *** kill whole word
+TODO: fix this so it doesn't delete previous word if cursor is on 1st char of string
+TODO: fix this so it actually deletes whole word regardless of global-super or subword-mode
 #+begin_src emacs-lisp
   (defun kill-whole-word ()
     (interactive)
@@ -692,6 +694,10 @@ locate definitions of funcs or vars
   #+begin_src emacs-lisp
   (global-set-key (kbd "C-c k l") 'kill-whole-line)
   #+end_src
+*** don’t add a string to kill-ring if it duplicates the last one
+#+begin_src emacs-lisp
+  (setq kill-do-not-save-duplicates t)
+#+end_src
 ** yanking
 #+begin_src emacs-lisp
   (defun copy-whole-word ()
@@ -846,18 +852,19 @@ TODO: use-package-ify all of counsel
 #+begin_src emacs-lisp
   (use-package counsel
     :ensure t
-    :after ivy)
+    :after ivy
+    :bind
+    ("C-x C-f" . counsel-find-file)
+    ("C-h f" . counsel-describe-function)
+    ("C-h v" . counsel-describe-variable)
+    ("C-h S" . counsel-info-lookup-symbol)
+    (("M-y" . counsel-yank-pop)
+     :map ivy-minibuffer-map
+     ("M-y" . ivy-next-line)))
 
   ;; no regexp by default
     (with-eval-after-load 'counsel
       (setq ivy-initial-inputs-alist nil))
-
-    ;; counsel bindings
-    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-    (global-set-key (kbd "C-h f") 'counsel-describe-function)
-    (global-set-key (kbd "C-h v") 'counsel-describe-variable)
-    (global-set-key (kbd "C-h S") 'counsel-info-lookup-symbol)
-    (global-set-key (kbd "M-y") 'counsel-yank-pop)
 
     (let ((bindings #'(("g" . counsel-git-grep)
                       ("r" . counsel-rg)
@@ -869,7 +876,17 @@ TODO: use-package-ify all of counsel
     (defun counsel-git-grep-thing-at-point ()
       (interactive)
       (counsel-git-grep (kill-new (thing-at-point 'symbol))))
-    (global-set-key (kbd "C-c c G") 'counsel-git-grep-thing-at-point)
+  (global-set-key (kbd "C-c c G") 'counsel-git-grep-thing-at-point)
+
+  ;; (defun my/counsel-yank-pop (&optional arg)
+  ;;   "Call `counsel-yank'. If called after a yank, call `yank-pop' instead."
+  ;;   (interactive "*p")
+  ;;   (setq enable-recursive-minibuffers nil)
+  ;;   (if (eq last-command 'yank)
+  ;;       (yank-pop arg)
+  ;;     (counsel-yank-pop))
+  ;;   (setq enable-recursive-minibuffers t))
+  ;; (global-set-key (kbd "M-y") 'my/counsel-yank-pop)
 #+end_src
 ** swiper
 TODO: use-package-ify all of swiper
@@ -905,11 +922,12 @@ alternative interface for M-x in Emacs
     :config
     (projectile-global-mode)
     (setq projectile-completion-system 'ivy)
-    (defun my-projectile-replace ()
-      (interactive)
-      (let ((after-change-functions nil)) ; empty when executing this func
-        (call-interactively 'projectile-replace)))
-    (global-set-key (kbd "C-c p r") 'my-projectile-replace))
+    ;; (defun my-projectile-replace ()
+    ;;   (interactive)
+    ;;   (let ((after-change-functions nil)) ; empty when executing this func
+    ;;     (call-interactively 'projectile-replace)))
+    ;; (global-set-key (kbd "C-c p r") 'my-projectile-replace)
+    )
 
   (use-package counsel-projectile
     :ensure t
