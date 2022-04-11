@@ -680,15 +680,26 @@ locate definitions of funcs or vars
 
 * Killing, Yanking, Moving lines, etc.
 ** killing
-*** kill whole word
-TODO: fix this so it doesn't delete previous word if cursor is on 1st char of string
-TODO: fix this so it actually deletes whole word regardless of global-super or subword-mode
 #+begin_src emacs-lisp
-  (defun kill-whole-word ()
+  (defun kill-thing-at-point (thing)
+    "Kill the `thing-at-point' for the specified kind of THING."
+    (let ((bounds (bounds-of-thing-at-point thing)))
+      (if bounds
+          (kill-region (car bounds) (cdr bounds))
+        (error "No %s at point" thing))
+      (if (buffer-file-name)
+          (save-buffer))
+      (message "whole %s killed" thing)))
+#+end_src
+*** kill whole word
+#+begin_src emacs-lisp
+  (defun kill-whole-word-at-point ()
+    "Kill the word at point."
     (interactive)
-    (backward-word)
-    (kill-word 1))
-  (global-set-key (kbd "C-c k w") 'kill-whole-word)
+    (global-superword-mode 1)
+    (kill-thing-at-point 'word)
+    (global-subword-mode 1))
+  (global-set-key (kbd "C-c k w") 'kill-whole-word-at-point)
 #+end_src
 *** kill whole line
   #+begin_src emacs-lisp
