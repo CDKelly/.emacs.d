@@ -1159,7 +1159,7 @@ REPL buffer connected to a Ruby subprocess
     (setq web-mode-enable-auto-pairing t)
     (setq web-mode-enable-auto-closing t)
     (setq web-mode-enable-auto-indentation t)
-    (setq web-mode-markup-indent-offset 2)
+    (setq web-mode-markup-indent-offset 4)
     ;; (add-hook 'web-mode-hook (lambda () (add-hook 'after-save-hook web-mode-buffer-indent)))
 
     (defvar web-mode-electric-pairs '((?\< . ?\>)) "helpful pairing for web mode")

@@ -7,6 +7,7 @@
         beginning-of-visual-line
         counsel-yank-pop
         end-of-visual-line
+        gcm-scroll-up
         hydra-multiple-cursors/nil
         indent-for-tab-command
         kill-region
@@ -17,13 +18,12 @@
         paredit-forward-delete
         paredit-forward-kill-word
         paredit-kill
-        gcm-scroll-up
-        gcm-scroll-down
         ))
 
 (setq mc/cmds-to-run-once
       '(
         counsel-mark-ring
+        gcm-scroll-down
         hydra-multiple-cursors/mc/cycle-backward
         hydra-multiple-cursors/mc/cycle-forward
         hydra-multiple-cursors/mc/mark-next-like-this
@@ -33,4 +33,5 @@
         hydra-multiple-cursors/mc/skip-to-next-like-this
         hydra-multiple-cursors/mc/unmark-next-like-this
         hydra-multiple-cursors/mc/unmark-previous-like-this
+        other-frame
         ))
