@@ -705,7 +705,12 @@ locate definitions of funcs or vars
   #+begin_src emacs-lisp
   (global-set-key (kbd "C-c k l") 'kill-whole-line)
   #+end_src
-*** don’t add a string to kill-ring if it duplicates the last one
+*** kill ring stuff
+**** increase kill ring size
+#+begin_src emacs-lisp
+  (setq kill-ring-max 100)
+#+end_src
+**** don’t add a string to kill-ring if it duplicates the last one
 #+begin_src emacs-lisp
   (setq kill-do-not-save-duplicates t)
 #+end_src
