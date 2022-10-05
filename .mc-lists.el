@@ -5,33 +5,50 @@
       '(
         amx
         beginning-of-visual-line
+        c-electric-brace
+        c-electric-colon
+        c-electric-delete-forward
+        c-electric-paren
         counsel-yank-pop
+        electric-pair-delete-pair
         end-of-visual-line
         gcm-scroll-up
         hydra-multiple-cursors/nil
         indent-for-tab-command
         kill-region
         kill-visual-line
+        markdown-outdent-or-delete
+        org-delete-char
         org-edit-src-save
         org-self-insert-command
         paredit-backward-kill-word
         paredit-forward-delete
         paredit-forward-kill-word
         paredit-kill
+        yaml-electric-backspace
         ))
 
 (setq mc/cmds-to-run-once
       '(
+        counsel-git-grep
         counsel-mark-ring
         gcm-scroll-down
+        handle-switch-frame
         hydra-multiple-cursors/mc/cycle-backward
         hydra-multiple-cursors/mc/cycle-forward
+        hydra-multiple-cursors/mc/mark-all-like-this
+        hydra-multiple-cursors/mc/mark-all-like-this-and-exit
+        hydra-multiple-cursors/mc/mark-all-symbols-like-this
+        hydra-multiple-cursors/mc/mark-all-symbols-like-this-and-exit
         hydra-multiple-cursors/mc/mark-next-like-this
+        hydra-multiple-cursors/mc/mark-next-like-this-symbol
         hydra-multiple-cursors/mc/mark-next-symbol-like-this
         hydra-multiple-cursors/mc/mark-previous-like-this
+        hydra-multiple-cursors/mc/mark-previous-like-this-symbol
         hydra-multiple-cursors/mc/mark-previous-symbol-like-this
         hydra-multiple-cursors/mc/skip-to-next-like-this
         hydra-multiple-cursors/mc/unmark-next-like-this
         hydra-multiple-cursors/mc/unmark-previous-like-this
         other-frame
+        switch-to-last-buffer
         ))

@@ -134,11 +134,11 @@ show 80-character vertical marker
 #+end_src
 *** clean up any accidental trailing whitespace upon save.
   #+begin_src emacs-lisp
-  (add-hook 'before-save-hook 'whitespace-cleanup)
-  ;; have to disable few items in whitespace-style
-  ;; according to https://www.emacswiki.org/emacs/SmartTabs
-  (setq whitespace-style
-     '(face trailing tabs spaces lines newline empty indentation space-before-tab space-mark tab-mark newline-mark))
+    (add-hook 'before-save-hook 'whitespace-cleanup)
+    ;; have to disable few items in whitespace-style
+    ;; according to https://www.emacswiki.org/emacs/SmartTabs
+    (setq whitespace-style
+       '(face trailing tabs spaces lines newline empty indentation space-before-tab space-mark tab-mark newline-mark))
   #+end_src
 ** indentation
 *** aesthetics
@@ -1463,7 +1463,7 @@ Stolen from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org#hyd
   (pretty-hydra-define hydra-multiple-cursors
     (:hint nil :quit-key "q" :title (with-faicon "i-cursor" "Multiple Cursors" 1 -0.05))
     ("Mark/Unmark"
-     (("a" mc/mark-all-like-this "mark all" :exit t)
+     (("a" mc/mark-all-like-this "mark all")
       ("n" mc/mark-next-like-this "mark next")
       ("p" mc/mark-previous-like-this "mark previous")
       ("N" mc/unmark-next-like-this "unmark next")
