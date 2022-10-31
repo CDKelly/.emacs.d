@@ -11,12 +11,24 @@
 ** desktop mode
 keeps track of all the files you've opened and remembers them
   #+begin_src emacs-lisp
-  (load-library "desktop")
-  (desktop-save-mode 1)
+    (load-library "desktop")
+    (desktop-save-mode 1)
+  #+end_src
+** server-start
+turn current emacs process into a server that another client can connect to
+#+begin_src emacs-lisp
   (require 'server)
   (or (server-running-p)
       (server-start))
-  #+end_src
+#+end_src
+** emacs daemon
+#+begin_src sh
+  # forks an emacs process in the background
+  emacs --daemon
+
+  # OR run as a foreground process and see the output of emacs (can be helpful to diagnose errors)
+  emacs --fg-daemon
+#+end_src
 ** change "yes or no?" to "y or n?"
   #+begin_src emacs-lisp
   (defalias 'yes-or-no-p 'y-or-n-p)
@@ -633,9 +645,102 @@ TODO: avy-goto-char-timer + symbol-at-point = could make it easier to jump to a 
     (use-package avy
       :ensure t
       :config
-      (setq avy-keys-alist
-            `((avy-goto-char-timer . ,(number-sequence ?a ?z))))
+      ;; (setq avy-keys-alist
+      ;;       `((avy-goto-char-timer . ,(number-sequence ?a ?z))))
+      ;; (setq avy-keys-alist nil)
       (setq avy-background t)
+
+      ;; every letter but the letters I use for avy-actions below
+      (setq avy-keys '(?a ?b ?c ?d ?e ?f ?g ?h
+                          ?h ?j ?l ?m ?o ?q ?r
+                          ?s ?u ?v ?x ?z))
+
+      (defun avy-show-dispatch-help ()
+        (let* ((len (length "avy-action-"))
+               (fw (frame-width))
+               (raw-strings (mapcar
+                             (lambda (x)
+                               (format "%2s → %-19s"
+                                       (propertize
+                                        (char-to-string (car x))
+                                        'face 'aw-key-face)
+                                       (substring (symbol-name (cdr x)) len)))
+                             avy-dispatch-alist))
+               (max-len (1+ (apply #'max (mapcar #'length raw-strings))))
+               (strings-len (length raw-strings))
+               (per-row (floor fw max-len))
+               display-strings)
+          (cl-loop for string in raw-strings
+                   for N from 1 to strings-len do
+                   (push (concat string " ") display-strings)
+                   (when (= (mod N per-row) 0) (push "\n" display-strings)))
+          (message "%s" (apply #'concat (nreverse display-strings)))))
+
+
+      ;; Kill text
+      (defun avy-action-kill-whole-line (pt)
+        (save-excursion
+          (goto-char pt)
+          (kill-whole-line))
+        (select-window
+         (cdr
+          (ring-ref avy-ring 0)))
+        t)
+
+      (setf (alist-get ?k avy-dispatch-alist) 'avy-action-kill-stay
+            (alist-get ?K avy-dispatch-alist) 'avy-action-kill-whole-line)
+
+      ;; Copy text
+      (defun avy-action-copy-whole-line (pt)
+        (save-excursion
+          (goto-char pt)
+          (kill-new
+           (buffer-substring
+            (point-at-bol)
+            (point-at-eol))))
+        (select-window
+         (cdr
+          (ring-ref avy-ring 0)))
+        t)
+
+      (setf (alist-get ?w avy-dispatch-alist) 'avy-action-copy
+            (alist-get ?W avy-dispatch-alist) 'avy-action-copy-whole-line)
+
+      ;; Yank text
+      (defun avy-action-yank-whole-line (pt)
+        (avy-action-copy-whole-line pt)
+        (save-excursion (yank))
+        t)
+
+      (defun avy-action-yank-whole-line-above (pt)
+        (avy-action-copy-whole-line pt)
+        (save-excursion
+          (insert-line-above)
+          (yank)
+          (indent-for-tab-command))
+        t)
+
+      (defun avy-action-yank-whole-line-below (pt)
+        (avy-action-copy-whole-line pt)
+        (save-excursion
+          (insert-line-below)
+          (yank)
+          (indent-for-tab-command))
+        t)
+
+      (setf (alist-get ?y avy-dispatch-alist) 'avy-action-yank
+            (alist-get ?Y avy-dispatch-alist) 'avy-action-yank-whole-line
+            (alist-get ?P avy-dispatch-alist) 'avy-action-yank-whole-line-above
+            (alist-get ?N avy-dispatch-alist) 'avy-action-yank-whole-line-below)
+
+      ;; Transpose/Move text
+      (defun avy-action-teleport-whole-line (pt)
+        (avy-action-kill-whole-line pt)
+        (save-excursion (yank)) t)
+
+      (setf (alist-get ?t avy-dispatch-alist) 'avy-action-teleport
+            (alist-get ?T avy-dispatch-alist) 'avy-action-teleport-whole-line)
+
       :bind
       ("C-c f" . avy-goto-char-timer)
       ("C-c a l" . avy-goto-line))
@@ -760,7 +865,8 @@ locate definitions of funcs or vars
     (save-excursion
       (copy-whole-line)
       (insert-line-below)
-      (yank)))
+      (yank)
+      (indent-for-tab-command)))
   (global-set-key (kbd "C-c y n") 'copy-and-yank-line-below)
 
   (defun copy-and-yank-line-above ()
@@ -770,7 +876,8 @@ locate definitions of funcs or vars
     (save-excursion
       (copy-whole-line)
       (insert-line-above)
-      (yank)))
+      (yank)
+      (indent-for-tab-command)))
   (global-set-key (kbd "C-c y p") 'copy-and-yank-line-above)
 #+end_src
 ** moving lines
