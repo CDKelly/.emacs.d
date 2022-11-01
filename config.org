@@ -407,7 +407,6 @@ maintain consistent coding styles between devs working on the same project
     ("C-c r e r" . vr/replace)
     ("C-c r e q" . vr/query-replace)
     ("C-c r e m" . vr/mc-mark)
-    ("C-c r e m" . vr/mc-mark)
     :init
     ;; if the files are not already in the load path
     (add-to-list 'load-path "/Users/ckelly/.emacs.d/elpa/visual-regexp-20210502.2019/")
