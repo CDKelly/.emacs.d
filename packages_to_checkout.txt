@@ -25,3 +25,5 @@ dtrt-indent - guess indentation and adjust settings in emacs; look for dtrt-inde
 aggressive-indent
 
 VLF (view large files) - https://elpa.gnu.org/packages/vlf.html
+
+https://github.com/kostafey/ejc-sql - sql client
