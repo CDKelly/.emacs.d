@@ -10,6 +10,7 @@
         c-electric-delete-forward
         c-electric-paren
         c-electric-semi&comma
+        c-indent-line-or-region
         counsel-yank-pop
         electric-pair-delete-pair
         end-of-visual-line
@@ -19,13 +20,16 @@
         kill-region
         kill-visual-line
         markdown-outdent-or-delete
+        nxml-electric-slash
         org-delete-char
         org-edit-src-save
         org-self-insert-command
         paredit-backward-kill-word
+        paredit-delete-char
         paredit-forward-delete
         paredit-forward-kill-word
         paredit-kill
+        save-all-buffers-no-confirm
         yaml-electric-backspace
         ))
 

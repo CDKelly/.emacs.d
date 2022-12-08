@@ -623,19 +623,20 @@ better looking bullets for .org files
         (end-of-visual-line)))
   #+end_src
 ** [[https://github.com/dimitri/switch-window][switch-window]]
-switch windows quickly when > 2 windows
+This was nice for awhile, but it eventually kept getting in the way and making frames unusable. Maybe some day I'll return to it
+switch windows quickly when > 3 windows
 #+begin_src emacs-lisp
-  (use-package switch-window
-    :ensure t
-    :config
-    (setq switch-window-input-style 'minibuffer)
-    (setq switch-window-increase 4)
-    (setq switch-window-threshold 3)
-    (setq switch-window-shortcut-style 'qwerty)
-    (setq switch-window-qwerty-shortcuts
-          '("a" "s" "d" "f" "g" "h" "j" "k" "l" "q" "w" "e" "r"))
-    :bind
-    ([remap other-window] . switch-window))
+  ;; (use-package switch-window
+  ;;   :ensure t
+  ;;   :config
+  ;;   (setq switch-window-input-style 'minibuffer)
+  ;;   (setq switch-window-increase 4)
+  ;;   (setq switch-window-threshold 3)
+  ;;   (setq switch-window-shortcut-style 'qwerty)
+  ;;   (setq switch-window-qwerty-shortcuts
+  ;;         '("a" "s" "d" "f" "g" "h" "j" "k" "l" "q" "w" "e" "r"))
+  ;;   :bind
+  ;;   ([remap other-window] . switch-window))
 #+end_src
 ** [[https://github.com/abo-abo/avy][avy]]
 quickly jump to char or line
@@ -646,13 +647,13 @@ TODO: avy-goto-char-timer + symbol-at-point = could make it easier to jump to a 
       :config
       ;; (setq avy-keys-alist
       ;;       `((avy-goto-char-timer . ,(number-sequence ?a ?z))))
-      ;; (setq avy-keys-alist nil)
+      (setq avy-keys-alist nil)
       (setq avy-background t)
 
       ;; every letter but the letters I use for avy-actions below
       (setq avy-keys '(?a ?b ?c ?d ?e ?f ?g ?h
-                          ?h ?j ?l ?m ?o ?q ?r
-                          ?s ?u ?v ?x ?z))
+                          ?j ?l ?m ?o ?q ?r ?s
+                          ?u ?v ?z))
 
       (defun avy-show-dispatch-help ()
         (let* ((len (length "avy-action-"))
