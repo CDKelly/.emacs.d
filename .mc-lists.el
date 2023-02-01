@@ -15,6 +15,7 @@
         electric-pair-delete-pair
         end-of-visual-line
         gcm-scroll-up
+        hydra--digit-argument
         hydra-multiple-cursors/nil
         indent-for-tab-command
         kill-region
@@ -31,6 +32,7 @@
         paredit-kill
         save-all-buffers-no-confirm
         yaml-electric-backspace
+        yaml-electric-dash-and-dot
         ))
 
 (setq mc/cmds-to-run-once
