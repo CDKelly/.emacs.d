@@ -653,7 +653,7 @@ TODO: avy-goto-char-timer + symbol-at-point = could make it easier to jump to a 
       ;; every letter but the letters I use for avy-actions below
       (setq avy-keys '(?a ?b ?c ?d ?e ?f ?g ?h
                           ?j ?l ?m ?o ?q ?r ?s
-                          ?u ?v ?z))
+                          ?u ?v))
 
       (defun avy-show-dispatch-help ()
         (let* ((len (length "avy-action-"))
