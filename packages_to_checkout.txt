@@ -2,6 +2,9 @@ zygospore - toggle delete-other-window
 
 yasnippet
 
+tree sitter - https://tree-sitter.github.io/tree-sitter/
+combobulate - https://github.com/mickeynp/combobulate; structural navigation and editing
+
 docker - wrapper around docker CLI
 
 puni - https://github.com/AmaiKinono/puni - smart/soft deletes around sexps
