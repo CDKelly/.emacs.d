@@ -11,3 +11,4 @@ C-M-m - run command but keep minibuffer open
 M-o - brings up list of options (default, insert, copy)
 
 C-c C-o - produce buffer of things in list -> ivy-occur (C-h m will show helpful commands)
+C-x C-q - enter editing mode -> make changes -> C-x C-s to save

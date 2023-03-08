@@ -39,6 +39,7 @@
       '(
         counsel-git-grep
         counsel-mark-ring
+        dumb-jump-go
         gcm-scroll-down
         handle-switch-frame
         hydra-multiple-cursors/mc/cycle-backward

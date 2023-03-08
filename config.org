@@ -1036,6 +1036,12 @@ alternative interface for M-x in Emacs
     ;; https://github.com/DarwinAwardWinner/amx#speeding-up-amx
     (setq amx-ignored-command-matchers nil))
 #+end_src
+** wgrep
+#+begin_src emacs-lisp
+  (use-package wgrep
+    :ensure
+    :after ivy)
+#+end_src
 * [[https://github.com/bbatsov/projectile][Projectile]]
 #+begin_src emacs-lisp
   (use-package projectile
