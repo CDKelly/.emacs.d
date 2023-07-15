@@ -29,6 +29,12 @@ turn current emacs process into a server that another client can connect to
   # OR run as a foreground process and see the output of emacs (can be helpful to diagnose errors)
   emacs --fg-daemon
 #+end_src
+** savehist
+#+begin_src emacs-lisp
+  (savehist-mode 1)
+
+  (setq savehist-additional-variables '(register-alist kill-ring))
+#+end_src
 ** change "yes or no?" to "y or n?"
   #+begin_src emacs-lisp
   (defalias 'yes-or-no-p 'y-or-n-p)
@@ -432,11 +438,19 @@ maintain consistent coding styles between devs working on the same project
 Kept getting the following error when running query-replace-regexp: "Match data clobbered by buffer modification hooks"
 Check out these links for more info: [[https://emacs.stackexchange.com/questions/47147/regex-replace-sporadic-match-data-clobbered-by-buffer-modification-hooks][stackexchange #1]], [[https://emacs.stackexchange.com/questions/38800/match-data-clobbered-by-buffer-modification-hooks][stackexchange #2]], [[https://gnu.emacs.bug.narkive.com/AfLtJyrL/bug-41445-26-3-query-replace-triggers-match-data-clobbered-by][gnu.emacs.bug]]
 #+begin_src emacs-lisp
-  (defun my-query-replace-regexp ()
-    (interactive)
-    (let ((after-change-functions nil)) ; empty when executing this func
-      (call-interactively 'query-replace-regexp)))
-  (global-set-key (kbd "C-M-%") 'my-query-replace-regexp)
+  ;; (defun my-query-replace-regexp ()
+  ;;   (interactive)
+  ;;   (let ((after-change-functions nil)) ; empty when executing this func
+  ;;     (call-interactively 'query-replace-regexp)))
+  ;; (global-set-key (kbd "C-M-%") 'my-query-replace-regexp)
+#+end_src
+*** [[https://github.com/joddie/pcre2el][pcre2el]]
+use perl-based regexp and convert between Emacs syntax to PCRE and vice versa
+#+begin_src emacs-lisp
+  (use-package pcre2el
+    :ensure t
+    :defer t
+    :hook ((prog-mode) . rxt-mode))
 #+end_src
 * Buffer and Window stuff
 ** ibuffer
@@ -748,21 +762,21 @@ TODO: avy-goto-char-timer + symbol-at-point = could make it easier to jump to a 
 ** [[https://github.com/jacktasia/dumb-jump][dumb-jump]]
 locate definitions of funcs or vars
   #+begin_src emacs-lisp
-  (use-package dumb-jump
-    :ensure t
-    :config
-    (setq dumb-jump-selector 'ivy)
-    ;; see https://www.reddit.com/r/emacs/comments/hzxvke/how_do_people_have_dumbjump_setup/
-    ;; and https://github.com/jacktasia/dumb-jump#obsolete-commands-and-options
-    ;; for latest update
-    (setq xref-backend-functions (remq 'etags--xref-backend xref-backend-functions))
-    (add-to-list 'xref-backend-functions #'dumb-jump-xref-activate t)
-    :hook
-    ((prog-mode) . dumb-jump-mode)
-    :bind
-    ("C-c d g" . dumb-jump-go)
-    ("C-c d p" . dumb-jump-back)
-    ("C-c d q" . dumb-jump-quick-look))
+    (use-package dumb-jump
+      :ensure t
+      :config
+      (setq dumb-jump-selector 'ivy)
+      ;; see https://www.reddit.com/r/emacs/comments/hzxvke/how_do_people_have_dumbjump_setup/
+      ;; and https://github.com/jacktasia/dumb-jump#obsolete-commands-and-options
+      ;; for latest update
+      (setq xref-backend-functions (remq 'etags--xref-backend xref-backend-functions))
+      (add-to-list 'xref-backend-functions #'dumb-jump-xref-activate t)
+      :hook
+      ((prog-mode) . dumb-jump-mode)
+      :bind
+      ("C-c d g" . dumb-jump-go)
+      ("C-c d p" . dumb-jump-back)
+      ("C-c d q" . dumb-jump-quick-look))
   #+end_src
 * Scrolling
 #+begin_src emacs-lisp
@@ -1034,7 +1048,11 @@ alternative interface for M-x in Emacs
     :config
     (amx-mode 1)
     ;; https://github.com/DarwinAwardWinner/amx#speeding-up-amx
-    (setq amx-ignored-command-matchers nil))
+    (setq amx-ignored-command-matchers nil)
+    ;; amx was ruining eval-expression. Hopefully, this removes this annoyance.
+    ;; opposite of this: https://github.com/DarwinAwardWinner/amx/blob/master/amx.el#L1323
+    (cl-loop for fun in '(load eval-last-sexp eval-buffer eval-region eval-expression autoload-do-load)
+             do (advice-remove fun #'amx-post-eval-force-update)))
 #+end_src
 ** wgrep
 #+begin_src emacs-lisp
