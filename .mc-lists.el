@@ -31,6 +31,7 @@
         paredit-forward-kill-word
         paredit-kill
         save-all-buffers-no-confirm
+        wgrep-finish-edit
         yaml-electric-backspace
         yaml-electric-dash-and-dot
         ))

@@ -12,3 +12,7 @@ M-o - brings up list of options (default, insert, copy)
 
 C-c C-o - produce buffer of things in list -> ivy-occur (C-h m will show helpful commands)
 C-x C-q - enter editing mode -> make changes -> C-x C-s to save
+
+Separate but related:
+occur can accept itself as a prefix (I think that's what happening?) -> C-u M-x occur -> will only list the matches themselves of a regexp search
+M-x occur - matches all lines
