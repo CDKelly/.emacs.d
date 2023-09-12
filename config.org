@@ -995,9 +995,14 @@ TODO: use-package-ify all of counsel
     ("C-h f" . counsel-describe-function)
     ("C-h v" . counsel-describe-variable)
     ("C-h S" . counsel-info-lookup-symbol)
-    (("M-y" . counsel-yank-pop)
-     :map ivy-minibuffer-map
-     ("M-y" . ivy-next-line)))
+    (("M-y" . counsel-yank-pop))
+    :config
+    (defun my-minibuffer-hook()
+      ;; I just want to use counsel-yank-pop in the minibuffer
+      ;; Apparently, setting enable-recursive-minibuffers (above) wasn't enough
+      (local-set-key (kbd "M-y") 'counsel-yank-pop))
+    (add-hook 'minibuffer-setup-hook 'my-minibuffer-hook)
+    )
 
   ;; no regexp by default
     (with-eval-after-load 'counsel
@@ -1416,6 +1421,11 @@ copied a lot of stuff from [[https://github.com/MatthewZMD/.emacs.d#lsp][this co
   ;;   )
 #+end_src
 * [[https://github.com/joaotavora/eglot][Eglot]]
+helpful doc - https://joaotavora.github.io/eglot/
+** TODO get working on work laptop (does work on personal laptop)
+*** can't import basic stuff (e.g. 'java.util') on work laptop; doesn't work on basic .java files
+*** ':java :home' setting is different between personal and work laptop when starting eglot
+** switched from lsp because eglot is more minimalist and works more OOTB
 #+begin_src emacs-lisp
   (use-package eglot
     :ensure t)
@@ -1492,6 +1502,8 @@ copied a lot of stuff from [[https://github.com/MatthewZMD/.emacs.d#lsp][this co
                       "-Declipse.application=org.eclipse.jdt.ls.core.id1"
                       "-Dosgi.bundles.defaultStartLevel=4"
                       "-Declipse.product=org.eclipse.jdt.ls.core.product"
+                      "-Dmy.maven.local.repository=/Users/connorkelly/.m2/repository/"
+                      "--add-modules=ALL-SYSTEM"
                       "-jar" jar
                       "-configuration" config
                       "-data" workspace)))))
@@ -1530,16 +1542,22 @@ copied a lot of stuff from [[https://github.com/MatthewZMD/.emacs.d#lsp][this co
   ;; END COPY
 
 
+  ;; Note: check out how this Java Language Server sets up its externalDependencies
+  ;; https://github.com/georgewfraser/java-language-server#settings
+  ;; This server apparently picks up your externalDependencies you put in your ~/.m2
+
   ;; This is also copied/pasted from the eglot repo: https://github.com/joaotavora/eglot/issues/176#issuecomment-445021620
-  ;; It just says, "Go to the eglot-server-program list and set the value (corresponding to the java-mode key) to this jdtls binary
+  ;; It just says, "Go to the eglot-server-program list and set the value (corresponding to the java-mode key) to this eclipse jar
   ;; (by overriding the eglot--eclipse-jdt-contact function... I think).
   ;; You might ask, "Why did we copy/paste the giant couple functions above, particularly eglot--eclipse-jdt-contact, if all we're
   ;; doing is changing a key-value pair?" Answer: Idk. Idk what unwind-protect was doing/not doing, so I copied/pasted everything bcus
   ;; I'm desperate to get something to work.
 
-  (defconst my-eglot-eclipse-jdt-home "/Users/connorkelly/.emacs.d/.cache/lsp/eclipse.jdt.ls/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar") ;; also in PATH in .bashrc
-  ;; use bin/jdtls if eglot directly asks, "Can't find jdtls program in path. Enter program to execute:..."
-  ;; (defconst my-eglot-eclipse-jdt-home "/Users/connorkelly/.emacs.d/.cache/lsp/eclipse.jdt.ls/bin/jdtls")
+  ;; also in PATH in .bashrc
+  (defconst my-eglot-eclipse-jdt-home "/Users/connorkelly/.emacs.d/.cache/lsp/eclipse.jdt.ls/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar") ;; personal
+  ;; (defconst my-eglot-eclipse-jdt-home "/Users/ckelly/.emacs.d/.cache/lsp/eclipse.jdt.ls/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar") ;; work
+  ;; (defconst my-eglot-eclipse-jdt-home "/Users/connorkelly/.emacs.d/.cache/lsp/eclipse.jdt.ls/bin/jdtls") ;; use bin/jdtls if eglot directly asks, "Can't find jdtls program in path. Enter program to execute:..."
+
 
   (defun my-eglot-eclipse-jdt-contact (interactive)
     "Contact with the jdt server input INTERACTIVE."
