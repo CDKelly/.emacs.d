@@ -83,12 +83,12 @@ I just want to use counsel-yank-pop in the minibuffer
   (use-package all-the-icons
     :ensure t
     :if (display-graphic-p)
-    :commands all-the-icons-install-fonts
-    :config
-    (unless (find-font (font-spec :name "all-the-icons"))
-      (all-the-icons-install-fonts t))
-    (unless (member "all-the-icons" (font-family-list))
-      (all-the-icons-install-fonts t))
+    ;; :commands all-the-icons-install-fonts
+    ;; :config
+    ;; (unless (find-font (font-spec :name "all-the-icons"))
+    ;;   (all-the-icons-install-fonts t))
+    ;; (unless (member "all-the-icons" (font-family-list))
+    ;;   (all-the-icons-install-fonts t))
     ;; (all-the-icons-install-fonts)
     )
 #+end_src
@@ -965,7 +965,9 @@ make sure ivy, counsel, and swiper are all installed using the same package repo
     (ivy-wrap t)
     :config
     (ivy-mode 1)
-    (setq projectile-completion-system 'ivy))
+    (setq projectile-completion-system 'ivy)
+    ;; (define-key ivy-mode-map (kbd "M-y") nil)
+    )
 #+end_src
 *** ivy-hydra
 #+begin_src emacs-lisp
