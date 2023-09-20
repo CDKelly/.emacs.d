@@ -2,7 +2,4 @@ Replacing the dhs-<proj> parent version on all the poms in a project. For exampl
 
 When yanking (pasting) a line/chunk of code, it's (mostly just the 1st line) rarely aligned as it should be (to the right too much). This is probably b/c I yank the entire rectangle of code to the beginning of the line, but only paste when my cursor _is_ aligned thus pushing my code the right a bit. I just wanna hit yank, and the code is aligned as it should be with everything else in the buffer
 
-copy line n - basically instead of going to line n and then copying it and moving back to where I originally was, I wanna just hit "copy line n" (extra credit: copy/paste line n above, at, or below cursor)
-use avy to its full advantage: C-c f -> get result -> ask action (g -> goto, y -> copy and/or yank, w -> kill-ring-save, k -> kill) -> ask noun (w -> whole word, l -> line). Check out this guide: https://karthinks.com/software/avy-can-do-anything/
-
 projectile-switch-to-project then git grep across project (vs. finding file)

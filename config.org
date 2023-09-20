@@ -42,7 +42,7 @@ turn current emacs process into a server that another client can connect to
 ** subword mode
 treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of a camel-cased symbol)
   #+begin_src emacs-lisp
-  (global-subword-mode 1)
+    (global-subword-mode 1)
   #+end_src
 ** delete text when it's marked by typing
   #+begin_src emacs-lisp
