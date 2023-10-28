@@ -2,6 +2,8 @@ zygospore - toggle delete-other-window
 
 yasnippet
 
+rg - https://github.com/dajva/rg.el
+
 tree sitter - https://tree-sitter.github.io/tree-sitter/
 combobulate - https://github.com/mickeynp/combobulate; structural navigation and editing
 

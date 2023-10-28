@@ -21,6 +21,7 @@
         indent-for-tab-command
         kill-region
         kill-visual-line
+        kill-whole-word-at-point
         markdown-outdent-or-delete
         nxml-electric-slash
         org-delete-char
