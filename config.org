@@ -325,6 +325,42 @@ maintain consistent coding styles between devs working on the same project
     :config
     (editorconfig-mode 1))
   #+end_src
+** regex
+*** [[https://github.com/benma/visual-regexp-steroids.el/][visual-regexp-steroids]]
+#+begin_src emacs-lisp
+  (use-package visual-regexp-steroids
+    :ensure t
+    :bind
+    ("C-c r e r" . vr/replace)
+    ("C-c r e q" . vr/query-replace)
+    ("C-c r e m" . vr/mc-mark)
+    :init
+    ;; if the files are not already in the load path
+    (add-to-list 'load-path "/Users/ckelly/.emacs.d/elpa/visual-regexp-20210502.2019/")
+    (add-to-list 'load-path "/Users/ckelly/.emacs.d/elpa/visual-regexp-steroids-20170222.253/")
+    :config
+    ;; to use visual-regexp-steroids's isearch instead of the built-in regexp isearch, also include the following lines:
+    (define-key esc-map (kbd "C-c r e s b") 'vr/isearch-backward)
+    (define-key esc-map (kbd "C-c r e s f") 'vr/isearch-forward))
+#+end_src
+*** my-query-regexp-replace
+Kept getting the following error when running query-replace-regexp: "Match data clobbered by buffer modification hooks"
+Check out these links for more info: [[https://emacs.stackexchange.com/questions/47147/regex-replace-sporadic-match-data-clobbered-by-buffer-modification-hooks][stackexchange #1]], [[https://emacs.stackexchange.com/questions/38800/match-data-clobbered-by-buffer-modification-hooks][stackexchange #2]], [[https://gnu.emacs.bug.narkive.com/AfLtJyrL/bug-41445-26-3-query-replace-triggers-match-data-clobbered-by][gnu.emacs.bug]]
+#+begin_src emacs-lisp
+  ;; (defun my-query-replace-regexp ()
+  ;;   (interactive)
+  ;;   (let ((after-change-functions nil)) ; empty when executing this func
+  ;;     (call-interactively 'query-replace-regexp)))
+  ;; (global-set-key (kbd "C-M-%") 'my-query-replace-regexp)
+#+end_src
+*** [[https://github.com/joddie/pcre2el][pcre2el]]
+use perl-based regexp and convert between Emacs syntax to PCRE and vice versa
+#+begin_src emacs-lisp
+  (use-package pcre2el
+    :ensure t
+    :defer t
+    :hook ((prog-mode) . rxt-mode))
+#+end_src
 ** miscellaneous enhancements
 *** [[https://github.com/magnars/multiple-cursors.el][multiple-cursors]]
 #+begin_src emacs-lisp
@@ -360,25 +396,32 @@ maintain consistent coding styles between devs working on the same project
   (use-package magit
     :ensure t)
 
-  (defun my-magit-stage-and-commit (message)
-    (interactive "sCommit Message: ")
-    (let ((magit-commit-show-diff nil)
-          (magit-commit-ask-to-stage nil)
-          (msg message))
-      ;; (call-interactively 'magit-stage-modified)
-      ;; (call-interactively 'magit-commit)
-      (magit-stage t)
-      (magit-commit-create)
-      (magit-commit-message-buffer)
-      (insert (format "%S" msg))))
+  ;; (defun my-magit-stage-and-commit (message)
+  ;;   (interactive "sCommit Message: ")
+  ;;   (let ((magit-commit-show-diff nil)
+  ;;         (magit-commit-ask-to-stage nil)
+  ;;         (msg message))
+  ;;     ;; (call-interactively 'magit-stage-modified)
+  ;;     ;; (call-interactively 'magit-commit)
+  ;;     (magit-stage t)
+  ;;     (magit-commit-create)
+  ;;     (magit-commit-message-buffer)
+  ;;     (insert (format "%S" msg))))
 
-  (defun my-magit-stage-and-commit-2 ()
+  (defun my-magit-stage-and-commit ()
     (interactive)
     (let ((magit-commit-show-diff nil)
           (magit-commit-ask-to-stage nil))
       ;; (call-interactively 'magit-stage-modified)
       ;; (call-interactively 'magit-commit)
       (magit-stage t)
+      (magit-commit-create)))
+
+  (defun my-magit-stage-all-and-commit ()
+    (interactive)
+    (let ((magit-commit-show-diff nil)
+          (magit-commit-ask-to-stage nil))
+      (magit-stage-modified)
       (magit-commit-create)))
 #+end_src
 *** [[https://github.com/justbur/emacs-which-key][which-key]]
@@ -440,40 +483,20 @@ maintain consistent coding styles between devs working on the same project
 
 
 #+end_src
-*** [[https://github.com/benma/visual-regexp-steroids.el/][visual-regexp-steroids]]
+**** commenting
 #+begin_src emacs-lisp
-  (use-package visual-regexp-steroids
-    :ensure t
-    :bind
-    ("C-c r e r" . vr/replace)
-    ("C-c r e q" . vr/query-replace)
-    ("C-c r e m" . vr/mc-mark)
-    :init
-    ;; if the files are not already in the load path
-    (add-to-list 'load-path "/Users/ckelly/.emacs.d/elpa/visual-regexp-20210502.2019/")
-    (add-to-list 'load-path "/Users/ckelly/.emacs.d/elpa/visual-regexp-steroids-20170222.253/")
-    :config
-    ;; to use visual-regexp-steroids's isearch instead of the built-in regexp isearch, also include the following lines:
-    (define-key esc-map (kbd "C-c r e s b") 'vr/isearch-backward)
-    (define-key esc-map (kbd "C-c r e s f") 'vr/isearch-forward))
-#+end_src
-*** my-query-regexp-replace
-Kept getting the following error when running query-replace-regexp: "Match data clobbered by buffer modification hooks"
-Check out these links for more info: [[https://emacs.stackexchange.com/questions/47147/regex-replace-sporadic-match-data-clobbered-by-buffer-modification-hooks][stackexchange #1]], [[https://emacs.stackexchange.com/questions/38800/match-data-clobbered-by-buffer-modification-hooks][stackexchange #2]], [[https://gnu.emacs.bug.narkive.com/AfLtJyrL/bug-41445-26-3-query-replace-triggers-match-data-clobbered-by][gnu.emacs.bug]]
-#+begin_src emacs-lisp
-  ;; (defun my-query-replace-regexp ()
-  ;;   (interactive)
-  ;;   (let ((after-change-functions nil)) ; empty when executing this func
-  ;;     (call-interactively 'query-replace-regexp)))
-  ;; (global-set-key (kbd "C-M-%") 'my-query-replace-regexp)
-#+end_src
-*** [[https://github.com/joddie/pcre2el][pcre2el]]
-use perl-based regexp and convert between Emacs syntax to PCRE and vice versa
-#+begin_src emacs-lisp
-  (use-package pcre2el
-    :ensure t
-    :defer t
-    :hook ((prog-mode) . rxt-mode))
+  (defun comment-from-curr-line-to-line-n (n)
+    "Run 'comment-or-uncomment-region' from current line to a given line N."
+    (interactive "nComment to line : ")
+    (save-excursion
+      (let ((line-diff (- n (line-number-at-pos))))
+        (if (>= line-diff 0)
+            (comment-line (+ 1 line-diff))
+          (forward-line 1)
+          (comment-line (+ (- 1) line-diff)))
+        (save-buffer))))
+
+  (global-set-key (kbd "C-c ;") 'comment-from-curr-line-to-line-n)
 #+end_src
 * Buffer and Window stuff
 ** ibuffer
@@ -1385,6 +1408,33 @@ REPL buffer connected to a Ruby subprocess
   (use-package json-reformat
     :ensure t)
 #+end_src
+*** JSON editing
+#+begin_src emacs-lisp
+  (defun json-to-single-line-insert-whitespace (beg end)
+    "Collapse prettified json in region between BEG and END to a single line"
+    (interactive "r")
+    (if (use-region-p)
+        (save-excursion
+          (save-restriction
+            (narrow-to-region beg end)
+            (goto-char (point-min))
+            (while (re-search-forward "[[:space:]\n]+" nil t)
+              (replace-match " "))))
+      (print "This function operates on a region")))
+
+  (defun json-to-single-line-insert-newline-char (beg end)
+    "Collapse prettified json in region between BEG and END to a single line"
+    (interactive "r")
+    (if (use-region-p)
+        (save-excursion
+          (save-restriction
+            (narrow-to-region beg end)
+            (goto-char (point-min))
+            (while (re-search-forward "[\n]+" nil t)
+              (replace-match "\r"))))
+      (print "This function operates on a region")))
+
+#+end_src
 ** Groovy
 (mostly for Jenkinsfiles)
 #+begin_src emacs-lisp
@@ -1637,42 +1687,43 @@ mostly taken from [[https://github.com/andreyorst/dotfiles/tree/master/.config/e
     :config
     ;; use numbers to insert company match
     ;; stolen from https://github.com/abo-abo/oremacs/blob/9c1dd95f52bd6f65313c50c1a85c8bacdde74581/modes/ora-company.el
-    (defun ora-company-number ()
-      "Forward to `company-complete-number'.
-  Unless the number is potentially part of the candidate.
-  In that case, insert the number."
-      (interactive)
-      (let* ((k (this-command-keys))
-             (re (concat "^" company-prefix k)))
-        (if (or (cl-find-if (lambda (s) (string-match re s))
-                            company-candidates)
-                (> (string-to-number k)
-                   (length company-candidates))
-                (looking-back "[0-9]+\\.[0-9]*" (line-beginning-position)))
-            (self-insert-command 1)
-          (company-complete-number
-           (if (equal k "0")
-               10
-             (string-to-number k))))))
+  ;;   (defun ora-company-number ()
+  ;;     "Forward to `company-complete-number'.
+  ;; Unless the number is potentially part of the candidate.
+  ;; In that case, insert the number."
+  ;;     (interactive)
+  ;;     (let* ((k (this-command-keys))
+  ;;            (re (concat "^" company-prefix k)))
+  ;;       (if (or (cl-find-if (lambda (s) (string-match re s))
+  ;;                           company-candidates)
+  ;;               (> (string-to-number k)
+  ;;                  (length company-candidates))
+  ;;               (looking-back "[0-9]+\\.[0-9]*" (line-beginning-position)))
+  ;;           (self-insert-command 1)
+  ;;         (company-complete-number
+  ;;          (if (equal k "0")
+  ;;              10
+  ;;            (string-to-number k))))))
 
-    (defun ora--company-good-prefix-p (orig-fn prefix)
-      (unless (and (stringp prefix) (string-match-p "\\`[0-9]+\\'" prefix))
-        (funcall orig-fn prefix)))
+  ;;   (defun ora--company-good-prefix-p (orig-fn prefix)
+  ;;     (unless (and (stringp prefix) (string-match-p "\\`[0-9]+\\'" prefix))
+  ;;       (funcall orig-fn prefix)))
 
-    (defun ora-advice-add (&rest args)
-      (when (fboundp 'advice-add)
-        (apply #'advice-add args)))
+  ;;   (defun ora-advice-add (&rest args)
+  ;;     (when (fboundp 'advice-add)
+  ;;       (apply #'advice-add args)))
 
-    (ora-advice-add 'company--good-prefix-p :around #'ora--company-good-prefix-p)
+  ;;   (ora-advice-add 'company--good-prefix-p :around #'ora--company-good-prefix-p)
 
-    (let ((map company-active-map))
-      (mapc (lambda (x) (define-key map (format "%d" x) 'ora-company-number))
-            (number-sequence 0 9))
-      (define-key map " " (lambda ()
-                            (interactive)
-                            (company-abort)
-                            (self-insert-command 1)))
-      (define-key map (kbd "<return>") nil)))
+  ;;   (let ((map company-active-map))
+  ;;     (mapc (lambda (x) (define-key map (format "%d" x) 'ora-company-number))
+  ;;           (number-sequence 0 9))
+  ;;     (define-key map " " (lambda ()
+  ;;                           (interactive)
+  ;;                           (company-abort)
+  ;;                           (self-insert-command 1)))
+    ;;     (define-key map (kbd "<return>") nil))
+    )
 
 #+end_src
 ** [[https://github.com/tumashu/company-posframe][company-posframe]]
@@ -1876,31 +1927,4 @@ Garbage Collect when Emacs is out of focus and try to avoid garbage collection w
 
               (add-hook 'minibuffer-setup-hook #'gc-minibuffer-setup-hook)
               (add-hook 'minibuffer-exit-hook #'gc-minibuffer-exit-hook)))
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun json-to-single-line-insert-whitespace (beg end)
-    "Collapse prettified json in region between BEG and END to a single line"
-    (interactive "r")
-    (if (use-region-p)
-        (save-excursion
-          (save-restriction
-            (narrow-to-region beg end)
-            (goto-char (point-min))
-            (while (re-search-forward "[[:space:]\n]+" nil t)
-              (replace-match " "))))
-      (print "This function operates on a region")))
-
-  (defun json-to-single-line-insert-newline-char (beg end)
-    "Collapse prettified json in region between BEG and END to a single line"
-    (interactive "r")
-    (if (use-region-p)
-        (save-excursion
-          (save-restriction
-            (narrow-to-region beg end)
-            (goto-char (point-min))
-            (while (re-search-forward "[\n]+" nil t)
-              (replace-match "\r"))))
-      (print "This function operates on a region")))
-
 #+end_src

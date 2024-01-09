@@ -13,6 +13,7 @@
         c-electric-star
         c-indent-line-or-region
         counsel-yank-pop
+        dabbrev-expand
         electric-pair-delete-pair
         end-of-visual-line
         gcm-scroll-up
