@@ -1648,7 +1648,8 @@ helpful doc - https://joaotavora.github.io/eglot/
 
   (setcdr (assq (cons 'java-mode 'java-ts-mode) eglot-server-programs) #'my-eglot-eclipse-jdt-contact)
 
-  (add-hook 'java-mode-hook 'eglot-ensure)
+  ;; (add-hook 'java-mode-hook 'eglot-ensure)
+  ;; (remove-hook 'java-mode-hook 'eglot-ensure)
 #+end_src
 * Company
 set [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Completion-Styles.html][completion-style]]
