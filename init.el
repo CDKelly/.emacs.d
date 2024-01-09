@@ -19,7 +19,7 @@
  '(Linum-format "%7i ")
  '(ansi-color-faces-vector
    [default bold shadow italic underline bold bold-italic bold])
- '(company-show-quick-access t nil nil "Customized with use-package company")
+ '(beacon-color "#cc6666")
  '(compilation-message-face 'default)
  '(cua-global-mark-cursor-color "#689d6a")
  '(cua-normal-cursor-color "#a89984")
@@ -30,7 +30,7 @@
  '(dumb-jump-selector 'ivy)
  '(eldoc-documentation-functions nil t nil "Customized with use-package lsp-mode")
  '(flycheck-color-mode-line-face-to-color 'mode-line-buffer-id)
- '(frame-background-mode 'light)
+ '(frame-background-mode nil)
  '(fringe-mode 4 nil (fringe))
  '(global-subword-mode t)
  '(global-visual-line-mode t)
@@ -76,6 +76,8 @@
  '(main-line-separator-style 'chamfer)
  '(nrepl-message-colors
    '("#fb4933" "#d65d0e" "#d79921" "#747400" "#b9b340" "#14676b" "#689d6a" "#d3869b" "#b16286"))
+ '(org-fontify-done-headline nil)
+ '(org-fontify-todo-headline nil)
  '(org-structure-template-alist
    '(("a" . "export ascii")
      ("c" . "center")
@@ -117,7 +119,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :extend nil :stipple nil :background "#1c1e1f" :foreground "#dfdfdf" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "nil" :family "Menlo"))))
+ '(default ((t (:inherit default :extend nil :stipple nil :background "#1c1e1f" :foreground "#dfdfdf" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "nil" :family "Menlo"))))
  '(ahs-plugin-defalt-face ((t (:background "gray40" :foreground "DeepSkyBlue1"))) t)
  '(ahs-plugin-whole-buffer-face ((t (:background "gray40" :foreground "DeepSkyBlue1"))))
  '(avy-lead-face-0 ((t (:inherit avy-lead-face :background "#fd971f"))))
@@ -129,14 +131,17 @@
  '(flycheck-info ((t (:background nil :underline (:color "#b6e63e" :style wave)))))
  '(flycheck-warning ((t (:background nil :underline (:color "#e2c770" :style wave)))))
  '(font-lock-comment-face ((t (:foreground "#7f7f80"))))
- '(font-lock-type-face ((t (:foreground "#66d9ef" :slant italic))))
+ '(font-lock-type-face ((t (:foreground "#3679D8" :slant italic))))
  '(ivy-current-match ((t (:extend t :background "MediumPurple3" :foreground "seashell1"))))
  '(ivy-minibuffer-match-face-1 ((t (:background "MediumPurple3" :foreground "AntiqueWhite1"))))
  '(ivy-minibuffer-match-highlight ((t (:foreground "#9c91e4"))))
  '(ivy-prompt-match ((t (:inherit ivy-current-match))))
+ '(magit-diff-hunk-heading ((t (:extend t :foreground "#D8B941" :box (:line-width 1 :color "grey75") :weight light))))
+ '(magit-diff-hunk-heading-highlight ((t (:extend t :foreground "#D8B941" :box (:line-width 1 :color "medium slate blue") :weight bold))))
  '(mode-line ((t (:background "black" :box (:line-width 1 :color "medium slate blue")))))
  '(mode-line-buffer-id ((t (:weight bold))))
  '(mode-line-inactive ((t (:background "#171819" :foreground "#4e4e4e" :box (:line-width 1 :color "gray25" :style released-button)))))
+ '(region ((t (:extend t :background "dim gray" :foreground "white"))))
  '(show-paren-match ((t (:background "MediumPurple1" :foreground "white" :overline nil :underline nil :weight ultra-bold))))
  '(swiper-background-match-face-1 ((t (:background "MediumPurple3" :foreground "white"))))
  '(swiper-match-face-1 ((t (:background "MediumPurple3" :foreground "antique white")))))

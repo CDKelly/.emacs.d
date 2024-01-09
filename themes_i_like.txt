@@ -2,17 +2,14 @@ doom-acario-dark
 doom-city-lights
 doom-dark+
 doom-gruvbox
+doom-monokai-classic
 doom-monokai-pro
 doom-material
 doom-peacock
 jazz
 material
-moe
 monokai
 molokai
 nord
 sanityinc: night, eighties
 spacemacs-dark
-
-
-

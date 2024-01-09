@@ -59,7 +59,9 @@ I just want to use counsel-yank-pop in the minibuffer
   (use-package doom-themes
     :ensure t
     :config
-    (load-theme 'doom-molokai t))
+    (load-theme 'doom-acario-dark t)
+    ;; (load-theme 'doom-molokai t)
+    )
   ;; doom-monokai-classic - very similar to doom-molokai
 #+end_src
 ** what face
@@ -76,7 +78,14 @@ I just want to use counsel-yank-pop in the minibuffer
   (use-package mood-line
     :ensure t
     :config
-    (mood-line-mode))
+    (mood-line-mode)
+    :after
+    all-the-icons
+
+    ;; Use pretty Fira Code-compatible glyphs:
+    ;;   ● myModifiedFile.js  Replace×3                 + main  JavaScript  → Issues: 2
+    :custom
+    (mood-line-glyph-alist mood-line-glyphs-fira-code))
 #+end_src
 ** [[https://github.com/domtronn/all-the-icons.el/][all-the-icons]]
 #+begin_src emacs-lisp
@@ -1646,7 +1655,8 @@ helpful doc - https://joaotavora.github.io/eglot/
       (unwind-protect (eglot--eclipse-jdt-contact nil)
         (setenv "PATH" envpath))))
 
-  (setcdr (assq (cons 'java-mode 'java-ts-mode) eglot-server-programs) #'my-eglot-eclipse-jdt-contact)
+  ;; THIS IS FINICKY
+  ;; (setcdr (assq (cons 'java-mode 'java-ts-mode) eglot-server-programs) #'my-eglot-eclipse-jdt-contact)
 
   ;; (add-hook 'java-mode-hook 'eglot-ensure)
   ;; (remove-hook 'java-mode-hook 'eglot-ensure)
