@@ -1672,7 +1672,7 @@ helpful doc - https://joaotavora.github.io/eglot/
 set [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Completion-Styles.html][completion-style]]
 TODO: checkout [[https://www.emacswiki.org/emacs/Icicles_-_Completion_Methods_and_Styles][Icicles - Completion Methods and Styles]]
 #+begin_src emacs-lisp
-  (add-to-list 'completion-styles-alist 'flex)
+  (add-to-list 'completion-styles-alist '(flex substring))
 #+end_src
 mostly taken from [[https://github.com/andreyorst/dotfiles/tree/master/.config/emacs][this config]]
 #+begin_src emacs-lisp
