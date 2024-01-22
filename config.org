@@ -198,6 +198,13 @@ show 80-character vertical marker
         (if (> space-count tab-count) (setq indent-tabs-mode nil))
         (if (> tab-count space-count) (setq indent-tabs-mode t))))
 #+end_src
+**** [[https://github.com/Malabarba/aggressive-indent-mode][aggressive-indent-mode]]
+#+begin_src emacs-lisp
+  (use-package aggressive-indent
+    :ensure t
+    :hook
+    (prog-mode . aggressive-indent-mode))
+#+end_src
 **** [[https://www.emacswiki.org/emacs/SmartTabs][smart-tabs-mode]]
 #+begin_src emacs-lisp
   (use-package smart-tabs-mode
