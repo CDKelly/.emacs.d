@@ -24,8 +24,9 @@ spaceline - changes mode line to look cool
 
 dabbrev - particularly dabbrev-expand and hippie-expand --> https://www.reddit.com/r/emacs/comments/j61aoh/weekly_tipstricketc_thread/
 
+icicles - https://www.emacswiki.org/emacs/Icicles_-_Completion_Methods_and_Styles
+
 dtrt-indent - guess indentation and adjust settings in emacs; look for dtrt-indent in https://tuhdo.github.io/c-ide.html
-aggressive-indent
 
 VLF (view large files) - https://elpa.gnu.org/packages/vlf.html
 
