@@ -19,7 +19,6 @@
  '(Linum-format "%7i ")
  '(ansi-color-faces-vector
    [default bold shadow italic underline bold bold-italic bold])
- '(beacon-color "#cc6666")
  '(compilation-message-face 'default)
  '(cua-global-mark-cursor-color "#689d6a")
  '(cua-normal-cursor-color "#a89984")
@@ -30,7 +29,7 @@
  '(dumb-jump-selector 'ivy)
  '(eldoc-documentation-functions nil t nil "Customized with use-package lsp-mode")
  '(flycheck-color-mode-line-face-to-color 'mode-line-buffer-id)
- '(frame-background-mode nil)
+ '(frame-background-mode 'light)
  '(fringe-mode 4 nil (fringe))
  '(global-subword-mode t)
  '(global-visual-line-mode t)
@@ -76,8 +75,6 @@
  '(main-line-separator-style 'chamfer)
  '(nrepl-message-colors
    '("#fb4933" "#d65d0e" "#d79921" "#747400" "#b9b340" "#14676b" "#689d6a" "#d3869b" "#b16286"))
- '(org-fontify-done-headline nil)
- '(org-fontify-todo-headline nil)
  '(org-structure-template-alist
    '(("a" . "export ascii")
      ("c" . "center")
@@ -136,8 +133,8 @@
  '(ivy-minibuffer-match-face-1 ((t (:background "MediumPurple3" :foreground "AntiqueWhite1"))))
  '(ivy-minibuffer-match-highlight ((t (:foreground "#9c91e4"))))
  '(ivy-prompt-match ((t (:inherit ivy-current-match))))
- '(magit-diff-hunk-heading ((t (:extend t :foreground "#D8B941" :box (:line-width 1 :color "grey75") :weight light))))
- '(magit-diff-hunk-heading-highlight ((t (:extend t :foreground "#D8B941" :box (:line-width 1 :color "medium slate blue") :weight bold))))
+ '(magit-diff-hunk-heading ((t (:extend t :background "textBackgroundColor" :foreground "#D8B941" :box (:line-width 1 :color "grey75") :weight light))))
+ '(magit-diff-hunk-heading-highlight ((t (:extend t :background "textBackgroundColor" :foreground "#D8B941" :box (:line-width 1 :color "medium slate blue") :weight bold))))
  '(mode-line ((t (:background "black" :box (:line-width 1 :color "medium slate blue")))))
  '(mode-line-buffer-id ((t (:weight bold))))
  '(mode-line-inactive ((t (:background "#171819" :foreground "#4e4e4e" :box (:line-width 1 :color "gray25" :style released-button)))))

@@ -61,6 +61,7 @@
         hydra-multiple-cursors/mc/skip-to-next-like-this
         hydra-multiple-cursors/mc/unmark-next-like-this
         hydra-multiple-cursors/mc/unmark-previous-like-this
+        hydra-multiple-cursors/mc-hide-unmatched-lines-mode
         other-frame
         switch-to-last-buffer
         ))
