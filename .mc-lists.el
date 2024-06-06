@@ -32,7 +32,9 @@
         paredit-delete-char
         paredit-forward-delete
         paredit-forward-kill-word
+        paredit-forward-slurp-sexp
         paredit-kill
+        paredit-open-round
         save-all-buffers-no-confirm
         wgrep-finish-edit
         yaml-electric-backspace
@@ -46,6 +48,7 @@
         dumb-jump-go
         gcm-scroll-down
         handle-switch-frame
+        hydra-multiple-cursors/mc-hide-unmatched-lines-mode
         hydra-multiple-cursors/mc/cycle-backward
         hydra-multiple-cursors/mc/cycle-forward
         hydra-multiple-cursors/mc/mark-all-like-this
@@ -61,7 +64,6 @@
         hydra-multiple-cursors/mc/skip-to-next-like-this
         hydra-multiple-cursors/mc/unmark-next-like-this
         hydra-multiple-cursors/mc/unmark-previous-like-this
-        hydra-multiple-cursors/mc-hide-unmatched-lines-mode
         other-frame
         switch-to-last-buffer
         ))

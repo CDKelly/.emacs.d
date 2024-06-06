@@ -35,3 +35,6 @@ https://github.com/kostafey/ejc-sql - sql client
 https://github.com/astoff/buffer-env - call the correct version of external programs such as linters, compilers and language servers on a per-project basis
 
 ediff - https://www.reddit.com/r/emacs/comments/17yc6x6/emacs_ediff_basics/
+
+corfu - https://github.com/minad/corfu
+replaces company

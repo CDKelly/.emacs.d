@@ -263,20 +263,6 @@ electric for everything that ParEdit doesn't cover
     (add-hook 'minibuffer-exit-hook (lambda () (electric-pair-mode 1)))
   #+end_src
 ** highlighting
-*** [[https://github.com/Malabarba/beacon][beacon]]
-#+begin_src emacs-lisp
-  ;; highlight line where cursor is
-  ;; used beacon setup from https://ladicle.com/post/config/#beacon
-  ;; for some reason the setup based on beacon's README wouldn't
-  ;; work with buffer changes and scrolling
-  ;; (use-package beacon
-  ;;   :ensure t
-  ;;   :demand t
-  ;;   :custom
-  ;;   (beacon-color "turquoise1")
-  ;;   :hook
-  ;;   (after-init . beacon-mode))
-#+end_src
 *** rainbow-mode
 highlight text representing color codes
   #+begin_src emacs-lisp
@@ -826,25 +812,6 @@ TODO: avy-goto-char-timer + symbol-at-point = could make it easier to jump to a 
       ("C-c f" . avy-goto-char-timer)
       ("C-c a l" . avy-goto-line))
   #+end_src
-** [[https://github.com/jacktasia/dumb-jump][dumb-jump]]
-locate definitions of funcs or vars
-  #+begin_src emacs-lisp
-    (use-package dumb-jump
-      :ensure t
-      :config
-      (setq dumb-jump-selector 'ivy)
-      ;; see https://www.reddit.com/r/emacs/comments/hzxvke/how_do_people_have_dumbjump_setup/
-      ;; and https://github.com/jacktasia/dumb-jump#obsolete-commands-and-options
-      ;; for latest update
-      (setq xref-backend-functions (remq 'etags--xref-backend xref-backend-functions))
-      (add-to-list 'xref-backend-functions #'dumb-jump-xref-activate t)
-      :hook
-      ((prog-mode) . dumb-jump-mode)
-      :bind
-      ("C-c d g" . dumb-jump-go)
-      ("C-c d p" . dumb-jump-back)
-      ("C-c d q" . dumb-jump-quick-look))
-  #+end_src
 * Scrolling
 #+begin_src emacs-lisp
   ;; scrolling
@@ -1014,108 +981,201 @@ locate definitions of funcs or vars
     (move-region start end (if (null n) 1 n)))
   (global-set-key (kbd "C-M-<down>") 'move-region-down)
 #+end_src
-
-* [[https://writequit.org/denver-emacs/presentations/2017-04-11-ivy.html][Ivy, Counsel, Swiper]] etc.
-** ivy
-make sure ivy, counsel, and swiper are all installed using the same package repo (according to this [[https://github.com/abo-abo/swiper/issues/2591#issuecomment-640022754][GitHub comment]])
+* Vertico, Consult, Embark, Orderless, Marginalia, and co.
+** vertico
+Copy/pasted from [[https://kristofferbalintona.me/posts/202202211546/][here]]
 #+begin_src emacs-lisp
-  (use-package ivy
+  (use-package vertico
     :ensure t
+    :bind (:map vertico-map
+                ;; ("<tab>" . vertico-insert) ; Set manually otherwise setting `vertico-quick-insert' overrides this
+                ;; ("<escape>" . minibuffer-keyboard-quit)
+                ;; ("?" . minibuffer-completion-help)
+                ("C-M-n" . vertico-next-group)
+                ("C-M-p" . vertico-previous-group)
+                ;; Multiform toggles
+                ("DEL" . vertico-directory-delete-char)
+                ("M-DEL" . vertico-directory-delete-word)
+                ("RET" . vertico-directory-enter)
+                ;; ("C-i" . vertico-quick-insert)
+                ;; ("C-o" . vertico-quick-exit)
+                ;; ("M-o" . kb/vertico-quick-embark)
+                ;; ("M-G" . vertico-multiform-grid)
+                ;; ("M-F" . vertico-multiform-flat)
+                ;; ("M-R" . vertico-multiform-reverse)
+                ;; ("M-U" . vertico-multiform-unobtrusive)
+                ;; ("C-l" . kb/vertico-multiform-flat-toggle)
+                )
+    :hook
+    ;; Needed with `read-file-name-completion-ignore-case'.
+    ;; See these links:
+    ;; - https://github.com/minad/vertico/issues/341
+    ;; - https://debbugs.gnu.org/cgi/bugreport.cgi?bug=60264
+    ;;
+    ;; Regardless of it fixing an actual bug, I prefer
+    ;; this behavior.
+    ((rfn-eshadow-update-overlay . vertico-directory-tidy) ; Clean up file path when typing
+     (minibuffer-setup . vertico-repeat-save) ; Make sure vertico state is saved
+     )
     :custom
-    (ivy-use-virtual-buffers t)
-    (ivy-display-style 'fancy)
-    (ivy-count-format "【%d/%d】 ")
-    ;; configure regexp engine
-    (ivy-re-builders-alist
-        ;; allow input not in order
-        '((t . ivy--regex-ignore-order)))
-    (ivy-wrap t)
+    (vertico-count 20)
+    (vertico-resize t)
+    (vertico-cycle t)
+    :init
+    (vertico-mode 1)
     :config
-    (ivy-mode 1)
-    (setq projectile-completion-system 'ivy)
-    ;; (define-key ivy-mode-map (kbd "M-y") nil)
-    )
+    ;; Extensions
+    (vertico-multiform-mode))
 #+end_src
-*** ivy-hydra
+** consult
 #+begin_src emacs-lisp
-  (use-package ivy-hydra
+  (use-package consult
     :ensure t
-    :defer t
-    :after ivy)
-#+end_src
-*** ivy-rich
-#+begin_src emacs-lisp
-(use-package ivy-rich
-    :ensure t
+    :after vertico
+    :bind (;; Common stuff
+           ("C-c i" . consult-info)
+           ;; C-x bindings in `ctl-x-map'
+           ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+           ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+           ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+           ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+           ("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
+           ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+           ;; yank-pop
+           ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+           ;; Searching and grep-ing
+           ("C-s" . consult-line)
+           ("C-c c l m" . consult-line-multi)
+           ("C-c c g" . consult-git-grep)
+           ("C-c c r" . consult-ripgrep)
+           ;; Minibuffer history
+           :map minibuffer-local-map
+           ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+           ("M-r" . consult-history)                 ;; orig. previous-matching-history-element
+           ;; Remaps
+           ([remap switch-to-buffer]              . consult-buffer)
+           ([remap switch-to-buffer-other-window] . consult-buffer-other-window)
+           ([remap switch-to-buffer-other-frame]  . consult-buffer-other-frame)
+           ([remap project-switch-to-buffer]      . consult-project-buffer)
+           ([remap yank-pop]                      . consult-yank-pop)
+           ([remap bookmark-jump]                 . consult-bookmark)
+           ([remap repeat-complex-command]        . consult-complex-command)
+           ;; Remaps for `Info-mode'.
+           ([remap Info-search] . consult-info)
+           )
     :config
-    (setcdr (assq t ivy-format-functions-alist)
-            #'ivy-format-function-line)
-    (ivy-rich-mode 1))
-#+end_src
-
-** counsel
-TODO: use-package-ify all of counsel
-#+begin_src emacs-lisp
-  (use-package counsel
-    :ensure t
-    :after ivy
-    :bind
-    ("C-x C-f" . counsel-find-file)
-    ("C-h f" . counsel-describe-function)
-    ("C-h v" . counsel-describe-variable)
-    ("C-h S" . counsel-info-lookup-symbol)
-    (("M-y" . counsel-yank-pop))
-    :config
-    (defun my-minibuffer-hook()
-      ;; I just want to use counsel-yank-pop in the minibuffer
-      ;; Apparently, setting enable-recursive-minibuffers (above) wasn't enough
-      (local-set-key (kbd "M-y") 'counsel-yank-pop))
-    (add-hook 'minibuffer-setup-hook 'my-minibuffer-hook)
-    )
-
-  ;; no regexp by default
-    (with-eval-after-load 'counsel
-      (setq ivy-initial-inputs-alist nil))
-
-    (let ((bindings #'(("g" . counsel-git-grep)
-                      ("r" . counsel-rg)
-                      ("m" . counsel-mark-ring)))
-          (prefix "C-c c "))
-      (dolist (binding bindings)
-        (global-set-key (kbd (concat prefix (car binding))) (cdr binding))))
-
-    (defun counsel-git-grep-thing-at-point ()
+    (defun consult-git-grep-thing-at-point ()
       (interactive)
-      (counsel-git-grep (kill-new (thing-at-point 'symbol))))
-  (global-set-key (kbd "C-c c G") 'counsel-git-grep-thing-at-point)
+      (consult-git-grep nil (kill-new (thing-at-point 'symbol))))
+    (global-set-key (kbd "C-c c G") 'consult-git-grep-thing-at-point)
 
-  ;; (defun my/counsel-yank-pop (&optional arg)
-  ;;   "Call `counsel-yank'. If called after a yank, call `yank-pop' instead."
-  ;;   (interactive "*p")
-  ;;   (setq enable-recursive-minibuffers nil)
-  ;;   (if (eq last-command 'yank)
-  ;;       (yank-pop arg)
-  ;;     (counsel-yank-pop))
-  ;;   (setq enable-recursive-minibuffers t))
-  ;; (global-set-key (kbd "M-y") 'my/counsel-yank-pop)
+    (defun consult-line-thing-at-point ()
+      (interactive)
+      (consult-line (kill-new (thing-at-point 'symbol))))
+    (global-set-key (kbd "C-M-s") 'consult-line-thing-at-point)
+
+    )
 #+end_src
-** swiper
-TODO: use-package-ify all of swiper
+** embark
 #+begin_src emacs-lisp
-  (use-package swiper
+  (use-package embark
     :ensure t
-    :after ivy
-    :bind
-    ("C-s" . swiper)
-    ("C-M-s" . swiper-thing-at-point)
-    ("C-c s a" . swiper-all))
+    :bind (("C-c e a" . embark-act)
+           ("C-c e d" . embark-dwim)
+           :map minibuffer-local-map
+           ("M-e"   . embark-act)
+           )
+    :config
+    ;; Hide the mode line of the Embark live/completions buffers
+    ;; (add-to-list 'display-buffer-alist
+    ;;              '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+    ;;                nil
+    ;;                (window-parameters (mode-line-format . none))))
+    :custom
+    (embark-mixed-indicator-delay 2)
+    )
+#+end_src
+*** embark-consult
+#+begin_src emacs-lisp
+  (use-package embark-consult
+    :ensure t
+    :after (embark consult))
+#+end_src
+** orderless
+Copy/pasted from [[https://kristofferbalintona.me/posts/202202211546/#orderless][here]] and [[https://codeberg.org/vifon/emacs-config/src/branch/master/emacs.d/lisp/20-completion-engine.el][here]]
+#+begin_src emacs-lisp
+  (use-package orderless
+    :ensure t
+    :after vertico
+    :custom
+    ;; Use the built-in "partial-completion" style to complete
+    ;; file inputs such as "/e/ni/co.nix" into
+    ;; "/etc/nixos/configuration.nix".  The "basic" style is
+    ;; needed to support the hostname completion in the TRAMP
+    ;; inputs such as "/sshx:HOSTNAME".
+    (completion-category-defaults nil)
+    (completion-category-overrides '((file (styles basic partial-completion))))
+
+    (orderless-component-separator 'orderless-escapable-split-on-space) ; Use backslash for literal space
+
+    (orderless-matching-styles
+     '(orderless-literal
+       orderless-prefixes
+       orderless-initialism
+       orderless-regexp
+       ;; orderless-flex ; too fuzzy
+       ))
+    (completion-styles '(orderless basic))
+
+    (orderless-style-dispatchers
+     '(prot-orderless-literal-dispatcher
+       prot-orderless-strict-initialism-dispatcher
+       prot-orderless-flex-dispatcher
+       ))
+    :init
+    ;; Stolen from https://kristofferbalintona.me/posts/202202211546/#orderless
+    (defun prot-orderless-literal-dispatcher (pattern _index _total)
+      "Literal style dispatcher using the equals sign as a suffix.
+  It matches PATTERN _INDEX and _TOTAL according to how Orderless
+  parses its input."
+      (when (string-suffix-p "=" pattern)
+        `(orderless-literal . ,(substring pattern 0 -1))))
+
+    (defun prot-orderless-strict-initialism-dispatcher (pattern _index _total)
+      "Leading initialism  dispatcher using the comma suffix.
+  It matches PATTERN _INDEX and _TOTAL according to how Orderless
+  parses its input."
+      (when (string-suffix-p "," pattern)
+        `(orderless-strict-initialism . ,(substring pattern 0 -1))))
+
+    (defun prot-orderless-flex-dispatcher (pattern _index _total)
+      "Flex  dispatcher using the tilde suffix.
+  It matches PATTERN _INDEX and _TOTAL according to how Orderless
+  parses its input."
+      (when (string-suffix-p "." pattern)
+        `(orderless-flex . ,(substring pattern 0 -1))))
+    )
+#+end_src
+** marginalia
+TODO: Load marginalia mode automagically. I have no idea why, but marginalia-mode will not load no matter what I try
+#+begin_src emacs-lisp
+  (use-package marginalia
+    :ensure t
+    :after vertico
+    :bind (:map minibuffer-local-map
+                ("M-c" . marginalia-cycle))
+    :custom
+    (marginalia-align 'right)
+    :init
+    (marginalia-mode)
+    )
 #+end_src
 ** [[https://github.com/DarwinAwardWinner/amx][amx]]
 alternative interface for M-x in Emacs
 #+begin_src emacs-lisp
   (use-package amx
     :ensure t
-    :after ivy
+    :after vertico
     :custom
     (amx-backend 'auto)
     (amx-save-file "~/.emacs.d/amx-items")
@@ -1131,8 +1191,12 @@ alternative interface for M-x in Emacs
 ** wgrep
 #+begin_src emacs-lisp
   (use-package wgrep
-    :ensure
-    :after ivy)
+    :ensure t)
+#+end_src
+** rg
+#+begin_src emacs-lisp
+  (use-package rg
+    :ensure t)
 #+end_src
 * [[https://github.com/bbatsov/projectile][Projectile]]
 #+begin_src emacs-lisp
@@ -1142,19 +1206,13 @@ alternative interface for M-x in Emacs
     ("C-c p" . projectile-command-map)
     :config
     (projectile-global-mode)
-    (setq projectile-completion-system 'ivy)
+    (setq projectile-completion-system 'auto)
     ;; (defun my-projectile-replace ()
     ;;   (interactive)
     ;;   (let ((after-change-functions nil)) ; empty when executing this func
     ;;     (call-interactively 'projectile-replace)))
     ;; (global-set-key (kbd "C-c p r") 'my-projectile-replace)
     )
-
-  (use-package counsel-projectile
-    :ensure t
-    :init
-    (counsel-projectile-mode)
-    :after counsel)
 #+end_src
 * Shell stuff
 #+begin_src emacs-lisp
