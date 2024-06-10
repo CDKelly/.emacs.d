@@ -1,0 +1,27 @@
+* vertico
+** hot keys:
+*** "?" = minibuffer-completion-help
+**** gives meta information about the minibuffer environment itself
+* consult
+** hot keys:
+*** "C-c c m i"
+**** what = consult-imenu
+***** split this buffer into "types" of things to look at (Variables, Functions, etc.)
+*** "C-c c o"
+**** what = consult-outline
+***** split this buffer into some headings to look at
+**** when = great for org-mode
+*** "<"
+**** what = consult-narrow-key
+**** when = when in consult-imenu
+* orderless
+** when NOT to use
+*** in "Find file" buffer
+**** partial completion should be used instead
+**** ex: "/e/ni/co.nix" turns into "/etc/nixos/configuration.nix"
+* embark
+** hot keys:
+*** "C-c e d" = do what I mean (without thinking; just 'do the thing')
+*** "C-c e a"
+**** what = cycle the list of actions you can do
+**** when = in embark-act minibuffer

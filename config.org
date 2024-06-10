@@ -990,7 +990,7 @@ Copy/pasted from [[https://kristofferbalintona.me/posts/202202211546/][here]]
     :bind (:map vertico-map
                 ;; ("<tab>" . vertico-insert) ; Set manually otherwise setting `vertico-quick-insert' overrides this
                 ;; ("<escape>" . minibuffer-keyboard-quit)
-                ;; ("?" . minibuffer-completion-help)
+                ("?" . minibuffer-completion-help)
                 ("C-M-n" . vertico-next-group)
                 ("C-M-p" . vertico-previous-group)
                 ;; Multiform toggles
@@ -1027,13 +1027,21 @@ Copy/pasted from [[https://kristofferbalintona.me/posts/202202211546/][here]]
     ;; Extensions
     (vertico-multiform-mode))
 #+end_src
+*** consult-projectile
+#+begin_src emacs-lisp
+  (use-package consult-projectile
+    :ensure t
+    :after (consult projectile))
+#+end_src
 ** consult
 #+begin_src emacs-lisp
   (use-package consult
     :ensure t
     :after vertico
     :bind (;; Common stuff
-           ("C-c i" . consult-info)
+           ("C-c c i" . consult-info)
+           ("C-c c o" . consult-outline)
+           ("C-c c m i" . consult-imenu)
            ;; C-x bindings in `ctl-x-map'
            ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
            ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
@@ -1048,6 +1056,8 @@ Copy/pasted from [[https://kristofferbalintona.me/posts/202202211546/][here]]
            ("C-c c l m" . consult-line-multi)
            ("C-c c g" . consult-git-grep)
            ("C-c c r" . consult-ripgrep)
+           :map consult-narrow-map
+           ("?" . consult-narrow-help)
            ;; Minibuffer history
            :map minibuffer-local-map
            ("M-s" . consult-history)                 ;; orig. next-matching-history-element
@@ -1063,6 +1073,12 @@ Copy/pasted from [[https://kristofferbalintona.me/posts/202202211546/][here]]
            ;; Remaps for `Info-mode'.
            ([remap Info-search] . consult-info)
            )
+    :custom
+    (consult-find-args (concat "find . -not ( "
+                               "-path */.git* -prune "
+                               "-or -path */.cache* -prune )"))
+    (consult-narrow-key "<")
+    (consult-line-numbers-widen t)
     :config
     (defun consult-git-grep-thing-at-point ()
       (interactive)
@@ -1080,19 +1096,56 @@ Copy/pasted from [[https://kristofferbalintona.me/posts/202202211546/][here]]
 #+begin_src emacs-lisp
   (use-package embark
     :ensure t
-    :bind (("C-c e a" . embark-act)
-           ("C-c e d" . embark-dwim)
-           :map minibuffer-local-map
-           ("M-e"   . embark-act)
-           )
+    :bind
+    (:map global-map
+          ("C-c e a" . embark-act)
+          ("C-c e d" . embark-dwim)
+          ;; ("C-," . prot-embark-act-no-quit)
+          :map minibuffer-local-map
+          ("M-e" . embark-act)
+          ;; ("C-," . prot-embark-act-no-quit))
     :config
     ;; Hide the mode line of the Embark live/completions buffers
     ;; (add-to-list 'display-buffer-alist
     ;;              '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
     ;;                nil
     ;;                (window-parameters (mode-line-format . none))))
+    (defun embark-which-key-indicator ()
+      "An embark indicator that displays keymaps using which-key.
+  The which-key help message will show the type and value of the
+  current target followed by an ellipsis if there are further
+  targets."
+      (lambda (&optional keymap targets prefix)
+        (if (null keymap)
+            (which-key--hide-popup-ignore-command)
+          (which-key--show-keymap
+           (if (eq (plist-get (car targets) :type) 'embark-become)
+               "Become"
+             (format "Act on %s '%s'%s"
+                     (plist-get (car targets) :type)
+                     (embark--truncate-target (plist-get (car targets) :target))
+                     (if (cdr targets) "…" "")))
+           (if prefix
+               (pcase (lookup-key keymap prefix 'accept-default)
+                 ((and (pred keymapp) km) km)
+                 (_ (key-binding prefix 'accept-default)))
+             keymap)
+           nil nil t (lambda (binding)
+                       (not (string-suffix-p "-argument" (cdr binding))))))))
+
+    ;; TODO: figure out how this works
+    ;; (defun prot-embark-act-no-quit ()
+    ;;   "Call `embark-act' but do not quit after the action."
+    ;;   (interactive)
+    ;;   (let ((embark-quit-after-action nil))
+    ;;     (call-interactively #'embark-act)))
+
     :custom
-    (embark-mixed-indicator-delay 2)
+    (embark-mixed-indicator-delay 0.5)
+    (embark-indicators
+     '(embark-which-key-indicator
+       embark-highlight-indicator
+       embark-isearch-highlight-indicator))
     )
 #+end_src
 *** embark-consult
