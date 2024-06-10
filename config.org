@@ -396,7 +396,9 @@ use perl-based regexp and convert between Emacs syntax to PCRE and vice versa
 *** [[https://github.com/magit/magit][magit]]
 #+begin_src emacs-lisp
   (use-package magit
-    :ensure t)
+    :ensure t
+    :custom
+    (magit-show-long-lines-warning nil))
 
   ;; (defun my-magit-stage-and-commit (message)
   ;;   (interactive "sCommit Message: ")
@@ -2029,16 +2031,15 @@ If you experience freezing, decrease this amount, if you increase stuttering, in
 #+begin_src emacs-lisp
   (defvar better-gc-cons-threshold 16777216 ; 16mb
     "The default value to use for `gc-cons-threshold'.
-  If you experience freezing, decrease this.  If you experience stuttering, increase this.")
+    If you experience freezing, decrease this.  If you experience stuttering, increase this.")
 
   (add-hook 'emacs-startup-hook
             (lambda ()
               (setq gc-cons-threshold better-gc-cons-threshold
                     gc-cons-percentage 0.1)))
-#+end_src
 
-Garbage Collect when Emacs is out of focus and try to avoid garbage collection when using minibuffer.
-#+begin_src emacs-lisp
+
+  ;; Garbage Collect when Emacs is out of focus and try to avoid garbage collection when using minibuffer.
   (add-hook 'emacs-startup-hook
             (lambda ()
               (if (boundp 'after-focus-change-function)
