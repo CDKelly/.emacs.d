@@ -1105,7 +1105,8 @@ Copy/pasted from [[https://kristofferbalintona.me/posts/202202211546/][here]]
           ;; ("C-," . prot-embark-act-no-quit)
           :map minibuffer-local-map
           ("M-e" . embark-act)
-          ;; ("C-," . prot-embark-act-no-quit))
+          ;; ("C-," . prot-embark-act-no-quit)
+          )
     :config
     ;; Hide the mode line of the Embark live/completions buffers
     ;; (add-to-list 'display-buffer-alist
