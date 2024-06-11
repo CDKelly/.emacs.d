@@ -93,7 +93,7 @@
      ("gnu" . "http://elpa.gnu.org/packages/")))
  '(package-enable-at-startup nil)
  '(package-selected-packages
-   '(consult-projectile rg marginalia amx orderless embark-consult embark consult markdown-mode doom-themes vertico vertico-directory aggressive-indent eglot pcre2el wgrep visual-regexp-steroids exec-path-from-shell major-mode-hydra mood-line company-posframe company-c-headers multiple-cursors zerodark-theme roby org-bullets popup-kill-ring doom-modeline avy rainbow-delimiters rainbow-mode use-package jazz-theme planet-theme soothe-theme color-theme-sanityinc-tomorrow molokai-theme afternoon-theme nord-theme material-theme monokai-alt-theme monokai-theme spacemacs-theme fill-column-indicator expand-region which-key ace-jump-mode auto-highlight-symbol dockerfile-mode lua-mode highlight-indent-guides yaml-mode smart-tabs-mode groovy-mode json-mode cheat-sh json-reformat edit-server magit ruby-end restclient less-css-mode paredit-menu paredit eslintd-fix add-node-modules-path eslint-fix web-mode editorconfig xref-js2 js2-mode browse-url-dwim rspec-mode robe rvm enh-ruby-mode inf-ruby flymake-ruby feature-mode flycheck popup projectile flx-ido landmark))
+   '(corfu consult-projectile rg marginalia amx orderless embark-consult embark consult markdown-mode doom-themes vertico vertico-directory aggressive-indent eglot pcre2el wgrep visual-regexp-steroids exec-path-from-shell major-mode-hydra mood-line multiple-cursors zerodark-theme roby org-bullets popup-kill-ring doom-modeline avy rainbow-delimiters rainbow-mode use-package jazz-theme planet-theme soothe-theme color-theme-sanityinc-tomorrow molokai-theme afternoon-theme nord-theme material-theme monokai-alt-theme monokai-theme spacemacs-theme fill-column-indicator expand-region which-key ace-jump-mode auto-highlight-symbol dockerfile-mode lua-mode highlight-indent-guides yaml-mode smart-tabs-mode groovy-mode json-mode cheat-sh json-reformat edit-server magit ruby-end restclient less-css-mode paredit-menu paredit eslintd-fix add-node-modules-path eslint-fix web-mode editorconfig xref-js2 js2-mode browse-url-dwim rspec-mode robe rvm enh-ruby-mode inf-ruby flymake-ruby feature-mode flycheck popup projectile flx-ido landmark))
  '(pos-tip-background-color "#32302f")
  '(pos-tip-foreground-color "#bdae93")
  '(powerline-color1 "#1E1E1E")
@@ -124,6 +124,7 @@
  '(avy-lead-face-0 ((t (:inherit avy-lead-face :background "#fd971f"))))
  '(company-posframe-metadata ((t (:inherit match))))
  '(consult-highlight-match ((t (:inherit match))))
+ '(corfu-current ((t (:background "#0D0E16" :foreground "#CEDBE5" :box (:line-width 1 :color "dark cyan" :style released-button)))))
  '(cursor ((t (:background "turquoise1"))))
  '(custom-documentation ((t (:inherit default))))
  '(eldoc-highlight-function-argument ((t (:inherit bold :underline t))))
