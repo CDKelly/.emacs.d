@@ -141,6 +141,9 @@
  '(mode-line-inactive ((t (:background "#171819" :foreground "#4e4e4e" :box (:line-width 1 :color "gray25" :style released-button)))))
  '(region ((t (:extend t :background "dim gray" :foreground "white"))))
  '(show-paren-match ((t (:background "MediumPurple1" :foreground "white" :overline nil :underline nil :weight ultra-bold))))
+ '(transient-key-exit ((t (:inherit transient-key :foreground "DarkOrange1"))))
+ '(transient-key-return ((t (:inherit transient-key :foreground "medium slate blue"))))
+ '(transient-key-stay ((t (:inherit transient-key :foreground "SeaGreen2"))))
  '(vertico-current ((t (:extend t :background "gray24")))))
 
 ;; https://github.com/purcell/exec-path-from-shell
