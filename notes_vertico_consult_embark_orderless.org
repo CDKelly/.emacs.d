@@ -14,6 +14,21 @@
 *** "<"
 **** what = consult-narrow-key
 **** when = when in consult-imenu
+** hot commands:
+*** [[https://github.com/minad/consult#grep-and-find][grep-and-find]] (aka filter search results)
+**** example:
+***** look for "searchTerm" but only in .java files
+**** consult-git-grep
+***** #searchTerm#\.java
+**** consult-ripgrep
+***** #searchTerm#*.java
+***** #searchTerm -- -g *.java
+***** #searchTerm -- -t java
+*** grep multiple lines
+**** example:
+***** look for "searchTerm" and then look for "anotherTerm"
+**** consult-ripgrep
+***** #searchTerm -- -e anotherTerm
 * orderless
 ** when NOT to use
 *** in "Find file" buffer
