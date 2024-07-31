@@ -110,8 +110,8 @@ I just want to use counsel-yank-pop in the minibuffer
   #+begin_src emacs-lisp
     ;; allows line-number-current-line face to work
     (setq-default display-line-numbers t)
-    ;; but global-linum-mode has to be turned off
-    (global-linum-mode 0)
+    ;; but global-display-line-numbers-mode has to be turned off
+    (global-display-line-numbers-mode 0)
 
     (setq-default mode-line-front-space
                   (append mode-line-front-space '((:eval (format "/%s" (line-number-at-pos (point-max)))))))
@@ -628,7 +628,7 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
   (setq org-src-tab-acts-natively t)
   (setq org-confirm-babel-evaluate nil)
   (setq org-export-with-smart-quotes t)
-  (setq org-src-window-setup 'reorganize-frameasfd)
+  (setq org-src-window-setup 'reorganize-frame)
   (add-hook 'org-mode-hook 'org-indent-mode)
 
   (defun reload-config ()
@@ -641,7 +641,12 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
 
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((java . t)))
+   '((java . t)
+     (C . t)
+     (emacs-lisp . t)
+     (lisp . t)
+     (sql . t)
+     ))
 #+end_src
 ** org-structure-template-alist
 #+begin_src emacs-lisp
@@ -1378,7 +1383,7 @@ alternative interface for M-x in Emacs
     (defun my-ruby-mode-hook ()
       "Setup ruby modes for me."
       (if window-system
-          (linum-mode))
+          (display-line-numbers-mode))
       (infer-indentation-style)
       (add-hook 'enh-ruby-mode-hook 'ac-robe-setup)
       (add-hook 'enh-ruby-mode-hook 'ruby-end-mode)
