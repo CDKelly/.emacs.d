@@ -12,6 +12,10 @@
   #+begin_src emacs-lisp
     (tool-bar-mode -1)
   #+end_src
+** no tab bar
+#+begin_src emacs-lisp
+  (tab-bar-mode -1)
+#+end_src
 ** desktop mode
 keeps track of all the files you've opened and remembers them
   #+begin_src emacs-lisp
@@ -226,6 +230,11 @@ show 80-character vertical marker
     :hook
     ((prog-mode emacs-lisp-mode lisp-mode) . rainbow-delimiters-mode))
   #+end_src
+*** paredit-menu
+#+begin_src emacs-lisp
+  (use-package paredit-menu
+    :ensure t)
+#+end_src
 *** [[https://www.emacswiki.org/emacs/ParEdit][ParEdit]]
 [[http://danmidwood.com/content/2014/11/21/animated-paredit.html][nice animated guide to Paredit]]
 [[https://www.emacswiki.org/emacs/PareditCheatsheet][PareditCheatsheet]]
@@ -1218,15 +1227,12 @@ Copy/pasted from [[https://kristofferbalintona.me/posts/202202211546/#orderless]
 TODO: Load marginalia mode automagically. I have no idea why, but marginalia-mode will not load no matter what I try
 #+begin_src emacs-lisp
   (use-package marginalia
-    :ensure t
-    :after vertico
     :bind (:map minibuffer-local-map
                 ("M-c" . marginalia-cycle))
     :custom
     (marginalia-align 'right)
     :init
-    (marginalia-mode)
-    )
+    (marginalia-mode))
 #+end_src
 ** [[https://github.com/DarwinAwardWinner/amx][amx]]
 alternative interface for M-x in Emacs
@@ -1868,6 +1874,8 @@ Stolen from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org#hyd
 #+end_src
 *** pretty hydras
 #+begin_src emacs-lisp
+  (use-package pretty-hydra
+    :ensure t)
   ;; had to edit .mc-lists.el and move all hydra commands
   ;; from mc/cmds-to-run-for-all to mc/cmds-to-run-once
   ;; in order for this work (i.e. not multiple my cursors for each command)
