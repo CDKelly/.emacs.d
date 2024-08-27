@@ -1503,7 +1503,6 @@ REPL buffer connected to a Ruby subprocess
      ("\\.tpl\\.php\\'" . web-mode)
      ("\\.[agj]sp\\'" . web-mode)
      ("\\.as[cp]x\\'" . web-mode)
-     ("\\.jsx\\'" . web-mode)
      ("\\.erb\\'" . web-mode)
      ("\\.mustache\\'" . web-mode)
      ("\\.hbs\\'" . web-mode)
@@ -1585,6 +1584,55 @@ REPL buffer connected to a Ruby subprocess
 ** xml
 #+begin_src emacs-lisp
   (setq nxml-child-indent 4)
+#+end_src
+* Treesit
+** find the language grammar
+#+begin_src emacs-lisp
+  (setq treesit-language-source-alist
+        '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+          (c "https://github.com/tree-sitter/tree-sitter-c.git")
+          (cmake "https://github.com/uyha/tree-sitter-cmake")
+          (common-lisp "https://github.com/theHamsta/tree-sitter-commonlisp")
+          (cpp "https://github.com/tree-sitter/tree-sitter-cpp.git")
+          (css "https://github.com/tree-sitter/tree-sitter-css.git")
+          (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+          (go "https://github.com/tree-sitter/tree-sitter-go")
+          (html "https://github.com/tree-sitter/tree-sitter-html")
+          (java "https://github.com/tree-sitter/tree-sitter-java")
+          (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+          (json "https://github.com/tree-sitter/tree-sitter-json")
+          (make "https://github.com/alemuller/tree-sitter-make")
+          (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+          (python "https://github.com/tree-sitter/tree-sitter-python")
+          (ruby "https://github.com/tree-sitter/tree-sitter-ruby")
+          (rust "https://github.com/tree-sitter/tree-sitter-rust")
+          (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+          (typescript "https://github.com/tree-sitter/tree-sitter-typescript"
+                      "master" "typescript/src")
+          (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+#+end_src
+** map major mode to its treesit counterpart
+#+begin_src emacs-lisp
+  (setq major-mode-remap-alist
+        '((bash-mode . bash-ts-mode)
+          (c-mode . c-ts-mode)
+          (c++-mode . c++-ts-mode)
+          (css-mode . css-ts-mode)
+          (java-mode . java-ts-mode)
+          (js2-mode . js-ts-mode)
+          (json-mode . json-ts-mode)
+          (python-mode . python-ts-mode)
+          (ruby-mode . ruby-ts-mode)
+          (yaml-mode . yaml-ts-mode)))
+#+end_src
+** [[https://github.com/renzmann/treesit-auto][treesit-auto]]
+#+begin_src emacs-lisp
+  (use-package treesit-auto
+    :custom
+    (treesit-auto-install 'prompt)
+    :config
+    (treesit-auto-add-to-auto-mode-alist 'all)
+    (global-treesit-auto-mode))
 #+end_src
 * [[https://emacs-lsp.github.io/lsp-mode/][LSP]]
 copied a lot of stuff from [[https://github.com/MatthewZMD/.emacs.d#lsp][this config]] and [[https://github.com/andreyorst/dotfiles/tree/master/.config/emacs#lsp-mode][this config]]
@@ -1793,7 +1841,7 @@ helpful doc - https://joaotavora.github.io/eglot/
     (corfu-auto-prefix 2)
     (corfu-separator ?\s)            ;; Orderless field separator
     (corfu-quit-at-boundary nil)     ;; Never quit at completion boundary
-    (corfu-quit-no-match nil)        ;; Never quit, even if there is no match
+    (corfu-quit-no-match t)          ;; Never quit, even if there is no match
     (corfu-preview-current nil)      ;; Enable current candidate preview
     (corfu-preselect 'valid)         ;; Preselect the prompt
     (corfu-on-exact-match nil)       ;; No special handling on exact match
