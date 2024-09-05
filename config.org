@@ -235,7 +235,9 @@ show 80-character vertical marker
   (use-package aggressive-indent
     :ensure t
     :hook
-    (prog-mode . aggressive-indent-mode))
+    (prog-mode . aggressive-indent-mode)
+    :custom
+    (aggressive-indent-sit-for-time 0.1))
 #+end_src
 **** [[https://www.emacswiki.org/emacs/SmartTabs][smart-tabs-mode]]
 #+begin_src emacs-lisp
@@ -1301,24 +1303,6 @@ Copy/pasted from [[https://kristofferbalintona.me/posts/202202211546/#orderless]
 
   (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup)
 
-#+end_src
-** [[https://github.com/DarwinAwardWinner/amx][amx]]
-alternative interface for M-x in Emacs
-#+begin_src emacs-lisp
-  (use-package amx
-    :ensure t
-    :after vertico
-    :custom
-    (amx-backend 'auto)
-    (amx-save-file "~/.emacs.d/amx-items")
-    :config
-    (amx-mode 1)
-    ;; https://github.com/DarwinAwardWinner/amx#speeding-up-amx
-    (setq amx-ignored-command-matchers nil)
-    ;; amx was ruining eval-expression. Hopefully, this removes this annoyance.
-    ;; opposite of this: https://github.com/DarwinAwardWinner/amx/blob/master/amx.el#L1323
-    (cl-loop for fun in '(load eval-last-sexp eval-buffer eval-region eval-expression autoload-do-load)
-             do (advice-remove fun #'amx-post-eval-force-update)))
 #+end_src
 ** wgrep
 #+begin_src emacs-lisp
