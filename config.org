@@ -1771,7 +1771,7 @@ helpful doc - https://joaotavora.github.io/eglot/
     :ensure t
     :config
     (add-to-list 'eglot-stay-out-of 'flymake)
-    (add-to-list 'eglot-stay-out-of 'company)
+    (add-to-list 'eglot-stay-out-of 'company) ;; this might be bad since eglot reaches for company naturally, and we can bridge company with cape
     (add-to-list 'eglot-stay-out-of 'corfu))
 
   ;; c and c++
@@ -1966,33 +1966,34 @@ Hippie expand (a better Dynamic Abbrev) can expand words and lines it has seen b
     )
 #+end_src
 ** [[https://github.com/minad/cape][Cape]]
-Not ready for Cape
+*** TODO look into creating a [[https://github.com/minad/cape?tab=readme-ov-file#super-capf---merging-multiple-capfs][cape-capf-super]]. It might help with getting a better list of completion candidates
+*** TODO stop emacs from constantly "Making tags completion table for...". It sometimes stops emacs in its tracks, and it's really annoying
 #+begin_src emacs-lisp
-  ;; (use-package cape
-  ;;   :ensure t
-  ;;   :bind (("C-c c p p" . completion-at-point)
-  ;;          ("C-c c p t" . complete-tag)
-  ;;          ("C-c c p d" . cape-dabbrev)
-  ;;          ("C-c c p h" . cape-history)
-  ;;          ("C-c c p f" . cape-file)
-  ;;          ("C-c c p k" . cape-keyword)
-  ;;          ("C-c c p s" . cape-elisp-symbol)
-  ;;          ("C-c c p e" . cape-elisp-block)
-  ;;          ("C-c c p a" . cape-abbrev)
-  ;;          ("C-c c p l" . cape-line)
-  ;;          ("C-c c p w" . cape-dict)
-  ;;          )
-  ;;   :init
-  ;;   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  ;;   (add-to-list 'completion-at-point-functions #'cape-abbrev)
-  ;;   (add-to-list 'completion-at-point-functions #'cape-file)
-  ;;   (add-to-list 'completion-at-point-functions #'cape-keyword)
-  ;;   (add-to-list 'completion-at-point-functions #'cape-history)
-  ;;   (add-to-list 'completion-at-point-functions #'cape-elisp-block)
-  ;;   ;; refresh candidates
-  ;;   ;; https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot
-  ;;   (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
-  ;;   )
+  (use-package cape
+    :ensure t
+    :bind (("C-c c p p" . completion-at-point)
+           ("C-c c p t" . complete-tag)
+           ("C-c c p d" . cape-dabbrev)
+           ("C-c c p h" . cape-history)
+           ("C-c c p f" . cape-file)
+           ("C-c c p k" . cape-keyword)
+           ("C-c c p s" . cape-elisp-symbol)
+           ("C-c c p e" . cape-elisp-block)
+           ("C-c c p a" . cape-abbrev)
+           ("C-c c p l" . cape-line)
+           ("C-c c p w" . cape-dict)
+           )
+    :init
+    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+    (add-to-list 'completion-at-point-functions #'cape-abbrev)
+    (add-to-list 'completion-at-point-functions #'cape-keyword)
+    (add-to-list 'completion-at-point-functions #'cape-file)
+    (add-to-list 'completion-at-point-functions #'cape-history)
+    (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+    ;; refresh candidates
+    ;; https://github.com/minad/corfu/wiki#configuring-corfu-for-eglot
+    (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
+    )
 #+end_src
 * Flycheck
 #+begin_src emacs-lisp
