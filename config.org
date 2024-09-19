@@ -409,28 +409,21 @@ use perl-based regexp and convert between Emacs syntax to PCRE and vice versa
     :ensure t
     :defer t
     :bind
-    (("C-S-<mouse-1>" . mc/add-cursor-on-click))
+    (("C-S-<mouse-1>" . mc/add-cursor-on-click)
+     ("C-c m c e" . mc/edit-lines)
+     ("C-c m c n" . mc/mark-next-like-this-symbol)
+     ("C-c m c p" . mc/mark-previous-like-this-symbol)
+     ("C-c m c a" . mc/mark-all-like-this)
+     ("C-c m c N" . mc/unmark-next-like-this)
+     ("C-c m c P" . mc/cycle-backward)
+     ("C-c m c b" . mc/cycle-backward)
+     ("C-c m c f" . mc/cycle-forward)
+     ("C-c m c ^" . mc/edit-beginnings-of-lines)
+     ("C-c m c $" . mc/edit-ends-of-lines)
+     ("C-c m c h" . mc-hide-unmatched-lines-mode))
     :custom
     (mc/always-repeat-command t)
-    (mc--executing-command-for-fake-cursor nil)
-    :config
-    (eval-after-load "multiple-cursors"
-      '(let ((prefix "C-c m c ")
-            (bindings #'(("e" . mc/edit-lines)
-                         ("n" . mc/mark-next-like-this-symbol)
-                         ("p" . mc/mark-previous-like-this-symbol)
-                         ("a" . mc/mark-all-like-this)
-                         ("N" . mc/unmark-next-like-this)
-                         ("P" . mc/unmark-previous-like-this)
-                         ("b" . mc/cycle-backward)
-                         ("f" . mc/cycle-forward)
-                         ("^" . mc/edit-beginnings-of-lines)
-                         ("$" . mc/edit-ends-of-lines)
-                         ("h" . mc-hide-unmatched-lines-mode))))
-        (dolist (binding bindings)
-          (global-set-key (kbd (concat prefix (car binding)))
-                          (cdr binding)))))
-    )
+    (mc--executing-command-for-fake-cursor nil))
 #+end_src
 *** [[https://github.com/magit/magit][magit]]
 #+begin_src emacs-lisp
@@ -439,35 +432,38 @@ use perl-based regexp and convert between Emacs syntax to PCRE and vice versa
     :init
     (setq magit-section-visibility-indicator '(" ▼"))
     :custom
-    (magit-show-long-lines-warning nil))
+    (magit-show-long-lines-warning nil)
+    :config
+    ;; (defun my-magit-stage-and-commit (message)
+    ;;   (interactive "sCommit Message: ")
+    ;;   (let ((magit-commit-show-diff nil)
+    ;;         (magit-commit-ask-to-stage nil)
+    ;;         (msg message))
+    ;;     ;; (call-interactively 'magit-stage-modified)
+    ;;     ;; (call-interactively 'magit-commit)
+    ;;     (magit-stage t)
+    ;;     (magit-commit-create)
+    ;;     (magit-commit-message-buffer)
+    ;;     (insert (format "%S" msg))))
 
-  ;; (defun my-magit-stage-and-commit (message)
-  ;;   (interactive "sCommit Message: ")
-  ;;   (let ((magit-commit-show-diff nil)
-  ;;         (magit-commit-ask-to-stage nil)
-  ;;         (msg message))
-  ;;     ;; (call-interactively 'magit-stage-modified)
-  ;;     ;; (call-interactively 'magit-commit)
-  ;;     (magit-stage t)
-  ;;     (magit-commit-create)
-  ;;     (magit-commit-message-buffer)
-  ;;     (insert (format "%S" msg))))
+    (defun my-magit-stage-and-commit ()
+      (interactive)
+      (let ((magit-commit-show-diff nil)
+            (magit-commit-ask-to-stage nil))
+        ;; (call-interactively 'magit-stage-modified)
+        ;; (call-interactively 'magit-commit)
+        (magit-stage t)
+        (magit-commit-create)))
+    (global-set-key (kbd "C-c m g s") 'my-magit-stage-and-commit)
 
-  (defun my-magit-stage-and-commit ()
-    (interactive)
-    (let ((magit-commit-show-diff nil)
-          (magit-commit-ask-to-stage nil))
-      ;; (call-interactively 'magit-stage-modified)
-      ;; (call-interactively 'magit-commit)
-      (magit-stage t)
-      (magit-commit-create)))
+    (defun my-magit-stage-all-and-commit ()
+      (interactive)
+      (let ((magit-commit-show-diff nil)
+            (magit-commit-ask-to-stage nil))
+        (magit-stage-modified)
+        (magit-commit-create)))
+    (global-set-key (kbd "C-c m g S") 'my-magit-stage-all-and-commit))
 
-  (defun my-magit-stage-all-and-commit ()
-    (interactive)
-    (let ((magit-commit-show-diff nil)
-          (magit-commit-ask-to-stage nil))
-      (magit-stage-modified)
-      (magit-commit-create)))
 #+end_src
 *** [[https://github.com/justbur/emacs-which-key][which-key]]
 #+begin_src emacs-lisp
@@ -1172,6 +1168,7 @@ Copy/pasted from [[https://kristofferbalintona.me/posts/202202211546/][here]]
     (:map global-map
           ("C-c e a" . embark-act)
           ("C-c e d" . embark-dwim)
+          ("C-c e e" . embark-export)
           ;; ("C-," . prot-embark-act-no-quit)
           :map minibuffer-local-map
           ("M-e" . embark-act)
