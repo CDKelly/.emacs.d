@@ -1352,12 +1352,13 @@ Copy/pasted from [[https://kristofferbalintona.me/posts/202202211546/#orderless]
 * Languages
 ** C
 #+begin_src emacs-lisp
-  (defun my-c-mode-common-hook ()
+  (defun my-all-c-modes-common-hook ()
     (infer-indentation-style)
+    (setq c-ts-mode-indent-offset 4)
     (setq c-basic-offset 4))
 
-  (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
-  (add-hook 'c-ts-mode-hook 'my-c-mode-common-hook)
+  (add-hook 'c-mode-common-hook 'my-all-c-modes-common-hook)
+  (add-hook 'c-ts-mode-hook 'my-all-c-modes-common-hook)
 #+end_src
 *** compilation functions
 #+begin_src emacs-lisp
@@ -1753,13 +1754,14 @@ helpful doc - https://joaotavora.github.io/eglot/
 #+begin_src emacs-lisp
   (use-package eglot
     :ensure t
+    :custom
+    (fset #'jsonrpc--log-event #'ignore)
     :config
-    (add-to-list 'eglot-stay-out-of 'flymake)
-    (add-to-list 'eglot-stay-out-of 'company) ;; this might be bad since eglot reaches for company naturally, and we can bridge company with cape
-    (add-to-list 'eglot-stay-out-of 'corfu))
+    (add-to-list 'eglot-stay-out-of 'flymake))
 
   ;; c and c++
-  (add-to-list 'eglot-server-programs '((c++-mode c++-ts-mode c-mode c-ts-mode) "clangd"))
+  ;; (add-to-list 'eglot-server-programs '((c++-mode c++-ts-mode c-mode c-ts-mode) "clangd"))
+  ;; (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd"))
   (add-hook 'c-mode-hook 'eglot-ensure)
   (add-hook 'c-ts-mode-hook 'eglot-ensure)
   (add-hook 'c++-mode-hook 'eglot-ensure)
@@ -1774,8 +1776,7 @@ helpful doc - https://joaotavora.github.io/eglot/
   ;; START COPY
   (with-eval-after-load 'eglot
     ;; Tell Eglot to use a specific class to handle java-mode files
-    (add-to-list 'eglot-server-programs '(java-mode . eglot--eclipse-jdt-contact))
-    (add-to-list 'eglot-server-programs '(java-ts-mode . eglot--eclipse-jdt-contact))
+    (add-to-list 'eglot-server-programs '((java-mode java-ts-mode) . eglot--eclipse-jdt-contact))
 
     (defun eglot--eclipse-jdt-contact (interactive)
       "Return cons (CLASS . ARGS) for connecting to Eclipse JDT.
