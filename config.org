@@ -237,7 +237,10 @@ show 80-character vertical marker
     :hook
     (prog-mode . aggressive-indent-mode)
     :custom
-    (aggressive-indent-sit-for-time 0.1))
+    (aggressive-indent-sit-for-time 0.1)
+    :config
+    (add-to-list 'aggressive-indent-excluded-modes 'sql-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'nxml-mode))
 #+end_src
 **** [[https://www.emacswiki.org/emacs/SmartTabs][smart-tabs-mode]]
 #+begin_src emacs-lisp
@@ -1593,7 +1596,7 @@ REPL buffer connected to a Ruby subprocess
 #+begin_src emacs-lisp
   (use-package json-mode
     :hook (json-mode . flycheck-mode)
-    :custom (js-indent-level 2))
+    :custom (js-indent-level 4))
 #+end_src
 *** [[https://github.com/gongo/json-reformat][json-reformat]]
 #+begin_src emacs-lisp
