@@ -12,8 +12,10 @@
         c-electric-semi&comma
         c-electric-star
         c-indent-line-or-region
+        consult-yank-pop
         counsel-yank-pop
         dabbrev-expand
+        delete-horizontal-space
         electric-pair-delete-pair
         end-of-visual-line
         gcm-scroll-up
@@ -24,6 +26,7 @@
         kill-visual-line
         kill-whole-word-at-point
         markdown-outdent-or-delete
+        move-line-up
         nxml-electric-slash
         org-delete-char
         org-edit-src-save
