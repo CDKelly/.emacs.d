@@ -529,6 +529,16 @@ use perl-based regexp and convert between Emacs syntax to PCRE and vice versa
 
 #+end_src
 **** commenting
+***** comment then save
+#+begin_src emacs-lisp
+  (defun my-comment-line (&optional n)
+    (interactive)
+    (comment-line n)
+    (save-buffer))
+
+  (global-set-key (kbd "C-x C-;") 'my-comment-line)
+#+end_src
+***** comment from m to n
 #+begin_src emacs-lisp
   (defun comment-from-curr-line-to-line-n (n)
     "Run 'comment-or-uncomment-region' from current line to a given line N."
