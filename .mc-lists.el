@@ -67,6 +67,7 @@
         hydra-multiple-cursors/mc/skip-to-next-like-this
         hydra-multiple-cursors/mc/unmark-next-like-this
         hydra-multiple-cursors/mc/unmark-previous-like-this
+        mc--insert-number-and-increase
         other-frame
         switch-to-last-buffer
         ))
