@@ -1268,7 +1268,8 @@ Copy/pasted from [[https://kristofferbalintona.me/posts/202202211546/#orderless]
      '(prot-orderless-literal-dispatcher
        prot-orderless-strict-initialism-dispatcher
        prot-orderless-flex-dispatcher
-       my-orderless-without-literal-dispatcher)
+       my-orderless-without-literal-dispatcher
+       my-orderless-regexp-dispatcher)
      )
     :init
     ;; Stolen from https://kristofferbalintona.me/posts/202202211546/#orderless
@@ -1299,6 +1300,13 @@ Copy/pasted from [[https://kristofferbalintona.me/posts/202202211546/#orderless]
       parses its input."
       (when (string-prefix-p "!" pattern)
         `(orderless-without-literal . ,(substring pattern 1))))
+
+    (defun my-orderless-regexp-dispatcher (pattern _index _total)
+      "Regexp dispatcher using the percentage suffix.
+      It matches PATTERN _INDEX and _TOTAL according to how Orderless
+      parses its input."
+      (when (string-suffix-p "%" pattern)
+        `(orderless-regexp . ,(substring pattern 0 -1))))
     )
 #+end_src
 ** marginalia
@@ -1516,36 +1524,37 @@ REPL buffer connected to a Ruby subprocess
     ;; Scroll to the first test failure
     (setq compilation-scroll-output 'first-error))
 #+end_src
-** Javascript (and web-mode)
+** Javascript, web-mode, css, etc.
 *** [[https://github.com/mooz/js2-mode][js2-mode]]
 #+begin_src emacs-lisp
-  ;; (use-package js2-mode
-  ;;   :ensure t
-  ;;   :mode
-  ;;   (("\\.js\\'" . js2-mode))
-  ;;   :config
-  ;;   ;; better imenu
-  ;;   (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
-  ;;   ;; searches the current files parent directories for the
-  ;;   ;; node_modules/.bin/ directory and adds it to the buffer local exec-path
-  ;;   (defun get-npm-exec-path()
-  ;;     "prepend the most local node package manager executable path to the current exec path and return it"
-  ;;     (let* ((root (locate-dominating-file
-  ;;                   (or (buffer-file-name) default-directory)
-  ;;                   "node_modules")))
-  ;;       (cons (concat root "/node_modules/.bin") exec-path)))
-  ;;   (defun my-js-mode-hook()
-  ;;     (set (make-local-variable 'exec-path) (get-npm-exec-path))
-  ;;     (infer-indentation-style)
-  ;;     (add-hook 'js2-mode-hook (lambda ()
-  ;;                                (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
-  ;;     (add-hook 'js2-mode-hook 'my-js-mode-hook)))
+  (use-package js2-mode
+    :ensure t
+    :mode
+    (("\\.js\\'" . js2-mode)
+     ("\\.js$\\'" . js2-mode))
+    :config
+    ;; better imenu
+    (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
+    ;; searches the current files parent directories for the
+    ;; node_modules/.bin/ directory and adds it to the buffer local exec-path
+    (defun get-npm-exec-path()
+      "prepend the most local node package manager executable path to the current exec path and return it"
+      (let* ((root (locate-dominating-file
+                    (or (buffer-file-name) default-directory)
+                    "node_modules")))
+        (cons (concat root "/node_modules/.bin") exec-path)))
+    (defun my-js-mode-hook()
+      (set (make-local-variable 'exec-path) (get-npm-exec-path))
+      (infer-indentation-style)
+      (add-hook 'js2-mode-hook (lambda ()
+                                 (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+      (add-hook 'js2-mode-hook 'my-js-mode-hook)))
 #+end_src
 *** [[https://github.com/llemaitre19/jtsx][jtsx]]
 #+begin_src emacs-lisp
   (use-package jtsx
     :ensure t
-    :mode (("\\.jsx?\\'" . jtsx-jsx-mode)
+    :mode (("\\.jsx\\'" . jtsx-jsx-mode)
            ("\\.tsx\\'" . jtsx-tsx-mode)
            ("\\.ts\\'" . jtsx-typescript-mode))
     :commands jtsx-install-treesit-language
@@ -1601,12 +1610,16 @@ REPL buffer connected to a Ruby subprocess
       (setq-local electric-pair-pairs (append electric-pair-pairs web-mode-electric-pairs))
       (setq-local electric-pair-text-pairs electric-pair-pairs))
     (add-hook 'web-mode-hook 'web-mode-add-electric-pairs))
-#+END_SRC
+#+end_src
+*** css-indent-offset
+#+begin_src emacs-lisp
+  (setq css-indent-offset 2)
+#+end_src
 ** JSON
 #+begin_src emacs-lisp
   (use-package json-mode
     :hook (json-mode . flycheck-mode)
-    :custom (js-indent-level 4))
+    :custom (js-indent-level 2))
 #+end_src
 *** [[https://github.com/gongo/json-reformat][json-reformat]]
 #+begin_src emacs-lisp
