@@ -75,6 +75,7 @@
  '(main-line-separator-style 'chamfer)
  '(nrepl-message-colors
    '("#fb4933" "#d65d0e" "#d79921" "#747400" "#b9b340" "#14676b" "#689d6a" "#d3869b" "#b16286"))
+ '(org-agenda-files '("~/.emacs.d/config.org"))
  '(org-fontify-done-headline nil)
  '(org-fontify-todo-headline nil)
  '(org-structure-template-alist
