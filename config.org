@@ -1350,6 +1350,17 @@ Copy/pasted from [[https://kristofferbalintona.me/posts/202202211546/#orderless]
     :config
     (projectile-global-mode)
     (setq projectile-completion-system 'auto)
+
+    (defun my-projectile-switch-and-grep ()
+      "Switch projects using `projectile-switch-project` and then run `consult-git-grep`."
+      (interactive)
+      (let ((projectile-switch-project-action
+             (lambda ()
+               (consult-git-grep))))  ;; Set what happens after switching
+        (projectile-switch-project)))
+
+    (global-set-key (kbd "C-c p h g") 'my-projectile-switch-and-grep)
+
     ;; (defun my-projectile-replace ()
     ;;   (interactive)
     ;;   (let ((after-change-functions nil)) ; empty when executing this func
@@ -1970,7 +1981,7 @@ Hippie expand (a better Dynamic Abbrev) can expand words and lines it has seen b
     :custom
     (corfu-cycle t)                  ;; Enable cycling for `corfu-next/previous'
     (corfu-auto t)                   ;; Enable auto completion
-    (corfu-auto-delay 0.5)
+    (corfu-auto-delay 1.0)
     (corfu-auto-prefix 2)
     (corfu-separator ?\s)            ;; Orderless field separator
     (corfu-quit-at-boundary nil)     ;; Never quit at completion boundary
