@@ -18,6 +18,7 @@
         delete-horizontal-space
         electric-pair-delete-pair
         end-of-visual-line
+        forward-sexp
         gcm-scroll-up
         hydra--digit-argument
         hydra-multiple-cursors/nil
