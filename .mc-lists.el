@@ -52,6 +52,7 @@
         dumb-jump-go
         gcm-scroll-down
         handle-switch-frame
+        hydra-multiple-cursors/body
         hydra-multiple-cursors/mc-hide-unmatched-lines-mode
         hydra-multiple-cursors/mc/cycle-backward
         hydra-multiple-cursors/mc/cycle-forward

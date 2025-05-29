@@ -1788,12 +1788,47 @@ copied a lot of stuff from [[https://github.com/MatthewZMD/.emacs.d#lsp][this co
   ;;   )
 #+end_src
 * [[https://github.com/joaotavora/eglot][Eglot]]
-helpful doc - https://joaotavora.github.io/eglot/
+** switched from lsp because eglot is more minimalist and works more OOTB
+*** helpful doc - https://joaotavora.github.io/eglot/
 ** TODO get working on work laptop (does work on personal laptop)
 *** can't import basic stuff (e.g. 'java.util') on work laptop; doesn't work on basic .java files
 *** ':java :home' setting is different between personal and work laptop when starting eglot
 *** look into running an lsp in a docker container and connecting to said container via Tramp
-** switched from lsp because eglot is more minimalist and works more OOTB
+*** devcontainers + eglot strategy
+**** NOTES:
+***** Overall strategy: configuring a devcontainer and then hooking up eglot up to that devcontainer.
+***** When eglot runs a .java file it'll look at 'eglot-server-programs' for java and run a bash script (eglot-docker.sh or eglot-docker-v2.sh). In this bash script, we can either try and run 'devcontainer' commands or regular 'docker run' commands
+***** Flow: summon eglot -> eglot looks at 'eglot-docker.sh', e.g. -> eglot-docker.sh runs 'devcontainer up' and '... exec' commands -> devcontainer leverages devcontainer.json -> which leverages a Dockerfile
+***** Best Dockerfile or docker image to pull in: probably this [[https://hub.docker.com/r/metio/devcontainers-java][metio/devcontainers-java:21]]
+****** I guess it needs 'at least 17' because jdtls.py complains if it's below 17. Super annoying
+****** The [[https://mcr.microsoft.com/en-us/artifact/mar/devcontainers/java/about][Microsoft devcontainers]] aren't bad as well. They provide baseline Java but lack the 'eclipse jdtls' part
+***** Checkout this var: 'eglot-withhold-process-id'
+***** Running a regular docker container
+****** [[https://2metz.fr/blog/configuring-emacs-eglot-lsp-with-docker-containers/][This guy]] has a good idea in which he runs a simple 'docker run' script and passes an language server command ('gopls serve', e.g.) to a devcontainer ('metio/devcontainers-go')
+****** This could work for me. However, the two tricky parts: what needs to be mounted ('--volume') and what command to pass to the docker container (I think it's '/jdtls/bin/jdtls')
+***** Running a devcontainer
+****** The eglot-docker.sh script runs two 'devcontainer' commands ('up' and 'exec'). By doing so we leverage the devcontainer.json config and the Dockerfile
+****** I used dhs-common/common-core as a guinea pig. Check the .devcontainer dir
+***** Two things that I wasn't 100% sure about:
+****** the '-data' option in the jdtls command. I'm not sure if this should be the workspace the code is in like it is with [[https://github.com/Kaylebor/eclipse.jdt.ls-docker/blob/master/start.sh#L12][this java command]] or you can leave it blank when booting up the jdtls devcontainer
+****** workspace. I see this everywhere, and I'm not sure who should set it: the devcontainer.json (like it is [[https://github.com/clearwater-analytics/devcontainer-java-example/blob/main/.devcontainer/team-environment/devcontainer.json#L7][here]]), set in the 'devcontainer' command '--workspace-folder' option.
+******* This probably doesn't matter. Pick one and stick to it.
+***** Helpful docs/blogs/links:
+****** https://happihacking.com/blog/posts/2023/dev-containers-emacs/
+****** https://gist.github.com/noinarisak/859831b148caf83f530cb158afb04f51
+****** https://medium.com/cwan-engineering/reproducible-local-development-with-dev-containers-0ed5fa850b36
+******* https://github.com/clearwater-analytics/devcontainer-java-example/tree/main
+****** https://2metz.fr/blog/configuring-emacs-eglot-lsp-with-docker-containers/
+****** https://emacs.stackexchange.com/questions/82194/how-can-i-start-a-remote-lsp-server-and-specify-a-specific-host-and-port-to-conn
+**** BEST ATTEMPT: eglot was able to connect to a running devcontainer, but then it timed out. Like eglot was hooked up to the devcontainer, and the devcontainer was running. But eglot (on my Mac) and jdtls (in the devcontainer) weren't talking to each other. The devcontainer itself had a running instance of jdtls on it (so that works).
+***** Steps:
+****** on command line: 'devcontainer up...' and 'devcontainer exec...'
+******* you may be able to skip the 'exec' step -> eglot can start it for you
+****** in Emacs, connect to docker via Tramp -> '/docker:container_name:/workspaces/dhs-common/common-core/...' -> M-x eglot -> when eglot asks for jdtls -> '/jdtls/bin/jdtls'
+****** This is with NO extra values added to the 'eglot-server-programs' var for '(java-mode java-ts-mode)
+***** Errors:
+****** [1] timed-out request ':initialize'
+** config
 #+begin_src emacs-lisp
   (use-package eglot
     :ensure t
@@ -1948,6 +1983,22 @@ helpful doc - https://joaotavora.github.io/eglot/
   ;; (add-hook 'java-ts-mode-hook 'eglot-ensure)
   ;; (remove-hook 'java-mode-hook 'eglot-ensure)
   ;; (remove-hook 'java-ts-mode-hook 'eglot-ensure)
+
+
+  ;;;;;;;;;;;;;;;;;;;;
+  ;; ATTEMPTING devcontainer + eglot
+  ;;;;;;;;;;;;;;;;;;;;
+
+  ;; See https://github.com/joaotavora/eglot/blob/28c1c3a52e1cb7fa7260815eb53700f348d48dd5/eglot.el#L402-L404
+  ;; (setq eglot-withhold-process-id "1")
+  ;; (with-eval-after-load 'eglot
+  ;;   (add-to-list 'eglot-server-programs `((java-mode java-ts-mode) . ("/Users/ckelly/.emacs.d/eglot-docker.sh")))
+  ;;   ;; (add-to-list 'eglot-server-programs `((java-mode java-ts-mode) . ("/Users/ckelly/.emacs.d/eglot-docker-v2.sh" "metio/devcontainers-java:21" "jdtls")))
+  ;;   )
+
+  ;; Opposite of add-to-list
+  ;; (setq eglot-server-programs
+  ;;       (remove '((java-mode java-ts-mode) . ("/Users/ckelly/.emacs.d/eglot-docker.sh")) eglot-server-programs))
 #+end_src
 * Abbreviation
 ** hippie expand
