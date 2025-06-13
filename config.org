@@ -696,7 +696,8 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
 ** org related vars, defuns, key bindings, etc.
 #+begin_src emacs-lisp
   (setq org-ellipsis " ")
-  (setq org-src-fontify-natively t)
+  (setq
+   org-src-fontify-natively t)
   (setq org-src-tab-acts-natively t)
   (setq org-confirm-babel-evaluate nil)
   (setq org-export-with-smart-quotes t)
@@ -707,18 +708,18 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
     "Reloads ~/.emacs.d/config.org at runtime"
     (interactive)
     (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
-  (global-set-key (kbd "C-c r c") 'reload-config)
+    (global-set-key (kbd "C-c r c") 'reload-config)
 
-  (global-set-key (kbd "C-c '") 'org-edit-src-code)
+    (global-set-key (kbd "C-c '") 'org-edit-src-code)
 
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((java . t)
-     (C . t)
-     (emacs-lisp . t)
-     (lisp . t)
-     (sql . t)
-     ))
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((java . t)
+       (C . t)
+       (emacs-lisp . t)
+       (lisp . t)
+       (sql . t)
+       ))
 #+end_src
 ** org-structure-template-alist
 #+begin_src emacs-lisp
