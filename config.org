@@ -90,10 +90,12 @@ I just want to use counsel-yank-pop in the minibuffer
     :after
     all-the-icons
 
+    :custom
+    (mood-line-format mood-line-format-default-extended)
     ;; Use pretty Fira Code-compatible glyphs:
     ;;   ● myModifiedFile.js  Replace×3                 + main  JavaScript  → Issues: 2
-    :custom
-    (mood-line-glyph-alist mood-line-glyphs-fira-code))
+    (mood-line-glyph-alist mood-line-glyphs-fira-code)
+    )
 #+end_src
 ** [[https://github.com/domtronn/all-the-icons.el/][all-the-icons]]
 #+begin_src emacs-lisp
