@@ -750,6 +750,7 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
           ("java" . "src java\n")
           ("sr" . "src R\n")
           ("sc" . "src C\n")
+          ("ss" . "src sql\n")
           ))
 #+end_src
 ** org-bullets
