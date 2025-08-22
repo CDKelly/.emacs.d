@@ -138,6 +138,7 @@
  '(font-lock-type-face ((t (:foreground "#3679D8" :slant italic))))
  '(font-lock-variable-name-face ((t (:foreground "DarkOrange1"))))
  '(font-lock-variable-use-face ((t (:foreground "turquoise2"))))
+ '(line-number-current-line ((t (:inherit (hl-line default) :foreground "#D85F00" :weight normal))))
  '(magit-diff-hunk-heading ((t (:extend t :foreground "#D8B941" :box (:line-width 1 :color "grey75") :weight light))))
  '(magit-diff-hunk-heading-highlight ((t (:extend t :foreground "#D8B941" :box (:line-width 1 :color "medium slate blue") :weight bold))))
  '(minibuffer-prompt ((t (:foreground "turquoise2"))))

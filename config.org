@@ -62,6 +62,13 @@ I just want to use counsel-yank-pop in the minibuffer
   (setq enable-recursive-minibuffers t)
 #+end_src
 * Aesthetics & Other Enhancements
+** font
+*** doesn't seem to be working?
+#+begin_src emacs-lisp
+  ;; 120 == 12
+  ;; (set-face-attribute 'default nil :height 90)
+  ;; (set-frame-font "Monospace-12")
+#+end_src
 ** theme
 #+begin_src emacs-lisp
   (use-package doom-themes
@@ -89,13 +96,11 @@ I just want to use counsel-yank-pop in the minibuffer
     (mood-line-mode)
     :after
     all-the-icons
-
     :custom
     (mood-line-format mood-line-format-default-extended)
     ;; Use pretty Fira Code-compatible glyphs:
     ;;   ● myModifiedFile.js  Replace×3                 + main  JavaScript  → Issues: 2
-    (mood-line-glyph-alist mood-line-glyphs-fira-code)
-    )
+    (mood-line-glyph-alist mood-line-glyphs-fira-code))
 #+end_src
 ** [[https://github.com/domtronn/all-the-icons.el/][all-the-icons]]
 #+begin_src emacs-lisp
@@ -698,8 +703,7 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
 ** org related vars, defuns, key bindings, etc.
 #+begin_src emacs-lisp
   (setq org-ellipsis " ")
-  (setq
-   org-src-fontify-natively t)
+  (setq org-src-fontify-natively t)
   (setq org-src-tab-acts-natively t)
   (setq org-confirm-babel-evaluate nil)
   (setq org-export-with-smart-quotes t)
@@ -710,18 +714,18 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
     "Reloads ~/.emacs.d/config.org at runtime"
     (interactive)
     (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
-    (global-set-key (kbd "C-c r c") 'reload-config)
+  (global-set-key (kbd "C-c r c") 'reload-config)
 
-    (global-set-key (kbd "C-c '") 'org-edit-src-code)
+  (global-set-key (kbd "C-c '") 'org-edit-src-code)
 
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((java . t)
-       (C . t)
-       (emacs-lisp . t)
-       (lisp . t)
-       (sql . t)
-       ))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((java . t)
+     (C . t)
+     (emacs-lisp . t)
+     (lisp . t)
+     (sql . t)
+     ))
 #+end_src
 ** org-structure-template-alist
 #+begin_src emacs-lisp
