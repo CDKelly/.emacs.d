@@ -26,7 +26,12 @@
  '(cua-overwrite-cursor-color "#d79921")
  '(cua-read-only-cursor-color "#98971a")
  '(custom-safe-themes
-   '("dccf4a8f1aaf5f24d2ab63af1aa75fd9d535c83377f8e26380162e888be0c6a9" "0f2f1feff73a80556c8c228396d76c1a0342eb4eefd00f881b91e26a14c5b62a" "7f6d4aebcc44c264a64e714c3d9d1e903284305fd7e319e7cb73345a9994f5ef" "7f1d414afda803f3244c6fb4c2c64bea44dac040ed3731ec9d75275b9e831fe5" "830877f4aab227556548dc0a28bf395d0abe0e3a0ab95455731c9ea5ab5fe4e1" default))
+   '("dccf4a8f1aaf5f24d2ab63af1aa75fd9d535c83377f8e26380162e888be0c6a9"
+     "0f2f1feff73a80556c8c228396d76c1a0342eb4eefd00f881b91e26a14c5b62a"
+     "7f6d4aebcc44c264a64e714c3d9d1e903284305fd7e319e7cb73345a9994f5ef"
+     "7f1d414afda803f3244c6fb4c2c64bea44dac040ed3731ec9d75275b9e831fe5"
+     "830877f4aab227556548dc0a28bf395d0abe0e3a0ab95455731c9ea5ab5fe4e1"
+     default))
  '(eldoc-documentation-functions nil t nil "Customized with use-package lsp-mode")
  '(flycheck-color-mode-line-face-to-color 'mode-line-buffer-id)
  '(frame-background-mode nil)
@@ -35,38 +40,27 @@
  '(global-visual-line-mode t)
  '(highlight-changes-colors '("#d3869b" "#b16286"))
  '(highlight-symbol-colors
-   '("#522a41fa2b3b" "#3821432637ec" "#5bbe348b2bf5" "#483d36c73def" "#43c0418329b9" "#538f36232679" "#317a3ddc3e5d"))
+   '("#522a41fa2b3b" "#3821432637ec" "#5bbe348b2bf5" "#483d36c73def"
+     "#43c0418329b9" "#538f36232679" "#317a3ddc3e5d"))
  '(highlight-symbol-foreground-color "#bdae93")
  '(highlight-tail-colors
-   '(("#32302f" . 0)
-     ("#747400" . 20)
-     ("#2e7d33" . 30)
-     ("#14676b" . 50)
-     ("#a76e00" . 60)
-     ("#a53600" . 70)
-     ("#9f4d64" . 85)
+   '(("#32302f" . 0) ("#747400" . 20) ("#2e7d33" . 30) ("#14676b" . 50)
+     ("#a76e00" . 60) ("#a53600" . 70) ("#9f4d64" . 85)
      ("#32302f" . 100)))
  '(hl-bg-colors
-   '("#a76e00" "#a53600" "#b21b0a" "#9f4d64" "#8b2a58" "#14676b" "#2e7d33" "#747400"))
+   '("#a76e00" "#a53600" "#b21b0a" "#9f4d64" "#8b2a58" "#14676b"
+     "#2e7d33" "#747400"))
  '(hl-fg-colors
-   '("#282828" "#282828" "#282828" "#282828" "#282828" "#282828" "#282828" "#282828"))
+   '("#282828" "#282828" "#282828" "#282828" "#282828" "#282828"
+     "#282828" "#282828"))
  '(hl-paren-colors '("#689d6a" "#d79921" "#458588" "#b16286" "#98971a"))
  '(hl-sexp-background-color "#1c1f26")
  '(hl-todo-keyword-faces
-   '(("TODO" . "#dc752f")
-     ("NEXT" . "#dc752f")
-     ("THEM" . "#2d9574")
-     ("PROG" . "#4f97d7")
-     ("OKAY" . "#4f97d7")
-     ("DONT" . "#f2241f")
-     ("FAIL" . "#f2241f")
-     ("DONE" . "#86dc2f")
-     ("NOTE" . "#b1951d")
-     ("KLUDGE" . "#b1951d")
-     ("HACK" . "#b1951d")
-     ("TEMP" . "#b1951d")
-     ("FIXME" . "#dc752f")
-     ("XXX+" . "#dc752f")
+   '(("TODO" . "#dc752f") ("NEXT" . "#dc752f") ("THEM" . "#2d9574")
+     ("PROG" . "#4f97d7") ("OKAY" . "#4f97d7") ("DONT" . "#f2241f")
+     ("FAIL" . "#f2241f") ("DONE" . "#86dc2f") ("NOTE" . "#b1951d")
+     ("KLUDGE" . "#b1951d") ("HACK" . "#b1951d") ("TEMP" . "#b1951d")
+     ("FIXME" . "#dc752f") ("XXX+" . "#dc752f")
      ("\\?\\?\\?+" . "#dc752f")))
  '(lsp-ui-doc-border "#bdae93")
  '(magit-diff-use-overlays nil)
@@ -74,31 +68,50 @@
  '(main-line-color2 "#111111")
  '(main-line-separator-style 'chamfer)
  '(nrepl-message-colors
-   '("#fb4933" "#d65d0e" "#d79921" "#747400" "#b9b340" "#14676b" "#689d6a" "#d3869b" "#b16286"))
+   '("#fb4933" "#d65d0e" "#d79921" "#747400" "#b9b340" "#14676b"
+     "#689d6a" "#d3869b" "#b16286"))
  '(org-agenda-files '("~/.emacs.d/config.org"))
  '(org-fontify-done-headline nil)
  '(org-fontify-todo-headline nil)
  '(org-structure-template-alist
-   '(("a" . "export ascii")
-     ("c" . "center")
-     ("C" . "comment")
-     ("E" . "export")
-     ("h" . "export html")
-     ("l" . "export latex")
-     ("q" . "quote")
-     ("s" . "src")
-     ("v" . "verse")))
+   '(("a" . "export ascii") ("c" . "center") ("C" . "comment")
+     ("E" . "export") ("h" . "export html") ("l" . "export latex")
+     ("q" . "quote") ("s" . "src") ("v" . "verse")))
  '(package-archives
    '(("elpa" . "https://elpa.gnu.org/packages/")
      ("melpa" . "http://melpa.org/packages/")
      ("gnu" . "http://elpa.gnu.org/packages/")))
  '(package-enable-at-startup nil)
  '(package-selected-packages
-   '(magit cape rvm nerd-icons-dired kind-icon svg-lib all-the-icons-dired all-the-icons-nerd-fonts all-the-icons-ibuffer all-the-icons-completion jtsx treesit-auto marginalia consult-projectile pretty-hydra major-mode-hydra embark-consult embark consult vertico compat with-editor which-key all-the-icons corfu rg amx orderless markdown-mode doom-themes vertico-directory aggressive-indent eglot pcre2el wgrep visual-regexp-steroids exec-path-from-shell mood-line multiple-cursors zerodark-theme roby org-bullets popup-kill-ring doom-modeline avy rainbow-delimiters rainbow-mode use-package jazz-theme planet-theme soothe-theme color-theme-sanityinc-tomorrow molokai-theme afternoon-theme nord-theme material-theme monokai-alt-theme monokai-theme spacemacs-theme fill-column-indicator expand-region ace-jump-mode auto-highlight-symbol dockerfile-mode lua-mode highlight-indent-guides yaml-mode smart-tabs-mode groovy-mode json-mode cheat-sh json-reformat edit-server ruby-end restclient less-css-mode paredit-menu paredit eslintd-fix add-node-modules-path eslint-fix web-mode editorconfig xref-js2 js2-mode browse-url-dwim rspec-mode robe enh-ruby-mode inf-ruby flymake-ruby feature-mode flycheck popup projectile flx-ido landmark))
+   '(magit cape rvm nerd-icons-dired kind-icon svg-lib
+           all-the-icons-dired all-the-icons-nerd-fonts
+           all-the-icons-ibuffer all-the-icons-completion jtsx
+           treesit-auto marginalia consult-projectile pretty-hydra
+           major-mode-hydra embark-consult embark consult vertico
+           compat with-editor which-key all-the-icons corfu rg amx
+           orderless markdown-mode doom-themes vertico-directory
+           aggressive-indent eglot pcre2el wgrep
+           visual-regexp-steroids mood-line multiple-cursors
+           zerodark-theme roby org-bullets popup-kill-ring
+           doom-modeline avy rainbow-delimiters rainbow-mode
+           use-package jazz-theme planet-theme soothe-theme
+           color-theme-sanityinc-tomorrow molokai-theme
+           afternoon-theme nord-theme material-theme monokai-alt-theme
+           monokai-theme spacemacs-theme fill-column-indicator
+           expand-region ace-jump-mode auto-highlight-symbol
+           dockerfile-mode lua-mode highlight-indent-guides yaml-mode
+           smart-tabs-mode groovy-mode json-mode cheat-sh
+           json-reformat edit-server ruby-end restclient less-css-mode
+           paredit-menu paredit eslintd-fix add-node-modules-path
+           eslint-fix web-mode editorconfig xref-js2 js2-mode
+           browse-url-dwim rspec-mode robe enh-ruby-mode inf-ruby
+           flymake-ruby feature-mode flycheck popup projectile flx-ido
+           landmark))
  '(pos-tip-background-color "#32302f")
  '(pos-tip-foreground-color "#bdae93")
  '(powerline-color1 "#1E1E1E")
  '(powerline-color2 "#111111")
+ '(safe-local-variable-directories '("/home/ckelly/projects/dhs-vinelink/"))
  '(show-paren-style 'parenthesis)
  '(show-paren-when-point-in-periphery t)
  '(show-paren-when-point-inside-paren t)
@@ -108,12 +121,17 @@
  '(term-default-fg-color "#a89984")
  '(vc-annotate-background-mode nil)
  '(weechat-color-list
-   '(unspecified "#282828" "#32302f" "#b21b0a" "#fb4933" "#747400" "#98971a" "#a76e00" "#d79921" "#14676b" "#458588" "#9f4d64" "#d3869b" "#2e7d33" "#689d6a" "#a89984" "#282828"))
+   '(unspecified "#282828" "#32302f" "#b21b0a" "#fb4933" "#747400"
+                 "#98971a" "#a76e00" "#d79921" "#14676b" "#458588"
+                 "#9f4d64" "#d3869b" "#2e7d33" "#689d6a" "#a89984"
+                 "#282828"))
  '(window-divider-mode nil)
  '(xterm-color-names
-   ["#32302f" "#fb4933" "#98971a" "#d79921" "#458588" "#d3869b" "#689d6a" "#a89984"])
+   ["#32302f" "#fb4933" "#98971a" "#d79921" "#458588" "#d3869b" "#689d6a"
+    "#a89984"])
  '(xterm-color-names-bright
-   ["#282828" "#d65d0e" "#7c6f64" "#282828" "#a89984" "#b16286" "#bdae93" "#fbf1c7"]))
+   ["#282828" "#d65d0e" "#7c6f64" "#282828" "#a89984" "#b16286" "#bdae93"
+    "#fbf1c7"]))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -156,11 +174,12 @@
 ;; only need exec-path-from-shell on OSX
 ;; this hopefully sets up path and other vars better
 ;; helps ESLint get found
-(package-install 'exec-path-from-shell)
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
-(when (daemonp)
-  (exec-path-from-shell-initialize))
+(when (eq system-type 'darwin)
+  (package-install 'exec-path-from-shell)
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+  (when (daemonp)
+    (exec-path-from-shell-initialize)))
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
