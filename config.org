@@ -765,6 +765,21 @@ better looking bullets for .org files
     :config
     (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
 #+end_src
+** org-roam
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :ensure t
+    :custom
+    (org-roam-directory "~/Documents/personal/professionalHouseOnPersonalLand/programming/orgRoamNotes")
+    (org-roam-completion-everywhere t)
+    :bind (("C-c o r n f" . org-roam-node-find)
+           ("C-c o r n i" . org-roam-node-insert)
+           ("C-c o r t a" . org-roam-tag-add)
+           ("C-c o r a a" . org-roam-alias-add)
+           ("C-c o r b" . org-roam-buffer-toggle))
+    :config
+    (org-roam-setup))
+#+end_src
 * Navigation
 ** basic navigation
   #+begin_src emacs-lisp
