@@ -16,6 +16,7 @@
         counsel-yank-pop
         dabbrev-expand
         delete-horizontal-space
+        dired-unmark-backward
         electric-pair-delete-pair
         end-of-visual-line
         forward-sexp

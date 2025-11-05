@@ -5,6 +5,15 @@
 (setq gc-cons-threshold most-positive-fixnum ; 2^61 bytes
       gc-cons-percentage 0.6)
 
+(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")))
+
+ ;; '(package-archives
+ ;;   '(("elpa" . "https://elpa.gnu.org/packages/")
+ ;;     ("melpa" . "https://melpa.org/packages/")
+ ;;     ("gnu" . "http://elpa.gnu.org/packages/")))
+
 ;; set up package manager
 ;; package-initialize might have to come before configurations of
 ;; installed packages
@@ -36,8 +45,6 @@
  '(flycheck-color-mode-line-face-to-color 'mode-line-buffer-id)
  '(frame-background-mode nil)
  '(fringe-mode 4 nil (fringe))
- '(global-subword-mode t)
- '(global-visual-line-mode t)
  '(highlight-changes-colors '("#d3869b" "#b16286"))
  '(highlight-symbol-colors
    '("#522a41fa2b3b" "#3821432637ec" "#5bbe348b2bf5" "#483d36c73def"
@@ -83,7 +90,30 @@
      ("gnu" . "http://elpa.gnu.org/packages/")))
  '(package-enable-at-startup nil)
  '(package-selected-packages
-   '(org-roam magit cape rvm nerd-icons-dired kind-icon svg-lib all-the-icons-dired all-the-icons-nerd-fonts all-the-icons-ibuffer all-the-icons-completion jtsx treesit-auto marginalia consult-projectile pretty-hydra major-mode-hydra embark-consult embark consult vertico compat with-editor which-key all-the-icons corfu rg amx orderless markdown-mode doom-themes vertico-directory aggressive-indent eglot pcre2el wgrep visual-regexp-steroids exec-path-from-shell mood-line multiple-cursors zerodark-theme roby org-bullets popup-kill-ring doom-modeline avy rainbow-delimiters rainbow-mode use-package jazz-theme planet-theme soothe-theme color-theme-sanityinc-tomorrow molokai-theme afternoon-theme nord-theme material-theme monokai-alt-theme monokai-theme spacemacs-theme fill-column-indicator expand-region ace-jump-mode auto-highlight-symbol dockerfile-mode lua-mode highlight-indent-guides yaml-mode smart-tabs-mode groovy-mode json-mode cheat-sh json-reformat edit-server ruby-end restclient less-css-mode paredit-menu paredit eslintd-fix add-node-modules-path eslint-fix web-mode editorconfig xref-js2 js2-mode browse-url-dwim rspec-mode robe enh-ruby-mode inf-ruby flymake-ruby feature-mode flycheck popup projectile flx-ido landmark))
+   '(org-roam magit cape rvm nerd-icons-dired kind-icon svg-lib
+              all-the-icons-dired all-the-icons-nerd-fonts
+              all-the-icons-ibuffer all-the-icons-completion jtsx
+              treesit-auto marginalia consult-projectile pretty-hydra
+              major-mode-hydra embark-consult embark consult vertico
+              compat with-editor which-key all-the-icons corfu rg amx
+              orderless markdown-mode doom-themes vertico-directory
+              aggressive-indent eglot pcre2el wgrep
+              visual-regexp-steroids mood-line multiple-cursors
+              zerodark-theme roby org-bullets popup-kill-ring
+              doom-modeline avy rainbow-delimiters rainbow-mode
+              use-package jazz-theme planet-theme soothe-theme
+              color-theme-sanityinc-tomorrow molokai-theme
+              afternoon-theme nord-theme material-theme
+              monokai-alt-theme monokai-theme spacemacs-theme
+              fill-column-indicator expand-region ace-jump-mode
+              auto-highlight-symbol dockerfile-mode lua-mode
+              highlight-indent-guides yaml-mode smart-tabs-mode
+              groovy-mode json-mode cheat-sh json-reformat edit-server
+              ruby-end restclient less-css-mode paredit-menu paredit
+              eslintd-fix add-node-modules-path eslint-fix web-mode
+              editorconfig xref-js2 js2-mode browse-url-dwim
+              rspec-mode robe enh-ruby-mode inf-ruby flymake-ruby
+              feature-mode flycheck popup projectile flx-ido landmark))
  '(pos-tip-background-color "#32302f")
  '(pos-tip-foreground-color "#bdae93")
  '(powerline-color1 "#1E1E1E")
@@ -117,6 +147,7 @@
  '(default ((t (:inherit default :extend nil :stipple nil :background "#1c1e1f" :foreground "#dfdfdf" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "nil" :family "Menlo"))))
  '(ahs-plugin-defalt-face ((t (:background "gray40" :foreground "DeepSkyBlue1"))) t)
  '(ahs-plugin-whole-buffer-face ((t (:background "gray40" :foreground "DeepSkyBlue1"))))
+ '(avy-lead-face ((t (:background "#D85F00" :foreground "#0D0E16" :weight normal))))
  '(avy-lead-face-0 ((t (:inherit avy-lead-face :background "#fd971f"))))
  '(company-posframe-metadata ((t (:inherit match))))
  '(consult-highlight-match ((t (:inherit match))))

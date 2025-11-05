@@ -65,7 +65,8 @@ I just want to use counsel-yank-pop in the minibuffer
 ** font
 *** doesn't seem to be working?
 #+begin_src emacs-lisp
-  ;; 120 == 12
+  (set-frame-font "Monospace-11" nil t)
+  ;; these didn't seem to work
   ;; (set-face-attribute 'default nil :height 90)
   ;; (set-frame-font "Monospace-12")
 #+end_src
@@ -1720,6 +1721,14 @@ REPL buffer connected to a Ruby subprocess
 #+begin_src emacs-lisp
   (setq nxml-child-indent 4)
 #+end_src
+** sql
+#+begin_src emacs-lisp
+  ;; aggressive-indent-mode doesn't seem to be working right in sql-mode
+  (defun my-sql-mode-hook ()
+    (setq aggressive-indent-mode nil))
+
+  (add-hook 'sql-mode-hook 'my-sql-mode-hook)
+#+end_src
 * Treesit
 ** find the language grammar
 #+begin_src emacs-lisp
@@ -1744,7 +1753,10 @@ REPL buffer connected to a Ruby subprocess
           (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
           (typescript "https://github.com/tree-sitter/tree-sitter-typescript"
                       "master" "typescript/src")
-          (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
+          ;; yaml-ts-mode not working. Can't be compiled
+          (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+          ))
 #+end_src
 ** map major mode to its treesit counterpart
 #+begin_src emacs-lisp
@@ -1753,12 +1765,21 @@ REPL buffer connected to a Ruby subprocess
           (c-mode . c-ts-mode)
           (c++-mode . c++-ts-mode)
           (css-mode . css-ts-mode)
+          (html-mode . html-ts-mode)
           (java-mode . java-ts-mode)
           (js2-mode . js-ts-mode)
           (json-mode . json-ts-mode)
           (python-mode . python-ts-mode)
           (ruby-mode . ruby-ts-mode)
-          (yaml-mode . yaml-ts-mode)))
+
+          ;; yaml-ts-mode not working - something with gcc, libc, or ld
+          ;; Warning (treesit): Error encountered when installing language grammar: (treesit-error Command: /snap/emacs/3130/usr/bin/g++-14 -fPIC -shared --sysroot /home/ckelly/snap/emacs/common/sysroot/ -B /home/ckelly/snap/emacs/common/sysroot/usr/lib/gcc parser.o scanner.o -o libtree-sitter-yaml.so Error output: /snap/emacs/3130/usr/bin/ld: cannot find /lib/x86_64-linux-gnu/libm.so.6: No such file or directory
+          ;; /snap/emacs/3130/usr/bin/ld: cannot find /lib/x86_64-linux-gnu/libmvec.so.1: No such file or directory
+          ;; collect2: error: ld returned 1 exit status
+          ;; )
+          (yaml-mode . yaml-ts-mode)
+
+          ))
 #+end_src
 ** [[https://github.com/renzmann/treesit-auto][treesit-auto]]
 #+begin_src emacs-lisp
@@ -2262,3 +2283,43 @@ If you experience freezing, decrease this amount, if you increase stuttering, in
               (add-hook 'minibuffer-setup-hook #'gc-minibuffer-setup-hook)
               (add-hook 'minibuffer-exit-hook #'gc-minibuffer-exit-hook)))
 #+end_src
+* NOTES
+** To get this to work on my work laptop's RHEL Workspace
+*** changed this to just setq in init.el
+#+begin_example
+   ;; '(package-archives
+   ;;   '(("elpa" . "https://elpa.gnu.org/packages/")
+   ;;     ("melpa" . "https://melpa.org/packages/")
+   ;;     ("gnu" . "http://elpa.gnu.org/packages/")))
+#+end_example
+changed to
+#+begin_example
+  ;; (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+  ;;                          ("melpa" . "https://melpa.org/packages/")
+  ;;                          ("org" . "https://orgmode.org/elpa/")))
+#+end_example
+*** had to go into smart-tabs-mode.el and move a macro
+**** did what [[https://github.com/jcsalomon/smarttabs/pull/54/files][this PR]] did: move smart-tabs-create-advice-list macro up
+*** changed the line-number-current-line face from being bold. This was causing an annoying visual effect where the current line was moving slightly to the right
+#+begin_example
+  ;;   '(line-number-current-line ((t (:inherit (hl-line default) :foreground "#D85F00" :weight normal))))
+#+end_example
+*** changed the font to be monospace so lines/columns would align
+#+begin_example
+    ;; (set-frame-font "Monospace-11" nil t)
+#+end_example
+*** snap emacs couldn't compile treesitter for yaml. Some compatibility issue with snap emac's ld command not being able to find the host's libm or libmvec files. Idk
+**** solution:
+***** Use [[https://github.com/casouri/tree-sitter-module/tree/master][this repo's]] build.sh script to compile libtree-sitter-yaml.so, then copy to `~/.emacs.d/tree-sitter/`
+***** Not the best solution since we're compiling libtree-sitter-yaml outside of our compiled emacs and expecting it to work, but hey. It worked.
+**** research:
+***** [[https://github.com/alexmurray/emacs-snap/issues/103][emacs-snap issue 103]]
+***** [[https://github.com/alexmurray/emacs-snap/issues/77][emacs-snap issue 77]]
+***** [[https://github.com/alexmurray/emacs-snap/issues/66][emacs-snap issue 66]]
+***** [[https://unix.stackexchange.com/questions/506866/what-should-i-install-to-correct-ld-cannot-find-lgbm-and-linput-so-that-i-c]["ld cannot find" issue]] and [[https://stackoverflow.com/questions/16710047/usr-bin-ld-cannot-find-lnameofthelibrary][another "ld cannot find" issue]]
+**** full error:
+#+begin_example
+  Warning (treesit): Error encountered when installing language grammar: (treesit-error Command: /snap/emacs/3130/usr/bin/g++-14 -fPIC -shared --sysroot /home/ckelly/snap/emacs/common/sysroot/ -B /home/ckelly/snap/emacs/common/sysroot/usr/lib/gcc parser.o scanner.o -o libtree-sitter-yaml.so Error output: /snap/emacs/3130/usr/bin/ld: cannot find /lib/x86_64-linux-gnu/libm.so.6: No such file or directory
+  /snap/emacs/3130/usr/bin/ld: cannot find /lib/x86_64-linux-gnu/libmvec.so.1: No such file or directory
+  collect2: error: ld returned 1 exit status
+#+end_example
