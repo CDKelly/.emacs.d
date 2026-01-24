@@ -4,7 +4,6 @@ yasnippet
 
 rg - https://github.com/dajva/rg.el
 
-tree sitter - https://tree-sitter.github.io/tree-sitter/
 combobulate - https://github.com/mickeynp/combobulate; structural navigation and editing
 
 docker - wrapper around docker CLI
@@ -36,5 +35,5 @@ https://github.com/astoff/buffer-env - call the correct version of external prog
 
 ediff - https://www.reddit.com/r/emacs/comments/17yc6x6/emacs_ediff_basics/
 
-corfu - https://github.com/minad/corfu
-replaces company
+agent-shell - https://github.com/xenodium/agent-shell
+hook up emacs to any AI agent shell (Claude, Gemini, etc.)
