@@ -61,6 +61,11 @@ I just want to use counsel-yank-pop in the minibuffer
 #+begin_src emacs-lisp
   (setq enable-recursive-minibuffers t)
 #+end_src
+** dired
+#+begin_src emacs-lisp
+  (setq dired-kill-when-opening-new-dired-buffer t)
+  (setq dired-listing-switches "-alh")
+#+end_src
 * Aesthetics & Other Enhancements
 ** font
 *** doesn't seem to be working?
