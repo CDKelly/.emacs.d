@@ -832,9 +832,9 @@ TODO: avy-goto-char-timer + symbol-at-point = could make it easier to jump to a 
       (setq avy-background t)
 
       ;; every letter but the letters I use for avy-actions below
-      (setq avy-keys '(?a ?b ?c ?d ?e ?f ?g ?h
-                          ?j ?l ?m ?o ?q ?r ?s
-                          ?u ?v))
+      (setq avy-keys '(?a ?b ?c ?d ?f ?g ?h
+                          ?j ?l ?m ?o ?q ?r
+                          ?s ?u ?v))
 
       (defun avy-show-dispatch-help ()
         (let* ((len (length "avy-action-"))
@@ -858,6 +858,11 @@ TODO: avy-goto-char-timer + symbol-at-point = could make it easier to jump to a 
           (message "%s" (apply #'concat (nreverse display-strings)))))
 
 
+      (defun avy-action-goto-end-of-line (pt)
+        (goto-char pt)
+        (end-of-line)
+        t)
+
       ;; Kill text
       (defun avy-action-kill-whole-line (pt)
         (save-excursion
@@ -867,9 +872,6 @@ TODO: avy-goto-char-timer + symbol-at-point = could make it easier to jump to a 
          (cdr
           (ring-ref avy-ring 0)))
         t)
-
-      (setf (alist-get ?k avy-dispatch-alist) 'avy-action-kill-stay
-            (alist-get ?K avy-dispatch-alist) 'avy-action-kill-whole-line)
 
       ;; Copy text
       (defun avy-action-copy-whole-line (pt)
@@ -883,9 +885,6 @@ TODO: avy-goto-char-timer + symbol-at-point = could make it easier to jump to a 
          (cdr
           (ring-ref avy-ring 0)))
         t)
-
-      (setf (alist-get ?w avy-dispatch-alist) 'avy-action-copy
-            (alist-get ?W avy-dispatch-alist) 'avy-action-copy-whole-line)
 
       ;; Yank text
       (defun avy-action-yank-whole-line (pt)
@@ -909,18 +908,23 @@ TODO: avy-goto-char-timer + symbol-at-point = could make it easier to jump to a 
           (indent-for-tab-command))
         t)
 
-      (setf (alist-get ?y avy-dispatch-alist) 'avy-action-yank
-            (alist-get ?Y avy-dispatch-alist) 'avy-action-yank-whole-line
-            (alist-get ?P avy-dispatch-alist) 'avy-action-yank-whole-line-above
-            (alist-get ?N avy-dispatch-alist) 'avy-action-yank-whole-line-below)
-
       ;; Transpose/Move text
       (defun avy-action-teleport-whole-line (pt)
         (avy-action-kill-whole-line pt)
-        (save-excursion (yank)) t)
+        (save-excursion (yank))
+        t)
 
-      (setf (alist-get ?t avy-dispatch-alist) 'avy-action-teleport
-            (alist-get ?T avy-dispatch-alist) 'avy-action-teleport-whole-line)
+      (setf (alist-get ?k avy-dispatch-alist) 'avy-action-kill-stay
+            (alist-get ?K avy-dispatch-alist) 'avy-action-kill-whole-line
+            (alist-get ?w avy-dispatch-alist) 'avy-action-copy
+            (alist-get ?W avy-dispatch-alist) 'avy-action-copy-whole-line
+            (alist-get ?y avy-dispatch-alist) 'avy-action-yank
+            (alist-get ?Y avy-dispatch-alist) 'avy-action-yank-whole-line
+            (alist-get ?P avy-dispatch-alist) 'avy-action-yank-whole-line-above
+            (alist-get ?N avy-dispatch-alist) 'avy-action-yank-whole-line-below
+            (alist-get ?t avy-dispatch-alist) 'avy-action-teleport
+            (alist-get ?T avy-dispatch-alist) 'avy-action-teleport-whole-line
+            (alist-get ?e avy-dispatch-alist) 'avy-action-goto-end-of-line)
 
       :bind
       ("C-c f" . avy-goto-char-timer)
@@ -928,7 +932,6 @@ TODO: avy-goto-char-timer + symbol-at-point = could make it easier to jump to a 
   #+end_src
 * Scrolling
 #+begin_src emacs-lisp
-  ;; scrolling
   (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
   (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
   (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
@@ -2308,18 +2311,61 @@ changed to
 #+begin_example
     ;; (set-frame-font "Monospace-11" nil t)
 #+end_example
-*** snap emacs couldn't compile treesitter for yaml. Some compatibility issue with snap emac's ld command not being able to find the host's libm or libmvec files. Idk
-**** solution:
-***** Use [[https://github.com/casouri/tree-sitter-module/tree/master][this repo's]] build.sh script to compile libtree-sitter-yaml.so, then copy to `~/.emacs.d/tree-sitter/`
-***** Not the best solution since we're compiling libtree-sitter-yaml outside of our compiled emacs and expecting it to work, but hey. It worked.
-**** research:
-***** [[https://github.com/alexmurray/emacs-snap/issues/103][emacs-snap issue 103]]
-***** [[https://github.com/alexmurray/emacs-snap/issues/77][emacs-snap issue 77]]
-***** [[https://github.com/alexmurray/emacs-snap/issues/66][emacs-snap issue 66]]
-***** [[https://unix.stackexchange.com/questions/506866/what-should-i-install-to-correct-ld-cannot-find-lgbm-and-linput-so-that-i-c]["ld cannot find" issue]] and [[https://stackoverflow.com/questions/16710047/usr-bin-ld-cannot-find-lnameofthelibrary][another "ld cannot find" issue]]
-**** full error:
+*** Snap
+**** snap emacs couldn't compile treesitter for yaml. Some compatibility issue with snap emac's ld command not being able to find the host's libm or libmvec files. Idk
+***** solution:
+****** Use [[https://github.com/casouri/tree-sitter-module/tree/master][this repo's]] build.sh script to compile libtree-sitter-yaml.so, then copy to `~/.emacs.d/tree-sitter/`
+****** Not the best solution since we're compiling libtree-sitter-yaml outside of our compiled emacs and expecting it to work, but hey. It worked.
+***** research:
+****** [[https://github.com/alexmurray/emacs-snap/issues/103][emacs-snap issue 103]]
+****** [[https://github.com/alexmurray/emacs-snap/issues/77][emacs-snap issue 77]]
+****** [[https://github.com/alexmurray/emacs-snap/issues/66][emacs-snap issue 66]]
+****** [[https://unix.stackexchange.com/questions/506866/what-should-i-install-to-correct-ld-cannot-find-lgbm-and-linput-so-that-i-c]["ld cannot find" issue]] and [[https://stackoverflow.com/questions/16710047/usr-bin-ld-cannot-find-lnameofthelibrary][another "ld cannot find" issue]]
+***** full error:
 #+begin_example
   Warning (treesit): Error encountered when installing language grammar: (treesit-error Command: /snap/emacs/3130/usr/bin/g++-14 -fPIC -shared --sysroot /home/ckelly/snap/emacs/common/sysroot/ -B /home/ckelly/snap/emacs/common/sysroot/usr/lib/gcc parser.o scanner.o -o libtree-sitter-yaml.so Error output: /snap/emacs/3130/usr/bin/ld: cannot find /lib/x86_64-linux-gnu/libm.so.6: No such file or directory
   /snap/emacs/3130/usr/bin/ld: cannot find /lib/x86_64-linux-gnu/libmvec.so.1: No such file or directory
   collect2: error: ld returned 1 exit status
+#+end_example
+*** Building emacs:
+**** commands run
+#+begin_example
+  sudo dnf groupinstall "Development Tools"
+  sudo dnf install gtk3-devel libXpm-devel giflib libjpeg-turbo-devel libtiff-devel gnutls-devel ncurses-devel libxml2-devel jansson-devel harfbuzz-devel  libgccjit-devel
+  sudo dnf install libtree-sitter-devel librsvg2-devel
+
+  wget https://ftp.gnu.org/gnu/emacs/emacs-30.2.tar.xz
+  tar -axvf emacs-30.2.tar.xz -C <extract_to_wherever_you_want>
+
+  cd into emacs-30....
+
+
+  ./configure --with-native-compilation --with-tree-sitter --with-json --with-modules --with-rsvg --with-gif=ifavailable
+
+  make
+
+  sudo make install
+#+end_example
+**** create desktop icon
+#+begin_example
+  sudo cp /usr/local/share/applications/emacs.desktop /usr/share/applications/
+
+  sudo update-desktop-database /usr/share/applications/
+
+  sourceb
+
+  Then "Add to Favorites"
+#+end_example
+**** helpful links
+***** https://www.gnu.org/software/emacs/manual/html_node/efaq/Installing-Emacs.html
+***** https://phoenixnap.com/kb/emacs-linux
+**** errors and Warnings
+#+begin_example
+  ⛔ Warning (treesit): The installed language grammar for bash cannot be located or has problems (version-mismatch): 15
+  ⛔ Warning (native-compiler): er-basic-expansions.el:253:23: Warning: the function ‘treesit-node-at’ is not known to be defined.
+  ⛔ Warning (native-compiler): er-basic-expansions.el:252:25: Warning: the function ‘treesit-node-on’ is not known to be defined.
+  ⛔ Warning (native-compiler): er-basic-expansions.el:250:12: Warning: the function ‘treesit-language-at’ is not known to be defined.
+  ⛔ Warning (emacs): Error retrieving icon script-text-outline, falling back on short-text
+  (svg-lib.el requires Emacs to be compiled with svg support.
+  )
 #+end_example

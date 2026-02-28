@@ -28,6 +28,7 @@
         kill-visual-line
         kill-whole-word-at-point
         markdown-outdent-or-delete
+        mc--insert-letter-and-increase
         move-line-up
         nxml-electric-slash
         org-delete-char
