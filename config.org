@@ -716,14 +716,26 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
   (setq org-src-window-setup 'reorganize-frame)
   (add-hook 'org-mode-hook 'org-indent-mode)
 
+  (global-set-key (kbd "C-c '") 'org-edit-src-code)
+
   (defun reload-config ()
     "Reloads ~/.emacs.d/config.org at runtime"
     (interactive)
     (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
   (global-set-key (kbd "C-c r c") 'reload-config)
 
-  (global-set-key (kbd "C-c '") 'org-edit-src-code)
+  (defun my-org-insert-heading-after-current ()
+    "Insert a new heading at the same level on the line immediately
+  below the current heading, regardless of cursor position or subtree."
+    (interactive)
+    (org-back-to-heading)
+    (let ((level (org-current-level)))
+      (end-of-line)
+      (insert "\n" (make-string level ?*) " ")))
+  (global-set-key (kbd "C-c o RET") 'my-org-insert-heading-after-current)
 
+
+  ;; org-babel
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((java . t)
