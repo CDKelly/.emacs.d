@@ -70,7 +70,7 @@ I just want to use counsel-yank-pop in the minibuffer
 ** font
 *** doesn't seem to be working?
 #+begin_src emacs-lisp
-  (set-frame-font "Monospace-11" nil t)
+  (set-frame-font "Monospace-13" nil t)
   ;; these didn't seem to work
   ;; (set-face-attribute 'default nil :height 90)
   ;; (set-frame-font "Monospace-12")
@@ -2237,7 +2237,74 @@ Stolen from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org#hyd
      "Misc."
      (("h" mc-hide-unmatched-lines-mode "hide unmatched lines"))))
 #+end_src
+* AI
+** [[https://gptel.org/manual.html][gptel]]
+*** [[https://github.com/karthink/gptel][github]]
+**** [[https://github.com/karthink/.emacs.d/blob/master/lisp/setup-gptel.el][karthink's gptel config]]
+**** [[https://github.com/gregoryg/emacs-gregoryg/blob/cc75a1d6ad289e2a415ef2ffafe318e51c556245/AI.org][another config to look at]]
+*** to key api keys from:
+**** [[https://platform.claude.com/settings/keys][anthropic (claude)]]
+**** [[https://platform.openai.com/api-keys][openAI]]
+**** [[https://openrouter.ai/settings/keys][OpenRouter]]
+*** config
+**** TODO figure out which models are free for me to use and add those to the "OpenRouter" backend
+**** Might need to use a free model from [[https://openrouter.ai/models?order=pricing-low-to-high][OpenRouter]]
+#+begin_src emacs-lisp
+  ;; helper function to get api keys
+  (defun read-first-line-of-file (file)
+    "Return the first line of FILE."
+    (string-trim
+     (with-temp-buffer
+       (insert-file-contents (expand-file-name file))
+       (buffer-substring-no-properties (line-beginning-position)
+                                       (line-end-position)))))
 
+  (use-package gptel
+    :ensure t
+    :bind (("C-c g s" . gptel-send)
+           ("C-c g m" . gptel-menu)
+           ("C-c g <return>" . gptel)
+           ("C-c g C-g" . gptel-abort)
+           ("C-c g +" . gptel-add)))
+
+  (gptel-make-anthropic "Claude-thinking"
+    :key (lambda () (read-first-line-of-file "~/.emacs.d/claude-api-key-free.txt"))
+    :stream t
+    :models '(claude-sonnet-4-6
+              claude-sonnet-4-5-20250929)
+    :request-params '( :thinking (:type "enabled")))
+
+  (gptel-make-openai "OpenAI-ChatGPT"
+    :key (lambda () (read-first-line-of-file "~/.emacs.d/open-ai-key-free.txt"))
+    :stream t
+    :models '(gpt-5.2
+              gpt-4.1
+              gpt-4.1-mini
+              gpt-4o-mini
+              gpt-4o))
+
+  (gptel-make-openai "OpenRouter"
+    :stream t
+    :host "openrouter.ai"
+    :endpoint "/api/v1/chat/completions"
+    :key (lambda () (read-first-line-of-file "~/.emacs.d/open-router-api-key-free.txt"))
+    :models '(
+              moonshotai/kimi-k2.5
+              openrouter/auto
+              google/gemini-2.5-pro-exp-03-25:free
+              qwen/qwen3-coder-480b-a35b-instruct:free
+              deepseek/deepseek-chat
+              anthropic/claude-sonnet-4
+              ))
+
+  ;; ERRORS
+  ;;Claude-thinking error: ((HTTP/2 400) invalid_request_error) Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.
+  ;;
+  ;; OpenAI-ChatGPT error: ((HTTP/2 401) invalid_request_error) You didn't provide an API key. You need to provide your API key in an Authorization header using Bearer auth (i.e. Authorization: Bearer YOUR_KEY), or as the password field (with blank username) if you're accessing the API from your browser and are prompted for a username and password. You can obtain an API key from https://platform.openai.com/account/api-keys.
+
+  (setq gptel-backend (gptel-get-backend "OpenRouter"))
+  (setq gptel-model 'deepseek/deepseek-chat)
+#+end_src
 * Miscellaneous
 ** [[https://jblevins.org/projects/markdown-mode/][markdown]]
 #+begin_src emacs-lisp
