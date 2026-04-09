@@ -70,10 +70,14 @@ I just want to use counsel-yank-pop in the minibuffer
 ** font
 *** doesn't seem to be working?
 #+begin_src emacs-lisp
-  (set-frame-font "Monospace-13" nil t)
+  (set-frame-font "Monospace-13" nil t) ;; only this line seems to have worked
   ;; these didn't seem to work
   ;; (set-face-attribute 'default nil :height 90)
   ;; (set-frame-font "Monospace-12")
+#+end_src
+*** defer fontification until you stop typing
+#+begin_src emacs-lisp
+  (setq redisplay-skip-fontification-on-input t)
 #+end_src
 ** theme
 #+begin_src emacs-lisp
@@ -214,6 +218,13 @@ show 80-character vertical marker
 
     (setq require-final-newline t)
   #+end_src
+*** disable bidirectional text scanning
+**** The difference is hard to measure in small buffers, but in large files (think multi-thousand-line JSON or log files) it adds up
+#+begin_src emacs-lisp
+  (setq-default bidi-display-reordering 'left-to-right
+                bidi-paragraph-direction 'left-to-right)
+  (setq bidi-inhibit-bpa t)
+#+end_src
 ** indentation
 *** aesthetics
 **** [[https://github.com/DarthFennec/highlight-indent-guides][highlight-indent-guides]]
@@ -628,6 +639,20 @@ use perl-based regexp and convert between Emacs syntax to PCRE and vice versa
     (switch-to-buffer nil))
   (global-set-key (kbd "C-S-b") 'switch-to-last-buffer)
   #+end_src
+** delete-other-windows toggle
+#+begin_src emacs-lisp
+  (setq-default winner-mode t)
+
+  (defun toggle-delete-other-windows ()
+    "Delete other windows in frame if any, or restore previous window config."
+    (interactive)
+    (if (and winner-mode
+             (equal (selected-window) (next-window)))
+        (winner-undo)
+      (delete-other-windows)))
+
+  (global-set-key (kbd "C-x 1") #'toggle-delete-other-windows)
+#+end_src
 ** focus on newly created windows
 both stolen from [[https://github.com/daedreth/UncleDavesEmacs/blob/master/config.org#following-window-splits][UncleDaves's config]]
   #+begin_src emacs-lisp
@@ -645,6 +670,10 @@ both stolen from [[https://github.com/daedreth/UncleDavesEmacs/blob/master/confi
     (other-window 1))
   (global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
   #+end_src
+** resize window combinations proportionally automatically
+#+begin_src emacs-lisp
+  (setq window-combination-resize t)
+#+end_src
 ** always kill current buffer
   #+begin_src emacs-lisp
   (defun kill-current-buffer ()
@@ -1000,6 +1029,10 @@ TODO: avy-goto-char-timer + symbol-at-point = could make it easier to jump to a 
 **** don’t add a string to kill-ring if it duplicates the last one
 #+begin_src emacs-lisp
   (setq kill-do-not-save-duplicates t)
+#+end_src
+**** save the existing clipboard content into the kill ring before overwriting it
+#+begin_src emacs-lisp
+  (setq save-interprogram-paste-before-kill t)
 #+end_src
 ** yanking
 #+begin_src emacs-lisp
