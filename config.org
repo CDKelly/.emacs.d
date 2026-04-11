@@ -489,6 +489,20 @@ use perl-based regexp and convert between Emacs syntax to PCRE and vice versa
         (magit-commit-create)))
     (global-set-key (kbd "C-c m g S") 'my-magit-stage-all-and-commit))
 
+
+  (defun my-magit-create-new-branch-off-master ()
+    (interactive)
+    (if (magit-anything-modified-p)
+        (user-error "You have staged or unstaged changes. Not ready to check out master and create new branch")
+      (let ((base-branch (magit-read-branch "Select base branch (default=master)" "master")))
+        (unless (string-equal-ignore-case (magit-get-current-branch) base-branch)
+          (message "Not on base branch '%s'. Checking out '%s'" base-branch base-branch)
+          (magit-branch-checkout base-branch))
+        ;; pull from base-branch
+        (magit-pull-from-upstream nil)
+        ;; create and checkout new branch
+        (call-interactively #'magit-branch-and-checkout)))
+    )
 #+end_src
 *** [[https://github.com/justbur/emacs-which-key][which-key]]
 #+begin_src emacs-lisp
@@ -759,6 +773,7 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
           ("l" . "export latex\n")
           ("M" . "export markdown\n")
           ("m" . "markdown\n")
+          ("J" . "src json\n")
           ("P" . "src py\n")
           ("j" . "src java\n")
           ("s" . "src\n")
