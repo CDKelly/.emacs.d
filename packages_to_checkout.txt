@@ -1,14 +1,17 @@
 zygospore - toggle delete-other-window
 
-yasnippet
+yasnippet - https://github.com/joaotavora/yasnippet
+template system
 
 rg - https://github.com/dajva/rg.el
 
-combobulate - https://github.com/mickeynp/combobulate; structural navigation and editing
+combobulate - https://github.com/mickeynp/combobulate
+structural navigation and editing
 
 docker - wrapper around docker CLI
 
-puni - https://github.com/AmaiKinono/puni - smart/soft deletes around sexps
+puni - https://github.com/AmaiKinono/puni
+smart/soft deletes around sexps
 
 major-mode-hydra - checkout this part of this config --> https://github.com/rememberYou/.emacs.d/blob/master/config.org#hydra
 pretty-hydra - https://github.com/jerrypnz/major-mode-hydra.el#pretty-hydra
@@ -21,19 +24,22 @@ emacs-undo-fu - https://codeberg.org/ideasman42/emacs-undo-fu
 diminish
 spaceline - changes mode line to look cool
 
-dabbrev - particularly dabbrev-expand and hippie-expand --> https://www.reddit.com/r/emacs/comments/j61aoh/weekly_tipstricketc_thread/
-
 icicles - https://www.emacswiki.org/emacs/Icicles_-_Completion_Methods_and_Styles
 
 dtrt-indent - guess indentation and adjust settings in emacs; look for dtrt-indent in https://tuhdo.github.io/c-ide.html
 
 VLF (view large files) - https://elpa.gnu.org/packages/vlf.html
 
-https://github.com/kostafey/ejc-sql - sql client
+ejc-sql
+https://github.com/kostafey/ejc-sql
+sql client
 
 https://github.com/astoff/buffer-env - call the correct version of external programs such as linters, compilers and language servers on a per-project basis
 
 ediff - https://www.reddit.com/r/emacs/comments/17yc6x6/emacs_ediff_basics/
+
+gptel - https://github.com/karthink/gptel
+LLM client for emacs
 
 agent-shell - https://github.com/xenodium/agent-shell
 hook up emacs to any AI agent shell (Claude, Gemini, etc.)
