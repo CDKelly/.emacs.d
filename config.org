@@ -3,6 +3,14 @@
 #+begin_src emacs-lisp :comments no :tangle yes
   ;; -*- lexical-binding: t -*-
 #+end_src
+** reload config
+#+begin_src emacs-lisp
+  (defun reload-config ()
+    "Reloads ~/.emacs.d/config.org at runtime"
+    (interactive)
+    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+  (global-set-key (kbd "C-c r c") 'reload-config)
+#+end_src
 ** frame size
 #+begin_src emacs-lisp
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
@@ -461,60 +469,6 @@ use perl-based regexp and convert between Emacs syntax to PCRE and vice versa
     (mc/always-repeat-command t)
     (mc--executing-command-for-fake-cursor nil))
 #+end_src
-*** [[https://github.com/magit/magit][magit]]
-#+begin_src emacs-lisp
-  (use-package magit
-    :ensure t
-    :init
-    (setq magit-section-visibility-indicator '(" ▼"))
-    :custom
-    (magit-show-long-lines-warning nil)
-    :config
-    ;; (defun my-magit-stage-and-commit (message)
-    ;;   (interactive "sCommit Message: ")
-    ;;   (let ((magit-commit-show-diff nil)
-    ;;         (magit-commit-ask-to-stage nil)
-    ;;         (msg message))
-    ;;     ;; (call-interactively 'magit-stage-modified)
-    ;;     ;; (call-interactively 'magit-commit)
-    ;;     (magit-stage t)
-    ;;     (magit-commit-create)
-    ;;     (magit-commit-message-buffer)
-    ;;     (insert (format "%S" msg))))
-
-    (defun my-magit-stage-and-commit ()
-      (interactive)
-      (let ((magit-commit-show-diff nil)
-            (magit-commit-ask-to-stage nil))
-        ;; (call-interactively 'magit-stage-modified)
-        ;; (call-interactively 'magit-commit)
-        (magit-stage t)
-        (magit-commit-create)))
-    (global-set-key (kbd "C-c m g s") 'my-magit-stage-and-commit)
-
-    (defun my-magit-stage-all-and-commit ()
-      (interactive)
-      (let ((magit-commit-show-diff nil)
-            (magit-commit-ask-to-stage nil))
-        (magit-stage-modified)
-        (magit-commit-create)))
-    (global-set-key (kbd "C-c m g S") 'my-magit-stage-all-and-commit))
-
-
-  (defun my-magit-create-new-branch-off-master ()
-    (interactive)
-    (if (magit-anything-modified-p)
-        (user-error "You have staged or unstaged changes. Not ready to check out master and create new branch")
-      (let ((base-branch (magit-read-branch "Select base branch (default=master)" "master")))
-        (unless (string-equal-ignore-case (magit-get-current-branch) base-branch)
-          (message "Not on base branch '%s'. Checking out '%s'" base-branch base-branch)
-          (magit-branch-checkout base-branch))
-        ;; pull from base-branch
-        (magit-pull-from-upstream nil)
-        ;; create and checkout new branch
-        (call-interactively #'magit-branch-and-checkout)))
-    )
-#+end_src
 *** [[https://github.com/justbur/emacs-which-key][which-key]]
 #+begin_src emacs-lisp
   (use-package which-key
@@ -751,7 +705,7 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
 * Org Mode
 ** org related vars, defuns, key bindings, etc.
 #+begin_src emacs-lisp
-  (setq org-ellipsis " ")
+  (setq org-ellipsis " ▼")
   (setq org-src-fontify-natively t)
   (setq org-src-tab-acts-natively t)
   (setq org-confirm-babel-evaluate nil)
@@ -759,13 +713,10 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
   (setq org-src-window-setup 'reorganize-frame)
   (add-hook 'org-mode-hook 'org-indent-mode)
 
+  (global-set-key (kbd "C-c o i s") 'org-insert-subheading)
+  (global-set-key (kbd "C-c o u e") 'org-up-element)
+  (global-set-key (kbd "C-c o d e") 'org-down-element)
   (global-set-key (kbd "C-c '") 'org-edit-src-code)
-
-  (defun reload-config ()
-    "Reloads ~/.emacs.d/config.org at runtime"
-    (interactive)
-    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
-  (global-set-key (kbd "C-c r c") 'reload-config)
 
   (defun my-org-insert-heading-after-current ()
     "Insert a new heading at the same level on the line immediately
@@ -1433,6 +1384,69 @@ Copy/pasted from [[https://kristofferbalintona.me/posts/202202211546/#orderless]
   (use-package rg
     :ensure t)
 #+end_src
+* [[https://github.com/magit/magit][Magit]]
+#+begin_src emacs-lisp
+  (use-package magit
+    :ensure t
+    :init
+    (setq magit-section-visibility-indicator '(" ▼"))
+    :custom
+    (magit-show-long-lines-warning nil)
+    :config
+    ;; (defun my-magit-stage-and-commit (message)
+    ;;   (interactive "sCommit Message: ")
+    ;;   (let ((magit-commit-show-diff nil)
+    ;;         (magit-commit-ask-to-stage nil)
+    ;;         (msg message))
+    ;;     ;; (call-interactively 'magit-stage-modified)
+    ;;     ;; (call-interactively 'magit-commit)
+    ;;     (magit-stage t)
+    ;;     (magit-commit-create)
+    ;;     (magit-commit-message-buffer)
+    ;;     (insert (format "%S" msg))))
+
+    (defun my-magit-stage-and-commit ()
+      (interactive)
+      (let ((magit-commit-show-diff nil)
+            (magit-commit-ask-to-stage nil))
+        ;; (call-interactively 'magit-stage-modified)
+        ;; (call-interactively 'magit-commit)
+        (magit-stage t)
+        (magit-commit-create)))
+    (global-set-key (kbd "C-c m g s") 'my-magit-stage-and-commit)
+
+    (defun my-magit-stage-all-and-commit ()
+      (interactive)
+      (let ((magit-commit-show-diff nil)
+            (magit-commit-ask-to-stage nil))
+        (magit-stage-modified)
+        (magit-commit-create)))
+    (global-set-key (kbd "C-c m g S") 'my-magit-stage-all-and-commit)
+
+    (defun my-magit-checkout-and-pull-from-master ()
+      (interactive)
+      (if (magit-anything-modified-p)
+          (user-error "You have staged or unstaged changes. Not ready to check out master")
+        (let ((base-branch (magit-read-branch "Select base branch (default=master)" "master")))
+          (unless (string-equal-ignore-case (magit-get-current-branch) base-branch)
+            (message "Not on base branch '%s'. Checking out '%s'" base-branch base-branch)
+            (magit-branch-checkout base-branch))
+          ;; pull from base-branch
+          (magit-pull-from-upstream nil))))
+
+    (defun my-magit-create-new-branch-off-master ()
+      (interactive)
+      (if (magit-anything-modified-p)
+          (user-error "You have staged or unstaged changes. Not ready to check out master and create new branch")
+        (let ((base-branch (magit-read-branch "Select base branch (default=master)" "master")))
+          (unless (string-equal-ignore-case (magit-get-current-branch) base-branch)
+            (message "Not on base branch '%s'. Checking out '%s'" base-branch base-branch)
+            (magit-branch-checkout base-branch))
+          ;; pull from base-branch
+          (magit-pull-from-upstream nil)
+          ;; create and checkout new branch
+          (call-interactively #'magit-branch-and-checkout)))))
+#+end_src
 * [[https://github.com/bbatsov/projectile][Projectile]]
 #+begin_src emacs-lisp
   (use-package projectile
@@ -1850,10 +1864,14 @@ REPL buffer connected to a Ruby subprocess
           ))
 #+end_src
 ** [[https://github.com/renzmann/treesit-auto][treesit-auto]]
+*** TODO get bash-ts-mode working on work laptop's RHEL workspace
 #+begin_src emacs-lisp
   (use-package treesit-auto
     :custom
     (treesit-auto-install 'prompt)
+    ;; bash is NOT working right now with natively-compiled emacs on my work laptop's RHEL workspace
+    ;; Remove bash from this list BEFORE saying, "download all" (treesit-auto-add-to-auto-mode-alist -> below)
+    (treesit-auto-langs (cl-remove 'bash treesit-auto-supported-languages))
     :config
     (treesit-auto-add-to-auto-mode-alist 'all)
     (global-treesit-auto-mode))
