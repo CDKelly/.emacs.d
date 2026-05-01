@@ -65,7 +65,7 @@ treat camel-case symbols as separate (i.e. M-f and M-b will move across parts of
   (delete-selection-mode t)
   #+end_src
 ** minibuffer
-I just want to use counsel-yank-pop in the minibuffer
+I just want to use consult-yank-pop in the minibuffer
 #+begin_src emacs-lisp
   (setq enable-recursive-minibuffers t)
 #+end_src
@@ -73,6 +73,11 @@ I just want to use counsel-yank-pop in the minibuffer
 #+begin_src emacs-lisp
   (setq dired-kill-when-opening-new-dired-buffer t)
   (setq dired-listing-switches "-alh")
+#+end_src
+** transient
+#+begin_src emacs-lisp
+  (use-package transient
+    :ensure t)
 #+end_src
 * Aesthetics & Other Enhancements
 ** font
@@ -554,6 +559,51 @@ use perl-based regexp and convert between Emacs syntax to PCRE and vice versa
 
   (global-set-key (kbd "C-c ;") 'comment-from-curr-line-to-line-n)
 #+end_src
+**** execute function from current line to line n
+#+begin_src emacs-lisp
+  (defun line-region-bounds (n)
+    "Return (BEG . END) spanning from the current line to line N (inclusive)."
+    (let* ((current (line-number-at-pos))
+           (start   (min current n))
+           (end     (max current n)))
+      (cons
+       (save-excursion (goto-line start) (line-beginning-position))
+       (save-excursion (goto-line end)   (line-end-position)))))
+
+  (defun region-action-to-line (action n)
+    "Apply ACTION (a function taking BEG and END) from current line to line N.
+  ACTION receives two arguments: the beginning and end of the resolved region."
+    (let* ((bounds (line-region-bounds n))
+           (beg    (car bounds))
+           (end    (cdr bounds)))
+      (funcall action beg end)
+      (when (buffer-file-name)
+        (save-buffer))))
+
+  (defmacro define-region-dispatch-cmd (name action)
+    `(defun ,name ()
+       (interactive)
+       (region-action-to-line ,action (read-number "To line: "))))
+
+  (define-region-dispatch-cmd region-dispatch-comment #'comment-or-uncomment-region)
+  (define-region-dispatch-cmd region-dispatch-kill    #'kill-region)
+  (define-region-dispatch-cmd region-dispatch-yank    #'kill-ring-save)
+  (define-region-dispatch-cmd region-dispatch-indent  #'indent-region)
+  (define-region-dispatch-cmd region-dispatch-upcase  #'upcase-region)
+  (define-region-dispatch-cmd region-dispatch-downcase #'downcase-region)
+
+  (transient-define-prefix region-dispatch-menu ()
+    "Dispatch a region action from current line to line N."
+    ["Region Actions"
+     (";" "comment/uncomment" region-dispatch-comment)
+     ("k" "kill (cut)"        region-dispatch-kill)
+     ("y" "yank (copy)"       region-dispatch-yank)
+     ("i" "indent"            region-dispatch-indent)
+     ("u" "upcase"            region-dispatch-upcase)
+     ("d" "downcase"          region-dispatch-downcase)])
+
+  (global-set-key (kbd "C-c r x") #'region-dispatch-menu)
+#+end_src
 * Buffer and Window stuff
 ** ibuffer
 #+begin_src emacs-lisp
@@ -713,9 +763,9 @@ source: http://steve.yegge.googlepages.com/my-dot-emacs-file
   (setq org-src-window-setup 'reorganize-frame)
   (add-hook 'org-mode-hook 'org-indent-mode)
 
-  (global-set-key (kbd "C-c o i s") 'org-insert-subheading)
-  (global-set-key (kbd "C-c o u e") 'org-up-element)
-  (global-set-key (kbd "C-c o d e") 'org-down-element)
+  (global-set-key (kbd "C-c o s i") 'org-insert-subheading)
+  (global-set-key (kbd "C-c o e u") 'org-up-element)
+  (global-set-key (kbd "C-c o e d") 'org-down-element)
   (global-set-key (kbd "C-c '") 'org-edit-src-code)
 
   (defun my-org-insert-heading-after-current ()
