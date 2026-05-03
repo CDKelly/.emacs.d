@@ -2405,22 +2405,22 @@ Stolen from [[https://github.com/rememberYou/.emacs.d/blob/master/config.org#hyd
     :endpoint "/api/v1/chat/completions"
     :key (lambda () (read-first-line-of-file "~/.emacs.d/open-router-api-key-free.txt"))
     :models '(
-              moonshotai/kimi-k2.5
-              openrouter/auto
-              google/gemini-2.5-pro-exp-03-25:free
-              google/gemma-4-26b-a4b-it:free
-              qwen/qwen3-coder-480b-a35b-instruct:free
-              deepseek/deepseek-chat
-              anthropic/claude-sonnet-4
+              qwen/qwen3-coder:free                     ; best free coding model
+              deepseek/deepseek-r1:free                 ; strong reasoning/coding
+              meta-llama/llama-3.3-70b-instruct:free    ; solid general use
+              openrouter/free                           ; auto-picks best available free model
+              ;; paid but cheap if you ever add credits:
+              deepseek/deepseek-chat                    ; V3, very cheap
+              anthropic/claude-sonnet-4-6               ; requires OR credits
               ))
+
+  (setq gptel-backend (gptel-get-backend "OpenRouter"))
+  (setq gptel-model 'openrouter/free)
 
   ;; ERRORS
   ;;Claude-thinking error: ((HTTP/2 400) invalid_request_error) Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.
   ;;
   ;; OpenAI-ChatGPT error: ((HTTP/2 401) invalid_request_error) You didn't provide an API key. You need to provide your API key in an Authorization header using Bearer auth (i.e. Authorization: Bearer YOUR_KEY), or as the password field (with blank username) if you're accessing the API from your browser and are prompted for a username and password. You can obtain an API key from https://platform.openai.com/account/api-keys.
-
-  (setq gptel-backend (gptel-get-backend "OpenRouter"))
-  (setq gptel-model 'deepseek/deepseek-chat)
 #+end_src
 * Miscellaneous
 ** [[https://jblevins.org/projects/markdown-mode/][markdown]]
